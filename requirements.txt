@@ -1,0 +1,138 @@
+# ============================================================
+# REQUIREMENTS PRAKTIKUM COMPUTER VISION
+# Berdasarkan buku "Computer Vision - Algorithms and Applications"
+# 2nd Edition oleh Richard Szeliski
+# ============================================================
+# Kompatibel dengan Windows/Linux/Mac
+# Python 3.8+ direkomendasikan
+#
+# Bab yang tercakup:
+# - Bab 01-02: Image Basics & Formation
+# - Bab 03-04: Image Processing & Features
+# - Bab 05-06: Segmentation & Feature Detection
+# - Bab 07-08: Feature Matching & Motion
+# - Bab 09-10: 3D Vision & Object Recognition
+# - Bab 11: Structure from Motion (SfM)
+# - Bab 12: Depth Estimation
+# - Bab 13: 3D Reconstruction
+# - Bab 14: Image-Based Rendering (IBR)
+# ============================================================
+
+# Library Utama Computer Vision
+opencv-python>=4.8.0          # Library utama untuk pemrosesan citra
+opencv-contrib-python>=4.8.0  # Modul tambahan OpenCV (SIFT, SURF, AKAZE, dll)
+
+# Library untuk Numerical Computing
+numpy>=1.24.0                 # Operasi array dan matriks
+scipy>=1.11.0                 # Fungsi matematika dan optimisasi
+
+# Library Visualisasi
+matplotlib>=3.7.0             # Plotting dan visualisasi
+seaborn>=0.12.0               # Visualisasi statistik
+
+# Library Deep Learning
+torch>=2.0.0                  # PyTorch untuk deep learning (NeRF concepts)
+torchvision>=0.15.0           # Dataset dan model pre-trained
+tensorflow>=2.13.0            # TensorFlow (opsional, untuk beberapa model)
+
+# Library untuk Image Processing
+Pillow>=10.0.0                # Python Imaging Library
+scikit-image>=0.21.0          # Algoritma image processing
+imageio>=2.31.0               # Input/output gambar dan video
+imageio-ffmpeg>=0.4.8         # Dukungan video dengan ffmpeg
+
+# Library Machine Learning
+scikit-learn>=1.3.0           # Algoritma machine learning klasik
+
+# ============================================================
+# LIBRARY UNTUK BAB 11-14 (3D VISION & IBR)
+# ============================================================
+
+# Library untuk 3D Processing
+open3d>=0.17.0                # Point cloud & mesh processing (Bab 11-13)
+trimesh>=3.23.0               # Mesh processing utilities
+plyfile>=1.0.0                # Read/write PLY files
+pyvista>=0.42.0               # 3D visualization (opsional)
+
+# Library untuk Structure from Motion
+# OpenCV sudah cukup untuk SfM dasar
+# Untuk SfM advanced, pertimbangkan:
+# - COLMAP (external tool)
+# - OpenMVG (external tool)
+
+# Library untuk Depth Estimation
+# OpenCV stereo matching sudah cukup
+# Untuk deep learning depth:
+# - MiDaS (via torch hub)
+# - DPT
+
+# Library untuk Image-Based Rendering (Bab 14)
+# Core functionality sudah ada di OpenCV
+flask>=3.0.0                  # Web viewer untuk virtual tour (Bab 14)
+Werkzeug>=3.0.0               # Flask dependency
+
+# ============================================================
+# LIBRARY PENDUKUNG
+# ============================================================
+
+# Library untuk Video Processing
+moviepy>=1.0.3                # Editing video dengan Python
+
+# Library Utilitas
+tqdm>=4.66.0                  # Progress bar
+requests>=2.31.0              # HTTP requests untuk download
+gdown>=4.7.0                  # Download dari Google Drive
+wget>=3.2                     # Download file dari URL
+pathlib2>=2.3.7               # Path handling cross-platform
+
+# Library untuk Notebook/Interactive
+ipython>=8.14.0               # Interactive Python
+jupyter>=1.0.0                # Jupyter notebook (opsional)
+
+# Library untuk Face Detection/Recognition
+face-recognition>=1.3.0       # Face recognition library (opsional)
+dlib>=19.24.0                 # Machine learning toolkit
+
+# Library Tambahan
+imutils>=0.5.4                # Fungsi utilitas untuk OpenCV
+albumentations>=1.3.0         # Augmentasi gambar
+
+# ============================================================
+# INSTALASI
+# ============================================================
+# 
+# Basic install:
+#   pip install -r requirements.txt
+# 
+# Instalasi Open3D (jika bermasalah):
+#   pip install open3d --no-cache-dir
+#
+# Jika ada masalah dengan dlib/face-recognition di Windows:
+#   pip install cmake
+#   pip install dlib
+#   pip install face-recognition
+#
+# Untuk GPU support PyTorch (CUDA 11.8):
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+#
+# Untuk GPU support PyTorch (CUDA 12.1):
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+#
+# ============================================================
+# VERIFIKASI INSTALASI
+# ============================================================
+#
+# Jalankan script berikut untuk verifikasi:
+#
+# import cv2
+# import numpy as np
+# import open3d as o3d
+# import torch
+# 
+# print(f"OpenCV: {cv2.__version__}")
+# print(f"NumPy: {np.__version__}")
+# print(f"Open3D: {o3d.__version__}")
+# print(f"PyTorch: {torch.__version__}")
+# print(f"CUDA available: {torch.cuda.is_available()}")
+#
+# ============================================================

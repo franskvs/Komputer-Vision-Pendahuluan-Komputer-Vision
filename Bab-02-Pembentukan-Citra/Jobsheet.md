@@ -1,0 +1,326 @@
+# Jobsheet Praktikum
+## Bab 2: Pembentukan Citra (Image Formation)
+
+---
+
+### 📋 Informasi Praktikum
+
+| Item | Keterangan |
+|------|------------|
+| **Mata Kuliah** | Computer Vision |
+| **Topik** | Pembentukan Citra dan Transformasi Geometri |
+| **Waktu** | 3 x 50 menit |
+| **Software** | Python 3.8+, OpenCV, NumPy, Matplotlib |
+
+---
+
+### 🎯 Tujuan Praktikum
+
+Setelah menyelesaikan praktikum ini, mahasiswa mampu:
+1. Memahami dan mengimplementasikan transformasi geometri dasar
+2. Melakukan rotasi, scaling, dan translasi pada gambar
+3. Mengimplementasikan transformasi perspektif
+4. Memahami prinsip kalibrasi kamera
+5. Membuat aplikasi document scanner sederhana
+
+---
+
+### 🔧 Alat dan Bahan
+
+**Software:**
+- Python 3.8 atau lebih baru
+- Library: OpenCV, NumPy, Matplotlib
+- IDE: VS Code / PyCharm / Jupyter Notebook
+
+**File yang diperlukan:**
+- Gambar sample dari folder `data/images/`
+- Gambar dokumen/kertas untuk percobaan scanner
+
+**Hardware:**
+- Komputer dengan kamera (opsional untuk kalibrasi)
+- Checkerboard pattern (print untuk kalibrasi)
+
+---
+
+### 📝 Langkah Kerja
+
+## Percobaan 1: Translasi Gambar
+
+**Tujuan**: Memahami cara menggeser gambar menggunakan transformation matrix
+
+**Langkah-langkah**:
+1. Jalankan program `01_translasi.py`
+2. Amati pergerakan gambar saat nilai `tx` dan `ty` diubah
+3. Catat hasilnya di tabel observasi
+
+**Pertanyaan**:
+- Apa yang terjadi jika `tx` positif vs negatif?
+- Bagaimana nilai negatif mempengaruhi hasil?
+
+| tx | ty | Arah Pergerakan | Observasi |
+|----|----|-----------------| ----------|
+| 50 | 0 | | |
+| -50 | 0 | | |
+| 0 | 50 | | |
+| 100 | 100 | | |
+
+---
+
+## Percobaan 2: Rotasi Gambar
+
+**Tujuan**: Memahami rotasi gambar dengan berbagai sudut dan titik pusat
+
+**Langkah-langkah**:
+1. Jalankan program `02_rotasi.py`
+2. Eksperimen dengan berbagai sudut rotasi
+3. Ubah titik pusat rotasi dan amati perbedaannya
+4. Bandingkan dengan dan tanpa `BORDER_REPLICATE`
+
+**Pertanyaan**:
+- Mengapa bagian gambar bisa terpotong saat rotasi?
+- Apa perbedaan rotasi dari pusat vs dari sudut?
+
+| Sudut | Titik Pusat | Hasil | Observasi |
+|-------|-------------|-------|-----------|
+| 45° | Tengah | | |
+| 90° | Tengah | | |
+| 45° | (0,0) | | |
+| -30° | Tengah | | |
+
+---
+
+## Percobaan 3: Scaling (Resize)
+
+**Tujuan**: Memahami berbagai metode interpolasi saat mengubah ukuran gambar
+
+**Langkah-langkah**:
+1. Jalankan program `03_scaling.py`
+2. Bandingkan hasil berbagai metode interpolasi
+3. Ukur waktu pemrosesan untuk setiap metode
+4. Amati kualitas tepi dan detail
+
+**Pertanyaan**:
+- Metode mana yang paling cepat?
+- Metode mana yang memberikan hasil terbaik untuk upscaling?
+
+| Metode | Waktu (ms) | Kualitas Subjektif | Cocok untuk |
+|--------|------------|--------------------| ------------|
+| INTER_NEAREST | | | |
+| INTER_LINEAR | | | |
+| INTER_CUBIC | | | |
+| INTER_LANCZOS4 | | | |
+| INTER_AREA | | | |
+
+---
+
+## Percobaan 4: Transformasi Affine
+
+**Tujuan**: Memahami transformasi affine yang menggabungkan rotasi, scaling, dan shearing
+
+**Langkah-langkah**:
+1. Jalankan program `04_affine_transform.py`
+2. Definisikan 3 titik sumber dan 3 titik tujuan
+3. Amati bagaimana gambar berubah
+4. Eksperimen dengan koordinat berbeda
+
+**Pertanyaan**:
+- Mengapa dibutuhkan tepat 3 titik untuk transformasi affine?
+- Apa saja transformasi yang bisa dilakukan dengan affine?
+
+**Tabel Observasi**:
+
+| Titik Sumber | Titik Tujuan | Efek yang Dihasilkan |
+|--------------|--------------|----------------------|
+| [(0,0), (w,0), (0,h)] | | Original |
+| | | Shear horizontal |
+| | | Shear vertikal |
+| | | Kombinasi |
+
+---
+
+## Percobaan 5: Transformasi Perspektif
+
+**Tujuan**: Memahami transformasi perspektif untuk koreksi sudut pandang
+
+**Langkah-langkah**:
+1. Jalankan program `05_perspektif_transform.py`
+2. Praktekkan pada gambar dokumen/papan tulis
+3. Tentukan 4 titik sudut objek
+4. Transformasi ke bentuk persegi panjang
+
+**Pertanyaan**:
+- Mengapa dibutuhkan 4 titik untuk transformasi perspektif?
+- Apa perbedaan dengan transformasi affine?
+
+**Sketsa Titik-titik**:
+```
+Gambar Asli:              Hasil Transformasi:
+    1──────2              1────────2
+   /        \             │        │
+  /          \      →     │        │
+ 4────────────3           4────────3
+```
+
+---
+
+## Percobaan 6: Document Scanner
+
+**Tujuan**: Mengaplikasikan transformasi perspektif untuk membuat document scanner
+
+**Langkah-langkah**:
+1. Jalankan program `06_document_scanner.py`
+2. Load gambar dokumen dengan sudut miring
+3. Klik 4 sudut dokumen secara berurutan
+4. Lihat hasil dokumen yang sudah dikoreksi
+
+**Pertanyaan**:
+- Bagaimana cara otomatis mendeteksi sudut dokumen?
+- Apa tantangan dalam membuat scanner otomatis?
+
+**Evaluasi Hasil**:
+
+| Aspek | Skor (1-5) | Catatan |
+|-------|------------|---------|
+| Kelurusan garis | | |
+| Proporsi dokumen | | |
+| Kualitas teks | | |
+
+---
+
+## Percobaan 7: Kalibrasi Kamera (Opsional)
+
+**Tujuan**: Memahami proses kalibrasi kamera untuk mendapatkan parameter intrinsik
+
+**Langkah-langkah**:
+1. Print checkerboard pattern
+2. Jalankan program `07_kalibrasi_kamera.py`
+3. Ambil 10-15 foto checkerboard dari berbagai sudut
+4. Lihat hasil matrix intrinsik dan distorsi
+
+**Pertanyaan**:
+- Apa fungsi checkerboard dalam kalibrasi?
+- Bagaimana cara mengetahui kalibrasi sudah akurat?
+
+**Hasil Kalibrasi**:
+```
+Camera Matrix (K):
+fx = ____    fy = ____
+cx = ____    cy = ____
+
+Distortion Coefficients:
+k1 = ____
+k2 = ____
+p1 = ____
+p2 = ____
+k3 = ____
+
+Reprojection Error = ____ pixels
+```
+
+---
+
+### 📊 Data Observasi
+
+#### Tabel Perbandingan Transformasi
+
+| Transformasi | Preservasi Garis Parallel | Preservasi Sudut | DOF | Contoh Penggunaan |
+|--------------|---------------------------|------------------|-----|-------------------|
+| Translasi | Ya | Ya | 2 | |
+| Rotasi | Ya | Ya | 1 | |
+| Scaling | Ya | Ya | 2 | |
+| Affine | Ya | Tidak | 6 | |
+| Perspektif | Tidak | Tidak | 8 | |
+
+---
+
+### 📈 Analisis
+
+#### Pertanyaan Analisis
+
+1. **Perbandingan Transformasi**
+   - Jelaskan perbedaan utama antara transformasi affine dan perspektif
+   - Kapan sebaiknya menggunakan masing-masing transformasi?
+
+2. **Interpolasi**
+   - Mengapa hasil resize dengan INTER_NEAREST terlihat "pixelated"?
+   - Dalam kasus apa INTER_AREA lebih baik dari INTER_CUBIC?
+
+3. **Aplikasi Praktis**
+   - Sebutkan 3 aplikasi nyata dari transformasi perspektif
+   - Bagaimana kalibrasi kamera membantu dalam augmented reality?
+
+4. **Troubleshooting**
+   - Apa yang menyebabkan gambar menjadi hitam setelah transformasi?
+   - Bagaimana mengatasi artifact pada tepi gambar setelah rotasi?
+
+---
+
+### ✍️ Kesimpulan
+
+*Tuliskan kesimpulan Anda di bawah ini:*
+
+1. Hal baru yang dipelajari:
+   
+   _______________________________________________
+   
+   _______________________________________________
+
+2. Kesulitan yang dihadapi:
+   
+   _______________________________________________
+   
+   _______________________________________________
+
+3. Solusi yang ditemukan:
+   
+   _______________________________________________
+   
+   _______________________________________________
+
+4. Aplikasi yang mungkin dibuat dengan pengetahuan ini:
+   
+   _______________________________________________
+   
+   _______________________________________________
+
+---
+
+### 📝 Tugas Mandiri
+
+1. **Tugas 1**: Buat program yang dapat merotasi gambar berdasarkan deteksi wajah (auto-rotate portrait)
+
+2. **Tugas 2**: Modifikasi document scanner untuk mendeteksi sudut dokumen secara otomatis menggunakan edge detection
+
+3. **Tugas 3**: Buat aplikasi yang menggabungkan 2 gambar dengan transformasi perspektif (simple panorama)
+
+---
+
+### ✅ Checklist Penyelesaian
+
+- [ ] Percobaan 1: Translasi selesai
+- [ ] Percobaan 2: Rotasi selesai
+- [ ] Percobaan 3: Scaling selesai
+- [ ] Percobaan 4: Affine Transform selesai
+- [ ] Percobaan 5: Perspective Transform selesai
+- [ ] Percobaan 6: Document Scanner selesai
+- [ ] Percobaan 7: Kalibrasi Kamera (opsional)
+- [ ] Analisis dijawab lengkap
+- [ ] Kesimpulan ditulis
+- [ ] Tugas mandiri dikerjakan
+
+---
+
+**Catatan Asisten**:
+
+| Aspek | Nilai | Catatan |
+|-------|-------|---------|
+| Persiapan | /10 | |
+| Pelaksanaan | /30 | |
+| Laporan | /30 | |
+| Analisis | /20 | |
+| Kesimpulan | /10 | |
+| **Total** | **/100** | |
+
+---
+
+*Jobsheet ini adalah bagian dari Praktikum Computer Vision*
