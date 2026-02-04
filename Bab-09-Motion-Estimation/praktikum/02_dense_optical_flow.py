@@ -58,8 +58,8 @@ FLOW_THRESHOLD = 2  # Threshold untuk visualisasi (filter noise)
 
 # Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(SCRIPT_DIR, "..", "data", "videos")
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output")
+DATA_DIR = os.path.join(SCRIPT_DIR, "data", "videos")
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output", "output2")
 
 # ============================================================
 # FUNGSI-FUNGSI UTAMA

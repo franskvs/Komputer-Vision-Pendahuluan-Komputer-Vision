@@ -53,8 +53,8 @@ MAX_CAPTURES = 10
 
 # Path
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(SCRIPT_DIR, "..", "data", "images")
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output")
+DATA_DIR = os.path.join(SCRIPT_DIR, "data", "images")
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output", "output6")
 
 # ============================================================
 # FUNGSI-FUNGSI UTAMA

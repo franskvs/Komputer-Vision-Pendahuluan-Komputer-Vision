@@ -51,7 +51,7 @@ import time
 # =============================================================================
 
 # Path ke gambar stereo
-DATA_DIR = Path(__file__).parent.parent / "data"
+DATA_DIR = Path(__file__).parent / "data"
 LEFT_IMAGE = DATA_DIR / "rectified" / "rectified_left.png"
 RIGHT_IMAGE = DATA_DIR / "rectified" / "rectified_right.png"
 

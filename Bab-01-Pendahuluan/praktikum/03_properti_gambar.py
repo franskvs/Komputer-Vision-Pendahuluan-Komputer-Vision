@@ -24,7 +24,7 @@ import os
 # ============================================================
 
 # 1. File gambar yang akan dianalisis
-NAMA_FILE_GAMBAR = "sample.jpg"
+NAMA_FILE_GAMBAR = "portrait.jpg"
 
 # 2. Tampilkan histogram?
 TAMPILKAN_HISTOGRAM = True
@@ -42,7 +42,7 @@ REGION_SAMPLE = (100, 100, 5)  # Mulai dari (100,100), ambil 5x5 piksel
 def dapatkan_path_gambar(nama_file):
     """Mendapatkan path lengkap file gambar"""
     direktori_script = os.path.dirname(os.path.abspath(__file__))
-    path_data = os.path.join(direktori_script, "..", "data", "images", nama_file)
+    path_data = os.path.join(direktori_script, "data", "images", nama_file)
     
     if not os.path.exists(path_data):
         path_data = os.path.join(direktori_script, nama_file)

@@ -28,8 +28,8 @@ import time
 # ============================================================
 
 # Path data
-DATA_DIR = Path(__file__).parent.parent / "data"
-OUTPUT_DIR = Path(__file__).parent / "output"
+DATA_DIR = Path(__file__).parent / "data"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output3"
 
 # Projection parameters
 DEFAULT_FOV = 60                    # Field of view dalam derajat
@@ -711,7 +711,7 @@ def demo_equirectangular_extraction():
     equirect = load_equirectangular()
     print(f"\n  Equirectangular: {equirect.shape}")
     
-    cv2.imwrite(str(OUTPUT_DIR / "equirectangular_input.jpg"), equirect)
+    cv2.imwrite(str(OUTPUT_DIR / "equirectangular_building.jpg"), equirect)
     
     # Extract views di berbagai orientasi
     views = [

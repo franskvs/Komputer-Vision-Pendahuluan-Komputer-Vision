@@ -54,7 +54,7 @@ import time
 # =============================================================================
 
 # Path ke data
-DATA_DIR = Path(__file__).parent.parent / "data"
+DATA_DIR = Path(__file__).parent / "data"
 
 # Disparity map (dari praktikum sebelumnya)
 DISPARITY_FILE = DATA_DIR / "disparity" / "disparity_sgbm_float.npy"
@@ -73,7 +73,7 @@ FOCAL_LENGTH = 500.0  # Focal length dalam pixel
 CALIB_FILE = DATA_DIR / "calibration_results" / "stereo_calibration.yaml"
 
 # Path output
-OUTPUT_DIR = DATA_DIR / "depth"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output5" / "depth"
 
 # Range depth yang valid (dalam meter)
 MIN_DEPTH = 0.1  # 10 cm

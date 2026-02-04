@@ -55,8 +55,8 @@ MIN_AREA = 1000
 
 # Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(SCRIPT_DIR, "..", "data", "videos")
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output")
+DATA_DIR = os.path.join(SCRIPT_DIR, "data", "videos")
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output", "output5")
 
 # ============================================================
 # FUNGSI-FUNGSI UTAMA

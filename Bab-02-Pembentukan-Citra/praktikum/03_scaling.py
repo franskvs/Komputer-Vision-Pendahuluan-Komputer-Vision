@@ -16,6 +16,8 @@
 # ====================
 import cv2
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Gunakan backend non-GUI
 import matplotlib.pyplot as plt
 import time
 import os
@@ -24,8 +26,21 @@ import os
 # VARIABEL YANG BISA DIUBAH-UBAH (EKSPERIMEN)
 # ============================================================
 
+# ============================================================
+# KONFIGURASI PATH
+# ============================================================
+
+# Dapatkan direktori script (praktikum folder)
+DIR_SCRIPT = os.path.dirname(os.path.abspath(__file__))
+DIR_DATA = os.path.join(DIR_SCRIPT, "data", "images")
+DIR_OUTPUT = os.path.join(DIR_SCRIPT, "output3")
+
+# Pastikan folder output ada
+os.makedirs(DIR_OUTPUT, exist_ok=True)
+
+
 # 1. File gambar yang akan diproses
-NAMA_FILE_GAMBAR = "sample.jpg"
+NAMA_FILE_GAMBAR = "portrait.jpg"
 
 # 2. Faktor skala
 SKALA_X = 2.0  # Skala horizontal (coba: 0.5, 1.5, 2.0, 3.0)
@@ -49,7 +64,7 @@ METODE_INTERPOLASI = cv2.INTER_LINEAR
 def dapatkan_path_gambar(nama_file):
     """Mendapatkan path lengkap file gambar"""
     direktori_script = os.path.dirname(os.path.abspath(__file__))
-    path_data = os.path.join(direktori_script, "..", "data", "images", nama_file)
+    path_data = os.path.join(direktori_script, "data", "images", nama_file)
     
     if not os.path.exists(path_data):
         path_data = os.path.join(direktori_script, "..", "..", 
@@ -214,7 +229,13 @@ Rekomendasi metode untuk UPSCALING:
     
     plt.suptitle(f"Perbandingan Metode Interpolasi - Upscaling {skala}x", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
 
 
 def demo_downscaling(gambar):
@@ -257,7 +278,13 @@ Rekomendasi metode untuk DOWNSCALING:
     
     plt.suptitle(f"Perbandingan Metode Interpolasi - Downscaling {skala}x", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
 
 
 def demo_detail_interpolasi():
@@ -322,7 +349,13 @@ CARA KERJA INTERPOLASI:
     
     plt.suptitle(f"Upscaling Gambar 2x2 sebesar {skala}x", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
 
 
 def demo_aspect_ratio(gambar):
@@ -389,7 +422,13 @@ def demo_aspect_ratio(gambar):
     
     plt.suptitle("Berbagai Strategi Resize ke Target Size", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
 
 
 # ============================================================

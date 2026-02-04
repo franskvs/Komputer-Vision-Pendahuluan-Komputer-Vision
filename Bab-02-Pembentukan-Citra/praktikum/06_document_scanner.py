@@ -16,6 +16,8 @@
 # ====================
 import cv2
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Gunakan backend non-GUI
 import matplotlib.pyplot as plt
 import os
 
@@ -23,8 +25,21 @@ import os
 # VARIABEL YANG BISA DIUBAH-UBAH (EKSPERIMEN)
 # ============================================================
 
+# ============================================================
+# KONFIGURASI PATH
+# ============================================================
+
+# Dapatkan direktori script (praktikum folder)
+DIR_SCRIPT = os.path.dirname(os.path.abspath(__file__))
+DIR_DATA = os.path.join(DIR_SCRIPT, "data", "images")
+DIR_OUTPUT = os.path.join(DIR_SCRIPT, "output6")
+
+# Pastikan folder output ada
+os.makedirs(DIR_OUTPUT, exist_ok=True)
+
+
 # 1. File gambar yang akan diproses
-NAMA_FILE_GAMBAR = "sample.jpg"
+NAMA_FILE_GAMBAR = "portrait.jpg"
 
 # 2. Ukuran resize untuk pemrosesan (lebih kecil = lebih cepat)
 RESIZE_WIDTH = 500
@@ -48,7 +63,7 @@ OUTPUT_HEIGHT = 1169
 def dapatkan_path_gambar(nama_file):
     """Mendapatkan path lengkap file gambar"""
     direktori_script = os.path.dirname(os.path.abspath(__file__))
-    path_data = os.path.join(direktori_script, "..", "data", "images", nama_file)
+    path_data = os.path.join(direktori_script, "data", "images", nama_file)
     
     if not os.path.exists(path_data):
         path_data = os.path.join(direktori_script, "..", "..", 
@@ -234,7 +249,13 @@ def deteksi_dokumen(gambar, show_steps=True):
         
         plt.suptitle("Langkah-langkah Deteksi Dokumen", fontsize=14)
         plt.tight_layout()
-        plt.show()
+        output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+        plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+        print(f"[SAVED] {output_path}")
+
+        plt.close()
     
     # Return corners scaled back ke ukuran original
     if doc_contour is not None:
@@ -388,7 +409,13 @@ def scan_dokumen_lengkap(gambar, output_size=None):
     
     plt.suptitle("Document Scanner - Hasil Enhancement", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
     
     return scanned, corners
 
@@ -516,7 +543,13 @@ Pipeline:
     plt.imshow(cv2.cvtColor(gambar, cv2.COLOR_BGR2RGB))
     plt.title("Input Image")
     plt.axis('off')
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
     
     # Jalankan document scanner
     hasil, corners = scan_dokumen_lengkap(gambar)

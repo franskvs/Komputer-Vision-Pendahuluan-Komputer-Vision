@@ -30,8 +30,8 @@ import time
 # ============================================================
 
 # Path data
-DATA_DIR = Path(__file__).parent.parent / "data"
-OUTPUT_DIR = Path(__file__).parent / "output"
+DATA_DIR = Path(__file__).parent / "data"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output6"
 
 # SSIM parameters
 SSIM_K1 = 0.01                     # Stability constant

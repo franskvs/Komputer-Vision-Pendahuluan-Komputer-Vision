@@ -26,10 +26,10 @@ import time
 # ============================================================
 
 # 1. File gambar sumber
-NAMA_FILE_SUMBER = "sample.jpg"
+NAMA_FILE_SUMBER = "portrait.jpg"
 
 # 2. Direktori output
-DIREKTORI_OUTPUT = "output_images"
+DIREKTORI_OUTPUT = os.path.join("output", "output7")
 
 # 3. Kualitas JPEG (0-100, semakin tinggi semakin bagus tapi ukuran besar)
 KUALITAS_JPEG = 95
@@ -50,7 +50,7 @@ FORMAT_OUTPUT = ['jpg', 'png', 'bmp', 'tiff', 'webp']
 def dapatkan_path_gambar(nama_file):
     """Mendapatkan path lengkap file gambar"""
     direktori_script = os.path.dirname(os.path.abspath(__file__))
-    path_data = os.path.join(direktori_script, "..", "data", "images", nama_file)
+    path_data = os.path.join(direktori_script, "data", "images", nama_file)
     
     if not os.path.exists(path_data):
         path_data = os.path.join(direktori_script, nama_file)
@@ -87,9 +87,8 @@ def buat_direktori_output():
     direktori_script = os.path.dirname(os.path.abspath(__file__))
     path_output = os.path.join(direktori_script, DIREKTORI_OUTPUT)
     
-    if not os.path.exists(path_output):
-        os.makedirs(path_output)
-        print(f"[INFO] Direktori dibuat: {path_output}")
+    os.makedirs(path_output, exist_ok=True)
+    print(f"[INFO] Direktori siap: {path_output}")
     
     return path_output
 

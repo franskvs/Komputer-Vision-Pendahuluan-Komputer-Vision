@@ -26,14 +26,14 @@ ssl._create_default_https_context = ssl._create_unverified_context
 def create_directories():
     """Membuat struktur folder untuk data."""
     dirs = [
-        "data",
-        "data/faces",
-        "data/faces/train",
-        "data/faces/test",
-        "data/objects",
-        "data/scenes",
-        "data/ocr",
-        "data/models"
+        "praktikum/data",
+        "praktikum/data/faces",
+        "praktikum/data/faces/train",
+        "praktikum/data/faces/test",
+        "praktikum/data/objects",
+        "praktikum/data/scenes",
+        "praktikum/data/ocr",
+        "praktikum/data/models"
     ]
     
     for d in dirs:
@@ -59,7 +59,7 @@ def download_face_detection_models():
     }
     
     for name, url in models.items():
-        filepath = os.path.join("data/models", name)
+        filepath = os.path.join("praktikum/data/models", name)
         if not os.path.exists(filepath):
             try:
                 print(f"  Mengunduh {name}...")
@@ -93,7 +93,7 @@ def download_sample_images():
     ]
     
     for name, url in face_urls:
-        filepath = os.path.join("data/faces/test", name)
+        filepath = os.path.join("praktikum/data/faces/test", name)
         if not os.path.exists(filepath):
             try:
                 print(f"  Mengunduh {name}...")
@@ -114,7 +114,7 @@ def download_sample_images():
     ]
     
     for name, url in scene_urls:
-        filepath = os.path.join("data/scenes", name)
+        filepath = os.path.join("praktikum/data/scenes", name)
         if not os.path.exists(filepath):
             try:
                 print(f"  Mengunduh {name}...")
@@ -141,14 +141,14 @@ def create_synthetic_ocr_images():
         img1 = np.ones((100, 400, 3), dtype=np.uint8) * 255
         cv2.putText(img1, "Hello World", (50, 60), 
                     cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 0), 3)
-        cv2.imwrite("data/ocr/text_sample_1.jpg", img1)
+        cv2.imwrite("praktikum/data/ocr/text_sample_1.jpg", img1)
         print("  [OK] text_sample_1.jpg")
         
         # Numbers
         img2 = np.ones((100, 400, 3), dtype=np.uint8) * 255
         cv2.putText(img2, "12345-67890", (30, 60), 
                     cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 0), 3)
-        cv2.imwrite("data/ocr/text_sample_2.jpg", img2)
+        cv2.imwrite("praktikum/data/ocr/text_sample_2.jpg", img2)
         print("  [OK] text_sample_2.jpg")
         
         # License plate style
@@ -156,7 +156,7 @@ def create_synthetic_ocr_images():
         cv2.rectangle(img3, (5, 5), (245, 75), (0, 0, 0), 2)
         cv2.putText(img3, "B 1234 ABC", (20, 55), 
                     cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 2)
-        cv2.imwrite("data/ocr/license_plate.jpg", img3)
+        cv2.imwrite("praktikum/data/ocr/license_plate.jpg", img3)
         print("  [OK] license_plate.jpg")
         
         # Document style
@@ -172,7 +172,7 @@ def create_synthetic_ocr_images():
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 1)
         cv2.putText(img4, "Total: $500.00", (50, 200), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
-        cv2.imwrite("data/ocr/invoice.jpg", img4)
+        cv2.imwrite("praktikum/data/ocr/invoice.jpg", img4)
         print("  [OK] invoice.jpg")
         
     except ImportError:
@@ -190,7 +190,7 @@ def create_face_database_template():
     persons = ["person_01", "person_02", "person_03"]
     
     for person in persons:
-        person_dir = os.path.join("data/faces/train", person)
+        person_dir = os.path.join("praktikum/data/faces/train", person)
         os.makedirs(person_dir, exist_ok=True)
         
         # Buat README di setiap folder
@@ -218,12 +218,12 @@ def print_summary():
     
     # Count files in each directory
     directories = [
-        ("data/faces/train", "Face Training"),
-        ("data/faces/test", "Face Testing"),
-        ("data/objects", "Objects"),
-        ("data/scenes", "Scenes"),
-        ("data/ocr", "OCR Samples"),
-        ("data/models", "Models")
+        ("praktikum/data/faces/train", "Face Training"),
+        ("praktikum/data/faces/test", "Face Testing"),
+        ("praktikum/data/objects", "Objects"),
+        ("praktikum/data/scenes", "Scenes"),
+        ("praktikum/data/ocr", "OCR Samples"),
+        ("praktikum/data/models", "Models")
     ]
     
     for path, name in directories:

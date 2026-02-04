@@ -56,8 +56,8 @@ TRACK_LENGTH = 30       # Panjang trail tracking
 
 # Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(SCRIPT_DIR, "..", "data", "videos")
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output")
+DATA_DIR = os.path.join(SCRIPT_DIR, "data", "videos")
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output", "output1")
 
 # ============================================================
 # FUNGSI-FUNGSI UTAMA

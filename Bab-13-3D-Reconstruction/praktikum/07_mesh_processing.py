@@ -32,8 +32,8 @@ import copy
 # ============================================================
 
 # Path data
-DATA_DIR = Path(__file__).parent.parent / "data" / "meshes"
-OUTPUT_DIR = Path(__file__).parent / "output"
+DATA_DIR = Path(__file__).parent / "data" / "meshes"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output7"
 
 # Smoothing parameters
 LAPLACIAN_ITERATIONS = 10           # Jumlah iterasi Laplacian

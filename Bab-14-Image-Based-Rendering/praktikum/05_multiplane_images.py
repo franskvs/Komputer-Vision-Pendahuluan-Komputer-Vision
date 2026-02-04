@@ -32,8 +32,8 @@ import time
 # ============================================================
 
 # Path data
-DATA_DIR = Path(__file__).parent.parent / "data"
-OUTPUT_DIR = Path(__file__).parent / "output"
+DATA_DIR = Path(__file__).parent / "data"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output5"
 
 # MPI parameters
 NUM_DEPTH_PLANES = 32              # Jumlah depth planes

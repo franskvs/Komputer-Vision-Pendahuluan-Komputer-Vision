@@ -69,8 +69,8 @@ NOISE_SIGMA = 30
 
 # Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(SCRIPT_DIR, "..", "data", "images")
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output")
+DATA_DIR = os.path.join(SCRIPT_DIR, "data", "images")
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output", "output3")
 
 # ============================================================
 # FUNGSI-FUNGSI UTAMA
@@ -176,7 +176,7 @@ def main():
     # Add noise
     print(f"\nAdding Gaussian noise (sigma={NOISE_SIGMA})...")
     noisy = add_gaussian_noise(clean, NOISE_SIGMA)
-    cv2.imwrite(os.path.join(OUTPUT_DIR, "03_noisy_input.jpg"), noisy)
+    cv2.imwrite(os.path.join(OUTPUT_DIR, "03_noisy_building.jpg"), noisy)
     
     # Calculate baseline PSNR
     baseline_psnr = calculate_psnr(clean, noisy)
@@ -308,7 +308,7 @@ Results (sorted by PSNR):""")
 Best method: {sorted_results[0][0]}
 
 Files generated:
-  - 03_noisy_input.jpg
+  - 03_noisy_building.jpg
   - 03_denoised_gaussian.jpg
   - 03_denoised_bilateral.jpg
   - 03_denoised_nlm.jpg

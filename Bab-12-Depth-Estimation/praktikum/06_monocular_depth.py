@@ -52,12 +52,12 @@ import time
 # =============================================================================
 
 # Path ke gambar input
-DATA_DIR = Path(__file__).parent.parent / "data"
+DATA_DIR = Path(__file__).parent / "data"
 INPUT_IMAGE = DATA_DIR / "images" / "street_scene.png"
 INPUT_IMAGE_FALLBACK = DATA_DIR / "stereo" / "synthetic_left.png"
 
 # Path output
-OUTPUT_DIR = DATA_DIR / "depth_mono"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output6" / "depth_mono"
 
 # Model MiDaS yang digunakan
 # Options: "MiDaS_small", "DPT_Large", "DPT_Hybrid"

@@ -355,7 +355,7 @@ def main():
     
     # Setup paths
     script_dir = Path(__file__).parent.resolve()
-    data_dir = script_dir.parent / "data" / "images"
+    data_dir = script_dir / "data" / "images"
     output_dir = script_dir / "output"
     output_dir.mkdir(exist_ok=True)
     

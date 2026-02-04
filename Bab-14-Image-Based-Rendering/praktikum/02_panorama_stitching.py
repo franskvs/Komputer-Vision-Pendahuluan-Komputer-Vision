@@ -32,8 +32,8 @@ import glob
 # ============================================================
 
 # Path data
-DATA_DIR = Path(__file__).parent.parent / "data" / "panorama_sequences"
-OUTPUT_DIR = Path(__file__).parent / "output"
+DATA_DIR = Path(__file__).parent / "data" / "panorama_sequences"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output2"
 
 # Stitching parameters
 FEATURE_METHOD = 'SIFT'             # Feature detector

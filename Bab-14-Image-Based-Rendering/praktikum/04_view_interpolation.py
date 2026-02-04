@@ -30,8 +30,8 @@ import time
 # ============================================================
 
 # Path data
-DATA_DIR = Path(__file__).parent.parent / "data"
-OUTPUT_DIR = Path(__file__).parent / "output"
+DATA_DIR = Path(__file__).parent / "data"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output4"
 
 # View interpolation parameters
 NUM_INTERPOLATED_FRAMES = 10       # Jumlah frame interpolasi

@@ -16,6 +16,8 @@
 # ====================
 import cv2
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Gunakan backend non-GUI
 import matplotlib.pyplot as plt
 import os
 
@@ -24,7 +26,7 @@ import os
 # ============================================================
 
 # 1. File gambar yang akan diproses
-NAMA_FILE_GAMBAR = "sample.jpg"
+NAMA_FILE_GAMBAR = "portrait.jpg"
 
 # 2. Nilai translasi dalam piksel
 #    tx: pergeseran horizontal (positif = ke kanan)
@@ -42,13 +44,25 @@ MODE_BORDER = cv2.BORDER_CONSTANT
 WARNA_BORDER = (50, 50, 50)  # Abu-abu gelap
 
 # ============================================================
+# KONFIGURASI PATH
+# ============================================================
+
+# Dapatkan direktori script (praktiukm folder)
+DIR_SCRIPT = os.path.dirname(os.path.abspath(__file__))
+DIR_DATA = os.path.join(DIR_SCRIPT, "data", "images")
+DIR_OUTPUT = os.path.join(DIR_SCRIPT, "output1")
+
+# Pastikan folder output ada
+os.makedirs(DIR_OUTPUT, exist_ok=True)
+
+# ============================================================
 # FUNGSI HELPER
 # ============================================================
 
 def dapatkan_path_gambar(nama_file):
     """Mendapatkan path lengkap file gambar"""
     direktori_script = os.path.dirname(os.path.abspath(__file__))
-    path_data = os.path.join(direktori_script, "..", "data", "images", nama_file)
+    path_data = os.path.join(direktori_script, "data", "images", nama_file)
     
     if not os.path.exists(path_data):
         # Coba folder Bab-01
@@ -165,7 +179,10 @@ def demo_translasi_berbagai_arah(gambar):
     
     plt.suptitle("Translasi Gambar ke Berbagai Arah", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, 'demo_arah.png')
+    plt.savefig(output_path, dpi=100, bbox_inches='tight')
+    print(f"[SAVED] Gambar disimpan ke: {output_path}")
+    plt.close()
 
 
 def demo_border_modes(gambar):
@@ -207,7 +224,10 @@ def demo_border_modes(gambar):
     
     plt.suptitle(f"Perbandingan Border Mode (tx={tx}, ty={ty})", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, 'demo_border_modes.png')
+    plt.savefig(output_path, dpi=100, bbox_inches='tight')
+    print(f"[SAVED] Gambar disimpan ke: {output_path}")
+    plt.close()
 
 
 def visualisasi_matrix_translasi(gambar):
@@ -275,7 +295,10 @@ Jika tx = 100, ty = 50
     
     plt.suptitle("Pergerakan Titik Referensi Setelah Translasi", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, 'demo_matrix_visualization.png')
+    plt.savefig(output_path, dpi=100, bbox_inches='tight')
+    print(f"[SAVED] Gambar disimpan ke: {output_path}")
+    plt.close()
 
 
 # ============================================================
@@ -323,7 +346,10 @@ def main():
     
     plt.suptitle("Demonstrasi Translasi Gambar", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, 'demo_translasi_simple.png')
+    plt.savefig(output_path, dpi=100, bbox_inches='tight')
+    print(f"[SAVED] Gambar disimpan ke: {output_path}")
+    plt.close()
     
     # 2. Demo translasi berbagai arah
     demo_translasi_berbagai_arah(gambar)

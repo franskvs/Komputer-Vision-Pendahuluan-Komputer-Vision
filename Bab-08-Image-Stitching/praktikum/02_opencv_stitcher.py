@@ -54,8 +54,8 @@ TRY_GPU = False
 
 # Path ke gambar
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(SCRIPT_DIR, "..", "data", "images")
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output")
+DATA_DIR = os.path.join(SCRIPT_DIR, "data", "images")
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output", "output2")
 
 # ============================================================
 # FUNGSI-FUNGSI UTAMA

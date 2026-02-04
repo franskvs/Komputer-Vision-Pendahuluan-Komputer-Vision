@@ -36,8 +36,8 @@ import time
 # ============================================================
 
 # Path data
-DATA_DIR = Path(__file__).parent.parent / "data"
-OUTPUT_DIR = Path(__file__).parent / "output"
+DATA_DIR = Path(__file__).parent / "data"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output7"
 
 # Ray marching parameters
 NUM_SAMPLES_COARSE = 64            # Samples per ray (coarse)

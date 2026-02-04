@@ -36,8 +36,8 @@ import copy
 # ============================================================
 
 # Path data
-DATA_DIR = Path(__file__).parent.parent / "data" / "point_clouds"
-OUTPUT_DIR = Path(__file__).parent / "output"
+DATA_DIR = Path(__file__).parent / "data" / "point_clouds"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output4"
 
 # Parameter ICP
 ICP_THRESHOLD = 0.02            # Max correspondence distance

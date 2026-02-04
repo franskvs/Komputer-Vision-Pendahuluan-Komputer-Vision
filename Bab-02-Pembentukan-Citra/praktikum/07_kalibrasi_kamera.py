@@ -16,6 +16,8 @@
 # ====================
 import cv2
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Gunakan backend non-GUI
 import matplotlib.pyplot as plt
 import os
 import glob
@@ -23,6 +25,19 @@ import glob
 # ============================================================
 # VARIABEL YANG BISA DIUBAH-UBAH (EKSPERIMEN)
 # ============================================================
+
+# ============================================================
+# KONFIGURASI PATH
+# ============================================================
+
+# Dapatkan direktori script (praktikum folder)
+DIR_SCRIPT = os.path.dirname(os.path.abspath(__file__))
+DIR_DATA = os.path.join(DIR_SCRIPT, "data", "images")
+DIR_OUTPUT = os.path.join(DIR_SCRIPT, "output7")
+
+# Pastikan folder output ada
+os.makedirs(DIR_OUTPUT, exist_ok=True)
+
 
 # 1. Ukuran papan catur (jumlah inner corners)
 # Contoh: checkerboard 9x6 memiliki 8x5 inner corners
@@ -386,7 +401,13 @@ def visualisasi_distorsi():
     
     plt.suptitle("Jenis-jenis Distorsi Lensa", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
 
 
 def demo_calibration_pipeline():
@@ -412,7 +433,13 @@ def demo_calibration_pipeline():
     plt.imshow(pattern, cmap='gray')
     plt.title(f"Pola Kalibrasi Checkerboard\n{CHECKERBOARD_COLS}×{CHECKERBOARD_ROWS} kotak")
     plt.axis('off')
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
     
     # Buat gambar simulasi kalibrasi
     print("\n[INFO] Membuat gambar simulasi kalibrasi...")
@@ -437,7 +464,13 @@ def demo_calibration_pipeline():
     
     plt.suptitle("Gambar Kalibrasi dengan Detected Corners", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
     
     # Lakukan kalibrasi
     ret, camera_matrix, dist_coeffs, rvecs, tvecs = kalibrasi_kamera(
@@ -482,7 +515,13 @@ def demo_calibration_pipeline():
         
         plt.suptitle("Hasil Undistortion", fontsize=14)
         plt.tight_layout()
-        plt.show()
+        output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+        plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+        print(f"[SAVED] {output_path}")
+
+        plt.close()
         
         return camera_matrix, dist_coeffs
     

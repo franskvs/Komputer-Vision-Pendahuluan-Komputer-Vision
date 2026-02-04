@@ -16,6 +16,8 @@
 # ====================
 import cv2
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Gunakan backend non-GUI
 import matplotlib.pyplot as plt
 import os
 
@@ -23,8 +25,21 @@ import os
 # VARIABEL YANG BISA DIUBAH-UBAH (EKSPERIMEN)
 # ============================================================
 
+# ============================================================
+# KONFIGURASI PATH
+# ============================================================
+
+# Dapatkan direktori script (praktikum folder)
+DIR_SCRIPT = os.path.dirname(os.path.abspath(__file__))
+DIR_DATA = os.path.join(DIR_SCRIPT, "data", "images")
+DIR_OUTPUT = os.path.join(DIR_SCRIPT, "output2")
+
+# Pastikan folder output ada
+os.makedirs(DIR_OUTPUT, exist_ok=True)
+
+
 # 1. File gambar yang akan diproses
-NAMA_FILE_GAMBAR = "sample.jpg"
+NAMA_FILE_GAMBAR = "portrait.jpg"
 
 # 2. Sudut rotasi dalam derajat
 #    Positif = berlawanan arah jarum jam (counter-clockwise)
@@ -48,7 +63,7 @@ AUTO_EXPAND = True
 def dapatkan_path_gambar(nama_file):
     """Mendapatkan path lengkap file gambar"""
     direktori_script = os.path.dirname(os.path.abspath(__file__))
-    path_data = os.path.join(direktori_script, "..", "data", "images", nama_file)
+    path_data = os.path.join(direktori_script, "data", "images", nama_file)
     
     if not os.path.exists(path_data):
         path_data = os.path.join(direktori_script, "..", "..", 
@@ -180,7 +195,13 @@ def demo_rotasi_berbagai_sudut(gambar):
     
     plt.suptitle("Rotasi Gambar dengan Berbagai Sudut (tanpa expand)", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
 
 
 def demo_rotasi_expand_vs_normal(gambar):
@@ -221,7 +242,13 @@ def demo_rotasi_expand_vs_normal(gambar):
     
     plt.suptitle("Perbandingan Rotasi Normal vs Expand", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
 
 
 def demo_rotasi_titik_pusat_berbeda(gambar):
@@ -270,7 +297,13 @@ def demo_rotasi_titik_pusat_berbeda(gambar):
     
     plt.suptitle(f"Rotasi {sudut}° dengan Titik Pusat Berbeda", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
 
 
 def visualisasi_rotation_matrix(sudut):
@@ -350,7 +383,13 @@ def demo_rotasi_dengan_skala(gambar):
     
     plt.suptitle("Rotasi dengan Berbagai Kombinasi Sudut dan Skala", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
 
 
 # ============================================================
@@ -405,7 +444,13 @@ def main():
     
     plt.suptitle("Demonstrasi Rotasi Gambar", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
     
     # 3. Demo berbagai sudut
     demo_rotasi_berbagai_sudut(gambar)

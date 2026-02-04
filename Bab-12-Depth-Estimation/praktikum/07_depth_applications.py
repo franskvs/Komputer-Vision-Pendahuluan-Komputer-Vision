@@ -46,7 +46,7 @@ import time
 # =============================================================================
 
 # Path ke data
-DATA_DIR = Path(__file__).parent.parent / "data"
+DATA_DIR = Path(__file__).parent / "data"
 
 # Input files (dari praktikum sebelumnya)
 DEPTH_FILE = DATA_DIR / "depth" / "depth_meters.npy"
@@ -56,7 +56,7 @@ RGB_IMAGE = DATA_DIR / "stereo" / "synthetic_left.png"
 RGB_IMAGE_ALT = DATA_DIR / "images" / "street_scene.png"
 
 # Path output
-OUTPUT_DIR = DATA_DIR / "applications"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output7" / "applications"
 
 # Parameter untuk segmentasi
 # Range depth untuk foreground (dalam meter atau normalized)

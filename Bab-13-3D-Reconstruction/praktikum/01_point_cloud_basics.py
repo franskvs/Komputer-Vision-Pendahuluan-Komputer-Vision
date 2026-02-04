@@ -20,14 +20,16 @@ Author: Praktikum Computer Vision
 import numpy as np
 from pathlib import Path
 import time
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 # ============================================================
 # KONFIGURASI - Sesuaikan parameter sesuai kebutuhan
 # ============================================================
 
 # Path data
-DATA_DIR = Path(__file__).parent.parent / "data" / "point_clouds"
-OUTPUT_DIR = Path(__file__).parent / "output"
+DATA_DIR = Path(__file__).parent / "data" / "point_clouds"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output1"
 
 # Parameter point cloud generation
 NUM_POINTS_SPHERE = 10000       # Jumlah titik untuk sphere
@@ -379,82 +381,106 @@ def compute_point_cloud_statistics(pcd):
 
 def visualize_point_cloud(pcd, window_name="Point Cloud Viewer", point_size=2.0):
     """
-    Visualisasi interaktif point cloud.
+    Visualisasi interaktif point cloud dengan Matplotlib (Wayland-compatible).
     
     Args:
         pcd: Open3D PointCloud object atau list of PointClouds
         window_name: Judul window
         point_size: Ukuran titik
     """
-    import open3d as o3d
-    
-    print(f"\n[Visualisasi] Membuka viewer...")
+    print(f"\n[Visualisasi] Membuka viewer dengan Matplotlib...")
     print("  Kontrol:")
-    print("  - Mouse kiri: Rotate")
-    print("  - Mouse kanan: Pan")
+    print("  - Klik dan drag: Rotate")
     print("  - Scroll: Zoom")
-    print("  - 'Q' atau Esc: Keluar")
+    print("  - Close window: Keluar")
     
-    # Create visualizer
-    vis = o3d.visualization.Visualizer()
-    vis.create_window(window_name=window_name, width=1280, height=720)
+    fig = plt.figure(figsize=(14, 10))
+    ax = fig.add_subplot(111, projection='3d')
     
-    # Add geometry
+    # Plot point clouds
     if isinstance(pcd, list):
-        for p in pcd:
-            vis.add_geometry(p)
+        colors_list = ['red', 'green', 'blue', 'yellow', 'cyan', 'magenta']
+        for idx, p in enumerate(pcd):
+            points = np.asarray(p.points)
+            color = colors_list[idx % len(colors_list)]
+            ax.scatter(points[:, 0], points[:, 1], points[:, 2], 
+                      c=color, s=point_size, alpha=0.6, label=f"Cloud {idx}")
+        ax.legend()
     else:
-        vis.add_geometry(pcd)
+        points = np.asarray(pcd.points)
+        if pcd.has_colors():
+            colors = np.asarray(pcd.colors)
+            ax.scatter(points[:, 0], points[:, 1], points[:, 2], 
+                      c=colors, s=point_size, alpha=0.6)
+        else:
+            ax.scatter(points[:, 0], points[:, 1], points[:, 2], 
+                      c='blue', s=point_size, alpha=0.6)
     
-    # Set render options
-    opt = vis.get_render_option()
-    opt.point_size = point_size
-    opt.background_color = np.array(BACKGROUND_COLOR)
+    # Labels dan title
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.set_title(window_name, fontsize=14, fontweight='bold')
+    ax.grid(True, alpha=0.3)
     
-    # Add coordinate frame
-    coord_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.5)
-    vis.add_geometry(coord_frame)
+    # Set background
+    fig.patch.set_facecolor('#1a1a1a')
+    ax.set_facecolor('#2a2a2a')
     
-    # Run visualizer
-    vis.run()
-    vis.destroy_window()
+    plt.tight_layout()
+    plt.show()
+    print("  ✓ Visualization closed")
 
 def visualize_multiple_point_clouds(point_clouds, names=None, colors=None):
     """
-    Visualisasi multiple point clouds dengan warna berbeda.
+    Visualisasi multiple point clouds dengan warna berbeda (Matplotlib).
     
     Args:
         point_clouds: List of PointCloud objects
         names: List of names for each cloud
         colors: List of colors for each cloud
     """
-    import open3d as o3d
-    
     if colors is None:
-        # Default colors
+        # Default colors untuk matplotlib
         default_colors = [
-            [1, 0, 0],      # Red
-            [0, 1, 0],      # Green
-            [0, 0, 1],      # Blue
-            [1, 1, 0],      # Yellow
-            [1, 0, 1],      # Magenta
-            [0, 1, 1]       # Cyan
+            'red', 'green', 'blue', 'yellow', 
+            'cyan', 'magenta', 'orange', 'purple'
         ]
         colors = default_colors[:len(point_clouds)]
     
     print(f"\n[Multi-View] Menampilkan {len(point_clouds)} point clouds...")
     
-    # Create copies with assigned colors
-    colored_clouds = []
-    for i, pcd in enumerate(point_clouds):
-        pcd_copy = o3d.geometry.PointCloud(pcd)
-        pcd_copy.paint_uniform_color(colors[i])
-        colored_clouds.append(pcd_copy)
-        
-        if names:
-            print(f"  {names[i]}: {len(pcd_copy.points)} points, color={colors[i]}")
+    fig = plt.figure(figsize=(14, 10))
+    ax = fig.add_subplot(111, projection='3d')
     
-    visualize_point_cloud(colored_clouds, "Multiple Point Clouds")
+    # Plot setiap point cloud
+    for idx, pcd in enumerate(point_clouds):
+        points = np.asarray(pcd.points)
+        label = names[idx] if names and idx < len(names) else f"Cloud {idx}"
+        
+        if pcd.has_colors():
+            pc_colors = np.asarray(pcd.colors)
+            ax.scatter(points[:, 0], points[:, 1], points[:, 2], 
+                      c=pc_colors, s=2, alpha=0.6, label=label)
+        else:
+            ax.scatter(points[:, 0], points[:, 1], points[:, 2], 
+                      c=colors[idx % len(colors)], s=2, alpha=0.6, label=label)
+    
+    # Labels dan title
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.set_title("Multiple Point Clouds", fontsize=14, fontweight='bold')
+    ax.legend(loc='upper right')
+    ax.grid(True, alpha=0.3)
+    
+    # Set background
+    fig.patch.set_facecolor('#1a1a1a')
+    ax.set_facecolor('#2a2a2a')
+    
+    plt.tight_layout()
+    plt.show()
+    print("  ✓ Visualization closed")
 
 # ============================================================
 # DEMONSTRASI UTAMA

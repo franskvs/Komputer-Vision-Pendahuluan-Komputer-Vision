@@ -24,7 +24,7 @@ import os
 # ============================================================
 
 # 1. Nama file gambar
-NAMA_FILE_GAMBAR = "sample.jpg"
+NAMA_FILE_GAMBAR = "portrait.jpg"
 
 # 2. Ukuran figure matplotlib (lebar, tinggi) dalam inch
 UKURAN_FIGURE = (12, 8)
@@ -42,7 +42,7 @@ WAKTU_TUNGGU_MS = 0
 def dapatkan_path_gambar(nama_file):
     """Mendapatkan path lengkap file gambar"""
     direktori_script = os.path.dirname(os.path.abspath(__file__))
-    path_data = os.path.join(direktori_script, "..", "data", "images", nama_file)
+    path_data = os.path.join(direktori_script, "data", "images", nama_file)
     
     if not os.path.exists(path_data):
         path_data = os.path.join(direktori_script, nama_file)

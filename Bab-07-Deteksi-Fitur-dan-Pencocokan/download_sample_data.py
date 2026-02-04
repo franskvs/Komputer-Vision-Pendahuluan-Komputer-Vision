@@ -33,8 +33,8 @@ def create_directories():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
     directories = [
-        os.path.join(script_dir, "data", "images"),
-        os.path.join(script_dir, "data", "videos"),
+        os.path.join(script_dir, "praktikum/data", "images"),
+        os.path.join(script_dir, "praktikum/data", "videos"),
         os.path.join(script_dir, "praktikum", "output"),
     ]
     
@@ -52,7 +52,7 @@ def main():
     
     # Buat direktori
     script_dir = create_directories()
-    images_dir = os.path.join(script_dir, "data", "images")
+    images_dir = os.path.join(script_dir, "praktikum/data", "images")
     
     print()
     print("Mengunduh gambar sampel...")
@@ -135,7 +135,7 @@ Gambar-gambar ini digunakan untuk praktikum deteksi fitur dan pencocokan.
 Silakan gunakan gambar sendiri untuk eksplorasi lebih lanjut.
 """
     
-    readme_path = os.path.join(script_dir, "data", "README.md")
+    readme_path = os.path.join(script_dir, "praktikum/data", "README.md")
     with open(readme_path, 'w', encoding='utf-8') as f:
         f.write(readme_content)
     print(f"✓ README dibuat: {readme_path}")

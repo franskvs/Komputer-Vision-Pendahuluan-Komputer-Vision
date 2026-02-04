@@ -58,8 +58,8 @@ EXPOSURE_TIMES = np.array([1/30, 1/4, 1.0], dtype=np.float32)
 
 # Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(SCRIPT_DIR, "..", "data")
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output")
+DATA_DIR = os.path.join(SCRIPT_DIR, "data")
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output", "output1")
 
 # ============================================================
 # FUNGSI-FUNGSI UTAMA

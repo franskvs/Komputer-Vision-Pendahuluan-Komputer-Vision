@@ -27,7 +27,7 @@ import sys          # Library untuk system operations
 # 1. Nama file gambar yang akan dibaca
 #    - Coba ganti dengan gambar lain yang ada di folder data/images
 #    - Pastikan path-nya benar
-NAMA_FILE_GAMBAR = "sample.jpg"
+NAMA_FILE_GAMBAR = "portrait.jpg"
 
 # 2. Mode pembacaan gambar
 #    - cv2.IMREAD_COLOR (1)     : Baca sebagai gambar berwarna (BGR)
@@ -56,7 +56,7 @@ def dapatkan_path_gambar(nama_file):
     direktori_script = os.path.dirname(os.path.abspath(__file__))
     
     # Path ke folder data/images
-    path_data = os.path.join(direktori_script, "..", "data", "images", nama_file)
+    path_data = os.path.join(direktori_script, "data", "images", nama_file)
     
     # Jika tidak ditemukan, coba di folder yang sama dengan script
     if not os.path.exists(path_data):

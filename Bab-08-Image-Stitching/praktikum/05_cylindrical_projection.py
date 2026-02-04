@@ -56,8 +56,8 @@ AUTO_FOCAL = True
 
 # Path
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(SCRIPT_DIR, "..", "data", "images")
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output")
+DATA_DIR = os.path.join(SCRIPT_DIR, "data", "images")
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output", "output5")
 
 # ============================================================
 # FUNGSI-FUNGSI UTAMA
@@ -202,7 +202,7 @@ def main():
     
     # Load gambar
     # Coba gunakan gambar building atau apapun yang tersedia
-    img_files = ["building.jpg", "home.jpg", "left01.jpg", "lena.jpg"]
+    img_files = ["building.jpg", "home.jpg", "left01.jpg", "face.jpg"]
     img = None
     img_name = ""
     

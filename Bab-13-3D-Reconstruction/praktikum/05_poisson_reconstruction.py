@@ -39,8 +39,8 @@ import copy
 # ============================================================
 
 # Path data
-DATA_DIR = Path(__file__).parent.parent / "data" / "point_clouds"
-OUTPUT_DIR = Path(__file__).parent / "output"
+DATA_DIR = Path(__file__).parent / "data" / "point_clouds"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output5"
 
 # Parameter Poisson Reconstruction
 POISSON_DEPTHS = [6, 8, 9, 10]  # Depth levels untuk perbandingan

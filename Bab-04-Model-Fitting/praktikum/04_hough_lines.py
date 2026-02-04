@@ -55,7 +55,7 @@ def dapatkan_path_gambar(nama_file):
     direktori_script = os.path.dirname(os.path.abspath(__file__))
     
     lokasi_potensial = [
-        os.path.join(direktori_script, "..", "data", "images", nama_file),
+        os.path.join(direktori_script, "data", "images", nama_file),
         os.path.join(direktori_script, "..", "..", "Bab-01-Pendahuluan", 
                      "data", "images", nama_file),
         os.path.join(direktori_script, nama_file),

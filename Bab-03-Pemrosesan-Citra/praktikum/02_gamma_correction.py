@@ -23,7 +23,7 @@ import os
 # ============================================================
 
 # 1. File gambar yang akan diproses
-NAMA_FILE_GAMBAR = "sample.jpg"
+NAMA_FILE_GAMBAR = "portrait.jpg"
 
 # 2. Nilai gamma
 # Range: 0.1 sampai 3.0
@@ -44,7 +44,7 @@ def dapatkan_path_gambar(nama_file):
     direktori_script = os.path.dirname(os.path.abspath(__file__))
     
     lokasi_potensial = [
-        os.path.join(direktori_script, "..", "data", "images", nama_file),
+        os.path.join(direktori_script, "data", "images", nama_file),
         os.path.join(direktori_script, "..", "..", "Bab-01-Pendahuluan", 
                      "data", "images", nama_file),
         os.path.join(direktori_script, nama_file),

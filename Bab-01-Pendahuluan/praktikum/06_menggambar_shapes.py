@@ -63,7 +63,9 @@ def buat_canvas(ukuran=CANVAS_SIZE, warna=WARNA_BACKGROUND):
 def simpan_gambar(gambar, nama_file):
     """Menyimpan gambar ke file"""
     direktori_script = os.path.dirname(os.path.abspath(__file__))
-    path_output = os.path.join(direktori_script, nama_file)
+    output_dir = os.path.join(direktori_script, "output", "output6")
+    os.makedirs(output_dir, exist_ok=True)
+    path_output = os.path.join(output_dir, nama_file)
     cv2.imwrite(path_output, gambar)
     print(f"[SUKSES] Gambar disimpan: {path_output}")
 

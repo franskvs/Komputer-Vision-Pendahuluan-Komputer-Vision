@@ -16,6 +16,8 @@
 # ====================
 import cv2
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Gunakan backend non-GUI
 import matplotlib.pyplot as plt
 import os
 
@@ -23,8 +25,21 @@ import os
 # VARIABEL YANG BISA DIUBAH-UBAH (EKSPERIMEN)
 # ============================================================
 
+# ============================================================
+# KONFIGURASI PATH
+# ============================================================
+
+# Dapatkan direktori script (praktikum folder)
+DIR_SCRIPT = os.path.dirname(os.path.abspath(__file__))
+DIR_DATA = os.path.join(DIR_SCRIPT, "data", "images")
+DIR_OUTPUT = os.path.join(DIR_SCRIPT, "output4")
+
+# Pastikan folder output ada
+os.makedirs(DIR_OUTPUT, exist_ok=True)
+
+
 # 1. File gambar yang akan diproses
-NAMA_FILE_GAMBAR = "sample.jpg"
+NAMA_FILE_GAMBAR = "portrait.jpg"
 
 # 2. Titik sumber (3 titik untuk transformasi affine)
 #    Format: [(x1, y1), (x2, y2), (x3, y3)]
@@ -45,7 +60,7 @@ SHEAR_Y = 0.0  # Coba ubah: -0.5 sampai 0.5
 def dapatkan_path_gambar(nama_file):
     """Mendapatkan path lengkap file gambar"""
     direktori_script = os.path.dirname(os.path.abspath(__file__))
-    path_data = os.path.join(direktori_script, "..", "data", "images", nama_file)
+    path_data = os.path.join(direktori_script, "data", "images", nama_file)
     
     if not os.path.exists(path_data):
         path_data = os.path.join(direktori_script, "..", "..", 
@@ -208,7 +223,13 @@ AFFINE TRANSFORMATION terdiri dari:
     
     plt.suptitle("Komponen Transformasi Affine", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
 
 
 def demo_transformasi_dengan_titik(gambar):
@@ -283,7 +304,13 @@ Mengapa 3 titik? Karena matrix affine 2x3 memiliki 6 parameter:
     
     plt.suptitle("Transformasi Affine dengan Berbagai Titik Tujuan", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
 
 
 def demo_shearing(gambar):
@@ -335,7 +362,13 @@ Matrix Shearing:
     
     plt.suptitle("Efek Shearing pada Gambar", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
 
 
 def demo_inverse_affine(gambar):
@@ -390,7 +423,13 @@ Ini berguna untuk:
     
     plt.suptitle("Forward dan Inverse Affine Transform", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    output_path = os.path.join(DIR_OUTPUT, "output.png")
+
+    plt.savefig(output_path, dpi=100, bbox_inches="tight")
+
+    print(f"[SAVED] {output_path}")
+
+    plt.close()
     
     print(f"\nTransformation Matrix M:")
     print(M)

@@ -31,8 +31,8 @@ import time
 # ============================================================
 
 # Path data
-DATA_DIR = Path(__file__).parent.parent / "data" / "panorama_sequences"
-OUTPUT_DIR = Path(__file__).parent / "output"
+DATA_DIR = Path(__file__).parent / "data" / "panorama_sequences"
+OUTPUT_DIR = Path(__file__).parent / "output" / "output1"
 
 # Feature detection parameters
 FEATURE_METHOD = 'ORB'              # 'SIFT', 'ORB', 'AKAZE'
