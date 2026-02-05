@@ -1,6 +1,0 @@
-
-baca semua
-pastikan praktikum dan md2 lainya sudah masuk semua materinya, bila belum tambahkan percobaanya, pastikan semua termasukan dan dengan konsep penerapan nyata
-pastikan gambar2nya asyik dan mudah dipahami, serta menarik, coba carikan lagi referensi gambarnya,
-pastikan semua program merupakan penerapaan nyata, supaya mudah dipahami
-tes semua, verifikasi hasil outputnya harus ada, dan verifikasi hasil programnya, dan ketika di running ada yang buka gambar maka kamu otomasi close dengan q atau exit, biar bisa ke program berikutnya, atau setiap nyoba program kasih delay 2 detik saja terus close programnya.
