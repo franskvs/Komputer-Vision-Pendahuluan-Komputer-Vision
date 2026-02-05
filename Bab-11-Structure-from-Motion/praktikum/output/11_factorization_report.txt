@@ -1,0 +1,3 @@
+LAPORAN TOMASI-KANADE FACTORIZATION
+Measurement matrix shape: (20, 60)
+Reconstructed points: (60, 3)

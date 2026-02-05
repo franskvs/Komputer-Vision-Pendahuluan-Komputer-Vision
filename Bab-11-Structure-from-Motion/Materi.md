@@ -103,6 +103,33 @@ Setelah mempelajari materi ini, mahasiswa diharapkan mampu:
 └─────────────────────────────────────────────────────────────┘
 ```
 
+### 2.2.1 Vanishing Points Calibration
+
+Vanishing points digunakan untuk estimasi parameter intrinsik kamera (focal length) dari
+objek arsitektur atau garis-garis paralel pada scene. Untuk dua arah ortogonal:
+
+$$ (v_1 - c) \cdot (v_2 - c) + f^2 = 0 $$
+
+dengan $v_1, v_2$ adalah vanishing points dan $c$ adalah principal point.
+
+### 2.2.2 PnP Pose Estimation
+
+PnP (Perspective-n-Point) mengestimasi pose kamera $(R, t)$ dari korespondensi titik 3D-2D.
+Metode ini dipakai pada AR, robotik, dan pelacakan kamera.
+
+### 2.2.3 Radial Distortion
+
+Radial distortion terjadi pada lensa wide-angle. Model sederhana:
+
+$$ x' = x(1 + k_1 r^2 + k_2 r^4), \quad y' = y(1 + k_1 r^2 + k_2 r^4) $$
+
+Metode plumb-line memperbaiki distorsi dengan meluruskan garis.
+
+### 2.2.4 Tomasi-Kanade Factorization
+
+Factorization method merekonstruksi 3D dari track 2D multi-frame dengan asumsi
+orthographic projection, menggunakan SVD pada measurement matrix $W$.
+
 ### 2.3 Triangulasi
 
 Triangulasi adalah proses menghitung posisi 3D titik dari proyeksi 2D-nya di beberapa gambar.

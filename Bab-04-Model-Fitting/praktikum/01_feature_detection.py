@@ -313,6 +313,7 @@ def draw_keypoints_with_info(gambar, keypoints, detector_name, time_ms):
     
     # Add text info
     info = f"{detector_name}: {len(keypoints)} keypoints, {time_ms:.1f}ms"
+    # cv2.putText(a,b,c,d,e,f,g): a=img, b=teks, c=posisi(x,y), d=font, e=skala, f=warna, g=ketebalan
     cv2.putText(output, info, (10, 30), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
     

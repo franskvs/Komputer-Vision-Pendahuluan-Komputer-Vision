@@ -93,6 +93,7 @@ def create_synthetic_video():
         cv2.line(frame, (cx, cy), (x3, y3), (255, 255, 0), 3)
         
         # Text
+        # cv2.putText(a,b,c,d,e,f,g): a=img, b=teks, c=posisi(x,y), d=font, e=skala, f=warna, g=ketebalan
         cv2.putText(frame, f"Frame {t}", (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
         

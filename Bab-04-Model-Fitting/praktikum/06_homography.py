@@ -81,8 +81,10 @@ def buat_gambar_sample_pair():
     cv2.rectangle(gambar1, (100, 50), (400, 350), (100, 100, 100), 3)
     
     # Text content
+    # cv2.putText(a,b,c,d,e,f,g): a=img, b=teks, c=posisi(x,y), d=font, e=skala, f=warna, g=ketebalan
     cv2.putText(gambar1, "COMPUTER", (130, 150), 
                 cv2.FONT_HERSHEY_SIMPLEX, 1.2, (50, 50, 50), 2)
+    # cv2.putText(a,b,c,d,e,f,g): a=img, b=teks, c=posisi(x,y), d=font, e=skala, f=warna, g=ketebalan
     cv2.putText(gambar1, "VISION", (170, 200), 
                 cv2.FONT_HERSHEY_SIMPLEX, 1.2, (50, 50, 50), 2)
     
@@ -366,6 +368,7 @@ Contoh:
     # Draw trapezoid (simulating tilted view)
     pts_src = np.array([[100, 300], [150, 100], [350, 100], [400, 300]])
     cv2.fillPoly(img, [pts_src], (200, 200, 200))
+    # cv2.putText(a,b,c,d,e,f,g): a=img, b=teks, c=posisi(x,y), d=font, e=skala, f=warna, g=ketebalan
     cv2.putText(img, "TEXT", (200, 220), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (50, 50, 50), 2)
     
     # Destination points (rectangle)

@@ -1,6 +1,8 @@
 """
+# Assignment - set nilai ke variabel
 =============================================================================
 PRAKTIKUM 05 - TRANSFER LEARNING
+# Assignment - set nilai ke variabel
 =============================================================================
 Program ini mendemonstrasikan Transfer Learning menggunakan pre-trained
 models untuk image classification pada custom dataset.
@@ -17,6 +19,7 @@ Konsep yang dipelajari:
 5. Training strategies
 
 Kebutuhan:
+# Assignment - set nilai ke variabel
 - torch >= 2.0.0 atau tensorflow >= 2.10.0
 - torchvision atau keras.applications
 - numpy, matplotlib
@@ -24,37 +27,57 @@ Kebutuhan:
 Author: [Nama Mahasiswa]
 NIM: [NIM Mahasiswa]
 Tanggal: [Tanggal Praktikum]
+# Assignment - set nilai ke variabel
 =============================================================================
 """
 
+# Import library/module untuk digunakan
 import numpy as np
+# Import library/module untuk digunakan
 import os
 
 # Check framework availability
 PYTORCH_AVAILABLE = False
+# Assignment - set nilai ke variabel
 TENSORFLOW_AVAILABLE = False
 
+# Blok try-except untuk error handling
 try:
+    # Import library/module untuk digunakan
     import torch
+    # Import library/module untuk digunakan
     import torch.nn as nn
+    # Import library/module untuk digunakan
     import torch.optim as optim
+    # Import library/module untuk digunakan
     from torch.utils.data import DataLoader, Dataset
+    # Import library/module untuk digunakan
     import torchvision
+    # Import library/module untuk digunakan
     from torchvision import models, transforms
+    # Assignment - set nilai ke variabel
     PYTORCH_AVAILABLE = True
     print("[INFO] PyTorch tersedia")
+# Tangkap exception jika ada error di blok try
 except ImportError:
     pass
 
+# Blok try-except untuk error handling
 try:
+    # Import library/module untuk digunakan
     import tensorflow as tf
+    # Import library/module untuk digunakan
     from tensorflow import keras
+    # Import library/module untuk digunakan
     from tensorflow.keras import layers
+    # Assignment - set nilai ke variabel
     TENSORFLOW_AVAILABLE = True
     print("[INFO] TensorFlow tersedia")
+# Tangkap exception jika ada error di blok try
 except ImportError:
     pass
 
+# Conditional statement - eksekusi jika kondisi True
 if not PYTORCH_AVAILABLE and not TENSORFLOW_AVAILABLE:
     print("[WARNING] Tidak ada framework DL yang tersedia - mode simulasi")
 
@@ -63,7 +86,9 @@ if not PYTORCH_AVAILABLE and not TENSORFLOW_AVAILABLE:
 # PYTORCH IMPLEMENTATION
 # =============================================================================
 
+# Conditional statement - eksekusi jika kondisi True
 if PYTORCH_AVAILABLE:
+    # Definisi class untuk membuat object
     class CustomDataset(Dataset):
         """
         Custom Dataset untuk loading gambar.
@@ -80,6 +105,7 @@ if PYTORCH_AVAILABLE:
             └── ...
         """
         
+        # Definisi function dengan nama dan parameter
         def __init__(self, images, labels, transform=None):
             """
             Args:
@@ -87,29 +113,42 @@ if PYTORCH_AVAILABLE:
                 labels: List of labels (integers)
                 transform: torchvision transforms
             """
+            # Assignment - set nilai ke variabel
             self.images = images
+            # Assignment - set nilai ke variabel
             self.labels = labels
+            # Assignment - set nilai ke variabel
             self.transform = transform
         
+        # Definisi function dengan nama dan parameter
         def __len__(self):
+            # Return value dari function
             return len(self.images)
         
+        # Definisi function dengan nama dan parameter
         def __getitem__(self, idx):
+            # Assignment - set nilai ke variabel
             image = self.images[idx]
+            # Assignment - set nilai ke variabel
             label = self.labels[idx]
             
+            # Conditional statement - eksekusi jika kondisi True
             if self.transform:
+                # Assignment - set nilai ke variabel
                 image = self.transform(image)
             
+            # Return value dari function
             return image, label
 
 
+# Definisi function dengan nama dan parameter
 def get_pretrained_model_pytorch(model_name='resnet18', num_classes=10, freeze=True):
     """
     Load pre-trained model dan modify untuk custom classes.
     
     Args:
         model_name: Nama model ('resnet18', 'resnet50', 'mobilenet_v2', etc.)
+        # Definisi class untuk membuat object
         num_classes: Jumlah class output
         freeze: Apakah freeze base model weights
         
@@ -118,23 +157,38 @@ def get_pretrained_model_pytorch(model_name='resnet18', num_classes=10, freeze=T
     """
     # Load pre-trained model
     if model_name == 'resnet18':
+        # Assignment - set nilai ke variabel
         model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
+        # Assignment - set nilai ke variabel
         in_features = model.fc.in_features
+        # Assignment - set nilai ke variabel
         model.fc = nn.Linear(in_features, num_classes)
         
+    # Conditional statement - eksekusi jika kondisi True
     elif model_name == 'resnet50':
+        # Assignment - set nilai ke variabel
         model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
+        # Assignment - set nilai ke variabel
         in_features = model.fc.in_features
+        # Assignment - set nilai ke variabel
         model.fc = nn.Linear(in_features, num_classes)
         
+    # Conditional statement - eksekusi jika kondisi True
     elif model_name == 'mobilenet_v2':
+        # Assignment - set nilai ke variabel
         model = models.mobilenet_v2(weights=models.MobileNet_V2_Weights.IMAGENET1K_V1)
+        # Assignment - set nilai ke variabel
         in_features = model.classifier[1].in_features
+        # Assignment - set nilai ke variabel
         model.classifier[1] = nn.Linear(in_features, num_classes)
         
+    # Conditional statement - eksekusi jika kondisi True
     elif model_name == 'efficientnet_b0':
+        # Assignment - set nilai ke variabel
         model = models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1)
+        # Assignment - set nilai ke variabel
         in_features = model.classifier[1].in_features
+        # Assignment - set nilai ke variabel
         model.classifier[1] = nn.Linear(in_features, num_classes)
     
     else:
@@ -142,35 +196,49 @@ def get_pretrained_model_pytorch(model_name='resnet18', num_classes=10, freeze=T
     
     # Freeze base model jika diperlukan
     if freeze:
+        # Iterasi/loop melalui elemen dalam koleksi
         for param in model.parameters():
+            # Assignment - set nilai ke variabel
             param.requires_grad = False
         
         # Unfreeze classifier
         if model_name in ['resnet18', 'resnet50']:
+            # Iterasi/loop melalui elemen dalam koleksi
             for param in model.fc.parameters():
+                # Assignment - set nilai ke variabel
                 param.requires_grad = True
         else:
+            # Iterasi/loop melalui elemen dalam koleksi
             for param in model.classifier.parameters():
+                # Assignment - set nilai ke variabel
                 param.requires_grad = True
     
+    # Return value dari function
     return model
 
 
+# Definisi function dengan nama dan parameter
 def demo_transfer_learning_pytorch():
     """
     Demonstrasi Transfer Learning dengan PyTorch.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("TRANSFER LEARNING DENGAN PYTORCH")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
+    # Conditional statement - eksekusi jika kondisi True
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"\n[INFO] Using device: {device}")
     
     # Hyperparameters
     num_classes = 5  # Contoh: 5 kategori produk
+    # Assignment - set nilai ke variabel
     batch_size = 16
+    # Assignment - set nilai ke variabel
     num_epochs = 5
+    # Assignment - set nilai ke variabel
     learning_rate = 0.001
     
     # Data transforms
@@ -179,38 +247,53 @@ def demo_transfer_learning_pytorch():
         transforms.Resize((224, 224)),
         transforms.RandomHorizontalFlip(),
         transforms.RandomRotation(10),
+        # Assignment - set nilai ke variabel
         transforms.ColorJitter(brightness=0.2, contrast=0.2),
         transforms.ToTensor(),
+        # Assignment - set nilai ke variabel
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                           # Assignment - set nilai ke variabel
                            std=[0.229, 0.224, 0.225])
     ])
     
+    # Assignment - set nilai ke variabel
     val_transform = transforms.Compose([
         transforms.ToPILImage(),
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
+        # Assignment - set nilai ke variabel
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                           # Assignment - set nilai ke variabel
                            std=[0.229, 0.224, 0.225])
     ])
     
     # Generate dummy dataset
     print("\n[INFO] Generating synthetic dataset...")
+    # Assignment - set nilai ke variabel
     num_samples = 100
     
     # Create random images (RGB, various sizes)
     train_images = [np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8) 
+                   # Iterasi/loop melalui elemen dalam koleksi
                    for _ in range(num_samples)]
+    # Iterasi/loop melalui elemen dalam koleksi
     train_labels = [i % num_classes for i in range(num_samples)]
     
+    # Generate random integer dalam range tertentu
     val_images = [np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8) 
+                 # Iterasi/loop melalui elemen dalam koleksi
                  for _ in range(20)]
+    # Iterasi/loop melalui elemen dalam koleksi
     val_labels = [i % num_classes for i in range(20)]
     
     # Create datasets
     train_dataset = CustomDataset(train_images, train_labels, train_transform)
+    # Assignment - set nilai ke variabel
     val_dataset = CustomDataset(val_images, val_labels, val_transform)
     
+    # Assignment - set nilai ke variabel
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    # Assignment - set nilai ke variabel
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
     
     print(f"[INFO] Training samples: {len(train_dataset)}")
@@ -218,11 +301,14 @@ def demo_transfer_learning_pytorch():
     
     # Load pre-trained model
     print("\n[INFO] Loading pre-trained ResNet18...")
+    # Assignment - set nilai ke variabel
     model = get_pretrained_model_pytorch('resnet18', num_classes, freeze=True)
+    # Assignment - set nilai ke variabel
     model = model.to(device)
     
     # Count parameters
     total_params = sum(p.numel() for p in model.parameters())
+    # Iterasi/loop melalui elemen dalam koleksi
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     
     print(f"[INFO] Total parameters: {total_params:,}")
@@ -231,25 +317,35 @@ def demo_transfer_learning_pytorch():
     
     # Loss dan optimizer
     criterion = nn.CrossEntropyLoss()
+    # Assignment - set nilai ke variabel
     optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()),
+                          # Assignment - set nilai ke variabel
                           lr=learning_rate)
     
     # Training loop
     print("\n[INFO] Starting training (Feature Extraction)...")
     print("-"*60)
     
+    # Iterasi/loop melalui elemen dalam koleksi
     for epoch in range(num_epochs):
         model.train()
+        # Assignment - set nilai ke variabel
         running_loss = 0.0
+        # Assignment - set nilai ke variabel
         correct = 0
+        # Assignment - set nilai ke variabel
         total = 0
         
+        # Iterasi/loop melalui elemen dalam koleksi
         for images, labels in train_loader:
+            # Assignment - set nilai ke variabel
             images = images.to(device)
+            # Assignment - set nilai ke variabel
             labels = labels.to(device)
             
             # Forward
             outputs = model(images)
+            # Assignment - set nilai ke variabel
             loss = criterion(outputs, labels)
             
             # Backward
@@ -259,27 +355,42 @@ def demo_transfer_learning_pytorch():
             
             # Statistics
             running_loss += loss.item()
+            # Assignment - set nilai ke variabel
             _, predicted = torch.max(outputs.data, 1)
+            # Assignment - set nilai ke variabel
             total += labels.size(0)
+            # Assignment - set nilai ke variabel
             correct += (predicted == labels).sum().item()
         
+        # Assignment - set nilai ke variabel
         train_loss = running_loss / len(train_loader)
+        # Assignment - set nilai ke variabel
         train_acc = 100 * correct / total
         
         # Validation
         model.eval()
+        # Assignment - set nilai ke variabel
         val_correct = 0
+        # Assignment - set nilai ke variabel
         val_total = 0
         
         with torch.no_grad():
+            # Iterasi/loop melalui elemen dalam koleksi
             for images, labels in val_loader:
+                # Assignment - set nilai ke variabel
                 images = images.to(device)
+                # Assignment - set nilai ke variabel
                 labels = labels.to(device)
+                # Assignment - set nilai ke variabel
                 outputs = model(images)
+                # Assignment - set nilai ke variabel
                 _, predicted = torch.max(outputs.data, 1)
+                # Assignment - set nilai ke variabel
                 val_total += labels.size(0)
+                # Assignment - set nilai ke variabel
                 val_correct += (predicted == labels).sum().item()
         
+        # Assignment - set nilai ke variabel
         val_acc = 100 * val_correct / val_total
         
         print(f"Epoch [{epoch+1}/{num_epochs}] "
@@ -295,32 +406,43 @@ def demo_transfer_learning_pytorch():
     
     # Unfreeze last few layers
     for name, param in model.named_parameters():
+        # Conditional statement - eksekusi jika kondisi True
         if 'layer4' in name or 'fc' in name:
+            # Assignment - set nilai ke variabel
             param.requires_grad = True
     
+    # Iterasi/loop melalui elemen dalam koleksi
     trainable_params_ft = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"[INFO] Trainable parameters after unfreezing: {trainable_params_ft:,}")
     
     # Lower learning rate untuk fine-tuning
     optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()),
+                          # Assignment - set nilai ke variabel
                           lr=learning_rate * 0.1)
     
     # Train beberapa epoch lagi
     for epoch in range(2):
         model.train()
+        # Assignment - set nilai ke variabel
         running_loss = 0.0
         
+        # Iterasi/loop melalui elemen dalam koleksi
         for images, labels in train_loader:
+            # Assignment - set nilai ke variabel
             images = images.to(device)
+            # Assignment - set nilai ke variabel
             labels = labels.to(device)
             
+            # Assignment - set nilai ke variabel
             outputs = model(images)
+            # Assignment - set nilai ke variabel
             loss = criterion(outputs, labels)
             
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
             
+            # Assignment - set nilai ke variabel
             running_loss += loss.item()
         
         print(f"Fine-tune Epoch [{epoch+1}/2] Loss: {running_loss/len(train_loader):.4f}")
@@ -336,32 +458,44 @@ def demo_transfer_learning_pytorch():
 # TENSORFLOW/KERAS IMPLEMENTATION
 # =============================================================================
 
+# Definisi function dengan nama dan parameter
 def demo_transfer_learning_keras():
     """
     Demonstrasi Transfer Learning dengan Keras.
     """
+    # Conditional statement - eksekusi jika kondisi True
     if not TENSORFLOW_AVAILABLE:
         print("[ERROR] TensorFlow tidak tersedia")
         return
     
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("TRANSFER LEARNING DENGAN KERAS")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
     # Parameters
     num_classes = 5
+    # Assignment - set nilai ke variabel
     img_size = (224, 224)
+    # Assignment - set nilai ke variabel
     batch_size = 16
     
     # Generate synthetic data
     print("\n[INFO] Generating synthetic dataset...")
+    # Assignment - set nilai ke variabel
     num_train = 100
+    # Assignment - set nilai ke variabel
     num_val = 20
     
+    # Generate random integer dalam range tertentu
     x_train = np.random.randint(0, 255, (num_train, 224, 224, 3)).astype('float32') / 255.0
+    # Generate random integer dalam range tertentu
     y_train = np.random.randint(0, num_classes, num_train)
     
+    # Generate random integer dalam range tertentu
     x_val = np.random.randint(0, 255, (num_val, 224, 224, 3)).astype('float32') / 255.0
+    # Generate random integer dalam range tertentu
     y_val = np.random.randint(0, num_classes, num_val)
     
     print(f"[INFO] Training samples: {len(x_train)}")
@@ -377,9 +511,13 @@ def demo_transfer_learning_keras():
     # Load pre-trained MobileNetV2
     print("\n[INFO] Loading pre-trained MobileNetV2...")
     
+    # Assignment - set nilai ke variabel
     base_model = keras.applications.MobileNetV2(
+        # Assignment - set nilai ke variabel
         input_shape=(224, 224, 3),
+        # Assignment - set nilai ke variabel
         include_top=False,
+        # Assignment - set nilai ke variabel
         weights='imagenet'
     )
     
@@ -388,6 +526,7 @@ def demo_transfer_learning_keras():
     
     # Build model
     inputs = keras.Input(shape=(224, 224, 3))
+    # Assignment - set nilai ke variabel
     x = data_augmentation(inputs)
     
     # Preprocessing for MobileNetV2
@@ -398,9 +537,12 @@ def demo_transfer_learning_keras():
     
     # Custom classifier
     x = layers.GlobalAveragePooling2D()(x)
+    # Assignment - set nilai ke variabel
     x = layers.Dropout(0.2)(x)
+    # Assignment - set nilai ke variabel
     outputs = layers.Dense(num_classes, activation='softmax')(x)
     
+    # Assignment - set nilai ke variabel
     model = keras.Model(inputs, outputs)
     
     # Print model info
@@ -409,8 +551,11 @@ def demo_transfer_learning_keras():
     
     # Compile
     model.compile(
+        # Assignment - set nilai ke variabel
         optimizer=keras.optimizers.Adam(learning_rate=0.001),
+        # Assignment - set nilai ke variabel
         loss='sparse_categorical_crossentropy',
+        # Assignment - set nilai ke variabel
         metrics=['accuracy']
     )
     
@@ -418,11 +563,16 @@ def demo_transfer_learning_keras():
     print("\n[INFO] Starting Feature Extraction training...")
     print("-"*60)
     
+    # Train model dengan data training dan validation
     history = model.fit(
         x_train, y_train,
+        # Assignment - set nilai ke variabel
         validation_data=(x_val, y_val),
+        # Assignment - set nilai ke variabel
         epochs=5,
+        # Assignment - set nilai ke variabel
         batch_size=batch_size,
+        # Assignment - set nilai ke variabel
         verbose=1
     )
     
@@ -435,12 +585,16 @@ def demo_transfer_learning_keras():
     
     # Freeze semua kecuali 20 layer terakhir
     for layer in base_model.layers[:-20]:
+        # Assignment - set nilai ke variabel
         layer.trainable = False
     
     # Recompile dengan learning rate lebih kecil
     model.compile(
+        # Assignment - set nilai ke variabel
         optimizer=keras.optimizers.Adam(learning_rate=1e-5),
+        # Assignment - set nilai ke variabel
         loss='sparse_categorical_crossentropy',
+        # Assignment - set nilai ke variabel
         metrics=['accuracy']
     )
     
@@ -449,9 +603,13 @@ def demo_transfer_learning_keras():
     # Fine-tune
     history_ft = model.fit(
         x_train, y_train,
+        # Assignment - set nilai ke variabel
         validation_data=(x_val, y_val),
+        # Assignment - set nilai ke variabel
         epochs=3,
+        # Assignment - set nilai ke variabel
         batch_size=batch_size,
+        # Assignment - set nilai ke variabel
         verbose=1
     )
     
@@ -460,12 +618,15 @@ def demo_transfer_learning_keras():
     print("\n[INFO] Model saved to transfer_model_keras.h5")
 
 
+# Definisi function dengan nama dan parameter
 def demo_transfer_learning_simulation():
     """
     Simulasi Transfer Learning tanpa framework.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("SIMULASI TRANSFER LEARNING")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
     print("""
@@ -491,6 +652,7 @@ def demo_transfer_learning_simulation():
     │ Conv Layers (Pre-trained, Frozen)  │  New Classifier           │
     │                                    │                            │
     │  Same as above                     │  FC1: 2048 → 256          │
+    # Assignment - set nilai ke variabel
     │  ∂L/∂w = 0 (no updates)           │  FC2: 256 → num_classes   │
     │                                    │  (Your classes)            │
     │                                    │                            │
@@ -502,6 +664,7 @@ def demo_transfer_learning_simulation():
     print("\n[SIMULATED TRAINING - Feature Extraction]")
     print("-"*60)
     
+    # Assignment - set nilai ke variabel
     feature_extraction_results = [
         {"epoch": 1, "train_loss": 1.234, "train_acc": 45.2, "val_acc": 52.3},
         {"epoch": 2, "train_loss": 0.856, "train_acc": 62.1, "val_acc": 65.4},
@@ -512,6 +675,7 @@ def demo_transfer_learning_simulation():
     
     print(f"{'Epoch':<8} {'Loss':<12} {'Train Acc':<12} {'Val Acc':<12}")
     print("-"*50)
+    # Iterasi/loop melalui elemen dalam koleksi
     for r in feature_extraction_results:
         print(f"{r['epoch']:<8} {r['train_loss']:<12.4f} "
               f"{r['train_acc']:<12.1f}% {r['val_acc']:<12.1f}%")
@@ -519,6 +683,7 @@ def demo_transfer_learning_simulation():
     print("\n[SIMULATED TRAINING - Fine-tuning]")
     print("-"*60)
     
+    # Assignment - set nilai ke variabel
     finetuning_results = [
         {"epoch": 1, "train_loss": 0.312, "train_acc": 89.1, "val_acc": 84.5},
         {"epoch": 2, "train_loss": 0.245, "train_acc": 91.5, "val_acc": 87.2},
@@ -527,6 +692,7 @@ def demo_transfer_learning_simulation():
     
     print(f"{'Epoch':<8} {'Loss':<12} {'Train Acc':<12} {'Val Acc':<12}")
     print("-"*50)
+    # Iterasi/loop melalui elemen dalam koleksi
     for r in finetuning_results:
         print(f"{r['epoch']:<8} {r['train_loss']:<12.4f} "
               f"{r['train_acc']:<12.1f}% {r['val_acc']:<12.1f}%")
@@ -547,14 +713,18 @@ def demo_transfer_learning_simulation():
     """)
 
 
+# Definisi function dengan nama dan parameter
 def demo_pretrained_models_info():
     """
     Informasi tentang berbagai pre-trained models.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("PRE-TRAINED MODELS UNTUK TRANSFER LEARNING")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
+    # Assignment - set nilai ke variabel
     models_info = {
         "MobileNetV2": {
             "params": "3.5M",
@@ -603,6 +773,7 @@ def demo_pretrained_models_info():
     print(f"\n{'Model':<16} {'Params':<10} {'Input':<12} {'Top-1':<10} {'Features':<10}")
     print("-"*70)
     
+    # Iterasi/loop melalui elemen dalam koleksi
     for name, info in models_info.items():
         print(f"{name:<16} {info['params']:<10} {info['input_size']:<12} "
               f"{info['top1_acc']:<10} {info['feature_dim']:<10}")
@@ -624,14 +795,18 @@ def demo_pretrained_models_info():
     """)
 
 
+# Definisi function dengan nama dan parameter
 def main():
     """
     Fungsi utama program.
     """
+    # Assignment - set nilai ke variabel
     print("="*70)
     print("PRAKTIKUM TRANSFER LEARNING")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
+    # Loop berulang selama kondisi bernilai True
     while True:
         print("\n" + "-"*50)
         print("MENU DEMONSTRASI:")
@@ -643,31 +818,42 @@ def main():
         print("5. Jalankan Semua Demo")
         print("0. Keluar")
         
+        # Assignment - set nilai ke variabel
         choice = input("\nPilih menu (0-5): ").strip()
         
+        # Conditional statement - eksekusi jika kondisi True
         if choice == '1':
             demo_pretrained_models_info()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '2':
+            # Conditional statement - eksekusi jika kondisi True
             if PYTORCH_AVAILABLE:
                 demo_transfer_learning_pytorch()
             else:
                 print("[ERROR] PyTorch tidak tersedia")
                 demo_transfer_learning_simulation()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '3':
+            # Conditional statement - eksekusi jika kondisi True
             if TENSORFLOW_AVAILABLE:
                 demo_transfer_learning_keras()
             else:
                 print("[ERROR] TensorFlow tidak tersedia")
                 demo_transfer_learning_simulation()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '4':
             demo_transfer_learning_simulation()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '5':
             demo_pretrained_models_info()
             demo_transfer_learning_simulation()
+            # Conditional statement - eksekusi jika kondisi True
             if PYTORCH_AVAILABLE:
                 demo_transfer_learning_pytorch()
+            # Conditional statement - eksekusi jika kondisi True
             if TENSORFLOW_AVAILABLE:
                 demo_transfer_learning_keras()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '0':
             print("\n[INFO] Program selesai.")
             break
@@ -675,5 +861,6 @@ def main():
             print("[ERROR] Pilihan tidak valid!")
 
 
+# Conditional statement - eksekusi jika kondisi True
 if __name__ == "__main__":
     main()

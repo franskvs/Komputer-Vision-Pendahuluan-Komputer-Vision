@@ -73,37 +73,47 @@ def create_tracker(tracker_type):
     Returns:
         tracker: OpenCV tracker object
     """
+    # Fungsi nested untuk mencari tracker factory dengan fallback
+    # Tracker API bisa di cv2 atau cv2.legacy tergantung versi OpenCV
     def get_tracker_factory(name):
+        # Coba CSRT: accurate tapi lebih lambat
         if name == 'CSRT':
-            if hasattr(cv2, 'TrackerCSRT_create'):
+            if hasattr(cv2, 'TrackerCSRT_create'):  # OpenCV >= 4.5.1
                 return cv2.TrackerCSRT_create
-            if hasattr(cv2, 'legacy') and hasattr(cv2.legacy, 'TrackerCSRT_create'):
+            if hasattr(cv2, 'legacy') and hasattr(cv2.legacy, 'TrackerCSRT_create'):  # OpenCV 4.5.4+
                 return cv2.legacy.TrackerCSRT_create
+        # Coba KCF: balance speed dan accuracy
         if name == 'KCF':
             if hasattr(cv2, 'TrackerKCF_create'):
                 return cv2.TrackerKCF_create
             if hasattr(cv2, 'legacy') and hasattr(cv2.legacy, 'TrackerKCF_create'):
                 return cv2.legacy.TrackerKCF_create
+        # Coba MOSSE: sangat cepat tapi kurang akurat
         if name == 'MOSSE':
             if hasattr(cv2, 'legacy') and hasattr(cv2.legacy, 'TrackerMOSSE_create'):
                 return cv2.legacy.TrackerMOSSE_create
+        # Coba MIL: Multiple Instance Learning
         if name == 'MIL':
             if hasattr(cv2, 'TrackerMIL_create'):
                 return cv2.TrackerMIL_create
             if hasattr(cv2, 'legacy') and hasattr(cv2.legacy, 'TrackerMIL_create'):
                 return cv2.legacy.TrackerMIL_create
-        return None
+        return None  # Tracker tidak ditemukan
 
+    # Coba buat tracker sesuai type yang diminta
     create_func = get_tracker_factory(tracker_type)
 
+    # Jika tracker tidak tersedia, coba fallback ke tracker lain
     if create_func is None:
         for fallback in ['KCF', 'MIL', 'CSRT', 'MOSSE']:
             create_func = get_tracker_factory(fallback)
             if create_func is not None:
                 print(f"Tracker {tracker_type} tidak tersedia, menggunakan {fallback}")
-                return create_func(), fallback
+                return create_func(), fallback  # Return tracker dan nama fallback
+        # Jika semua gagal, raise error
         raise RuntimeError("Tidak ada tracker OpenCV yang tersedia.")
 
+    # Sukses: return tracker dan nama asli
     return create_func(), tracker_type
 
 def select_roi_auto(frame):
@@ -116,24 +126,28 @@ def select_roi_auto(frame):
     Returns:
         bbox: Bounding box (x, y, w, h) atau None
     """
-    # Simple approach: detect largest contour
+    # Deteksi otomatis objek berdasarkan edge detection
+    # Konversi ke grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # cv2.GaussianBlur: Smooth image untuk mengurangi noise
     blurred = cv2.GaussianBlur(gray, (21, 21), 0)
     
-    # Use edge detection
+    # cv2.Canny: Deteksi edge dengan threshold 50-150
     edges = cv2.Canny(blurred, 50, 150)
     
-    # Find contours
+    # Cari kontur dari edges
     contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     if contours:
-        # Get largest contour
+        # Ambil kontur terbesar (kemungkinan objek utama)
         largest = max(contours, key=cv2.contourArea)
+        # Filter: hanya jika area > 500 pixel (buang noise)
         if cv2.contourArea(largest) > 500:
+            # Dapatkan bounding box dari kontur
             x, y, w, h = cv2.boundingRect(largest)
             return (x, y, w, h)
     
-    return None
+    return None  # Tidak ada objek terdeteksi
 
 def draw_trajectory(frame, trajectory, color=(0, 255, 0)):
     """
@@ -144,19 +158,25 @@ def draw_trajectory(frame, trajectory, color=(0, 255, 0)):
         trajectory: Deque dari posisi (x, y)
         color: Warna trajectory
     """
+    # Konversi deque ke list untuk iterasi
     points = list(trajectory)
     
+    # Gambar garis menghubungkan titik-titik dalam trajectory
     for i in range(1, len(points)):
+        # Skip jika ada None value
         if points[i-1] is None or points[i] is None:
             continue
         
-        # Fade effect - semakin lama semakin transparan
+        # Fade effect: garis lama lebih tipis/transparan
+        # np.sqrt: buat efek non-linear fade
         thickness = int(np.sqrt(TRAIL_LENGTH / float(i + 1)) * 2.5)
-        alpha = float(i) / len(points)
+        alpha = float(i) / len(points)  # Alpha untuk transparency (not used here)
         
-        pt1 = tuple(map(int, points[i-1]))
-        pt2 = tuple(map(int, points[i]))
+        # Konversi koordinat float ke integer tuple
+        pt1 = tuple(map(int, points[i-1]))  # Titik sebelumnya
+        pt2 = tuple(map(int, points[i]))    # Titik sekarang
         
+        # cv2.line: Gambar garis dengan thickness dinamis (fade effect)
         cv2.line(frame, pt1, pt2, color, max(1, thickness))
 
 def main():

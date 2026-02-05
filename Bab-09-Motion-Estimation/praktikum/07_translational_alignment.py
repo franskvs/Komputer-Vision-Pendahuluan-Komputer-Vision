@@ -63,25 +63,30 @@ def create_synthetic_pair(size=(480, 640), shift=(12, -8)):
 def ssd_alignment(img1_gray, img2_gray, search_range=20):
     """Cari pergeseran terbaik dengan SSD (integer shift)."""
     h, w = img1_gray.shape
-    best_score = float("inf")
-    best_shift = (0, 0)
+    best_score = float("inf")  # Skor terbaik (minimum SSD)
+    best_shift = (0, 0)  # Shift terbaik (dx, dy)
 
+    # Brute force search: coba semua kemungkinan shift dalam range
     for dy in range(-search_range, search_range + 1):
         for dx in range(-search_range, search_range + 1):
-            x1 = max(0, dx)
-            y1 = max(0, dy)
-            x2 = max(0, -dx)
-            y2 = max(0, -dy)
+            # Hitung overlap region untuk shift (dx, dy)
+            x1 = max(0, dx)   # Start x di img1
+            y1 = max(0, dy)   # Start y di img1
+            x2 = max(0, -dx)  # Start x di img2
+            y2 = max(0, -dy)  # Start y di img2
 
-            ww = w - abs(dx)
-            hh = h - abs(dy)
-            if ww <= 0 or hh <= 0:
+            ww = w - abs(dx)  # Width overlap region
+            hh = h - abs(dy)  # Height overlap region
+            if ww <= 0 or hh <= 0:  # Skip jika tidak ada overlap
                 continue
 
+            # Ambil patch yang overlap dari kedua gambar
             patch1 = img1_gray[y1:y1 + hh, x1:x1 + ww]
             patch2 = img2_gray[y2:y2 + hh, x2:x2 + ww]
 
+            # Hitung SSD: Sum of Squared Differences
             ssd = np.sum((patch1.astype(np.float32) - patch2.astype(np.float32)) ** 2)
+            # Update best jika skor lebih kecil (lebih mirip)
             if ssd < best_score:
                 best_score = ssd
                 best_shift = (dx, dy)
@@ -128,15 +133,20 @@ def main():
     img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
     img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
-    # SSD alignment
+    # SSD alignment (brute force, integer precision)
     (dx_ssd, dy_ssd), ssd_score = ssd_alignment(img1_gray, img2_gray, SEARCH_RANGE)
 
-    # Phase correlation (sub-pixel)
+    # cv2.phaseCorrelate: Estimasi shift dengan FFT-based phase correlation
+    # Lebih cepat dari SSD, bisa sub-pixel precision
+    # Input: dua grayscale image sebagai float32
+    # Output: (dx,dy) shift dan response quality
     shift_pc, response = cv2.phaseCorrelate(np.float32(img1_gray), np.float32(img2_gray))
-    dx_pc, dy_pc = shift_pc
+    dx_pc, dy_pc = shift_pc  # Unpack shift
 
-    aligned_ssd = apply_shift(img2, (-dx_ssd, -dy_ssd))
-    aligned_pc = apply_shift(img2, (-dx_pc, -dy_pc))
+    # Apply shift untuk align gambar ke img1
+    # Shift negatif karena kita align img2 ke img1 (balik arah shift)
+    aligned_ssd = apply_shift(img2, (-dx_ssd, -dy_ssd))  # Align dengan SSD result
+    aligned_pc = apply_shift(img2, (-dx_pc, -dy_pc))      # Align dengan phase correlation
 
     overlay_before = cv2.addWeighted(img1, 0.5, img2, 0.5, 0)
     overlay_ssd = cv2.addWeighted(img1, 0.5, aligned_ssd, 0.5, 0)

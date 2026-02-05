@@ -82,6 +82,17 @@ def calculate_dense_flow(prev_gray, curr_gray):
     Returns:
         flow: Flow field (H, W, 2) dengan (dx, dy) per pixel
     """
+    # cv2.calcOpticalFlowFarneback: Hitung dense optical flow untuk setiap pixel
+    # Parameter:
+    # - prev_gray, curr_gray: frame grayscale sebelum dan sesudah
+    # - None: output akan dibuat otomatis
+    # - pyr_scale: faktor skala antar level pyramid (<1, misalnya 0.5 = setengah ukuran)
+    # - levels: jumlah level pyramid untuk multi-scale (lebih besar = handle gerakan lebih besar)
+    # - winsize: ukuran averaging window (pixel)
+    # - iterations: jumlah iterasi algoritma per level
+    # - poly_n: ukuran neighborhood untuk polynomial expansion (5 atau 7)
+    # - poly_sigma: standard deviation Gaussian untuk polynomial smoothing
+    # - flags: OPTFLOW_FARNEBACK_GAUSSIAN = gunakan Gaussian windowing
     flow = cv2.calcOpticalFlowFarneback(
         prev_gray, curr_gray, None,
         pyr_scale=PYR_SCALE,
@@ -109,18 +120,24 @@ def flow_to_hsv(flow):
     Returns:
         hsv_rgb: RGB visualization dari flow
     """
-    h, w = flow.shape[:2]
+    h, w = flow.shape[:2]  # Ambil tinggi dan lebar flow field
     
-    # Hitung magnitude dan angle
+    # cv2.cartToPolar: Konversi flow (dx,dy) ke polar coordinate (magnitude, angle)
+    # flow[..., 0] = komponen x (dx), flow[..., 1] = komponen y (dy)
+    # mag = panjang vektor flow (kecepatan), ang = sudut arah flow (radian)
     mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
     
-    # Buat HSV image
+    # Buat HSV image: Hue=arah, Saturation=penuh, Value=kecepatan
     hsv = np.zeros((h, w, 3), dtype=np.uint8)
-    hsv[..., 0] = ang * 180 / np.pi / 2  # Hue (0-180 dalam OpenCV)
-    hsv[..., 1] = 255  # Saturation
-    hsv[..., 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)  # Value
+    # Hue: konversi angle dari radian ke derajat OpenCV (0-180)
+    # ang * 180 / np.pi = radian ke derajat, / 2 = mapping 0-360 ke 0-180
+    hsv[..., 0] = ang * 180 / np.pi / 2
+    # Saturation: set maksimal (255) agar warna cerah
+    hsv[..., 1] = 255
+    # Value: normalize magnitude ke range 0-255 (brightness ~ kecepatan)
+    hsv[..., 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
     
-    # Convert to RGB
+    # cv2.cvtColor: Konversi HSV ke BGR untuk display
     rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
     
     return rgb
@@ -138,20 +155,26 @@ def flow_to_arrows(frame, flow, step=16, scale=1.0):
     Returns:
         output: Frame dengan arrows
     """
-    h, w = flow.shape[:2]
-    output = frame.copy()
+    h, w = flow.shape[:2]  # Tinggi dan lebar flow field
+    output = frame.copy()  # Copy frame agar asli tidak berubah
     
-    # Sample points
+    # np.mgrid: Buat grid koordinat untuk sampling flow field
+    # step//2:h:step = mulai dari step/2, sampai h, dengan interval step
+    # reshape(2, -1): ubah bentuk jadi 2 baris (y dan x coordinates)
     y, x = np.mgrid[step//2:h:step, step//2:w:step].reshape(2, -1).astype(int)
     
-    fx = flow[y, x, 0] * scale
-    fy = flow[y, x, 1] * scale
+    # Ambil flow values pada posisi yang di-sample, scale untuk visibility
+    fx = flow[y, x, 0] * scale  # Flow x direction
+    fy = flow[y, x, 1] * scale  # Flow y direction
     
-    # Draw arrows
+    # Gambar arrow untuk setiap point yang di-sample
     for i in range(len(x)):
+        # Hitung magnitude flow untuk filtering
         if np.sqrt(fx[i]**2 + fy[i]**2) > FLOW_THRESHOLD:
-            pt1 = (x[i], y[i])
-            pt2 = (int(x[i] + fx[i]), int(y[i] + fy[i]))
+            pt1 = (x[i], y[i])  # Start point
+            pt2 = (int(x[i] + fx[i]), int(y[i] + fy[i]))  # End point
+            # cv2.arrowedLine: Gambar panah dari pt1 ke pt2
+            # tipLength=0.3: panjang tip arrow relative ke total panjang
             cv2.arrowedLine(output, pt1, pt2, (0, 255, 0), 1, tipLength=0.3)
     
     return output
@@ -160,25 +183,32 @@ def create_color_wheel():
     """
     Buat color wheel legend untuk visualisasi.
     """
-    size = 100
+    size = 100  # Ukuran wheel dalam pixel
     wheel = np.zeros((size, size, 3), dtype=np.uint8)
     
-    center = size // 2
+    center = size // 2  # Titik tengah wheel
     
+    # Loop setiap pixel dalam wheel
     for y in range(size):
         for x in range(size):
-            dx = x - center
-            dy = y - center
-            r = np.sqrt(dx**2 + dy**2)
+            dx = x - center  # Jarak x dari center
+            dy = y - center  # Jarak y dari center
+            r = np.sqrt(dx**2 + dy**2)  # Jarak radial dari center
             
+            # Hanya gambar jika di dalam lingkaran
             if r <= center:
+                # np.arctan2: Hitung sudut dari (dx,dy) dalam radian
                 angle = np.arctan2(dy, dx)
-                hue = int((angle + np.pi) * 90 / np.pi)  # 0-180
+                # Konversi angle ke hue (0-180) dengan offset pi untuk rotasi
+                hue = int((angle + np.pi) * 90 / np.pi)
+                # Saturation maksimal
                 sat = 255
+                # Value berdasarkan jarak radial (0 di center, 255 di edge)
                 val = int(r * 255 / center)
                 
-                wheel[y, x] = [hue, sat, val]
+                wheel[y, x] = [hue, sat, val]  # Set pixel HSV
     
+    # Konversi wheel dari HSV ke BGR untuk display
     wheel = cv2.cvtColor(wheel, cv2.COLOR_HSV2BGR)
     return wheel
 
@@ -208,16 +238,17 @@ def main():
         print("ERROR: Tidak dapat membuka video/webcam!")
         return
     
+    # Ambil properti video
     fps = int(cap.get(cv2.CAP_PROP_FPS)) or 30
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     
-    # Resize untuk performance
-    scale = 1.0
+    # Resize video jika terlalu besar untuk meningkatkan performance
+    scale = 1.0  # Default tidak resize
     if width > 640:
-        scale = 640 / width
-        width = 640
-        height = int(height * scale)
+        scale = 640 / width  # Hitung faktor scaling
+        width = 640  # Set lebar baru
+        height = int(height * scale)  # Hitung tinggi baru proporsional
     
     print(f"Processing at: {width}x{height}")
     
@@ -260,38 +291,48 @@ def main():
         if scale != 1.0:
             frame = cv2.resize(frame, (width, height))
         
+        # Konversi frame ke grayscale untuk optical flow
         curr_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         
-        # Calculate dense flow
+        # Hitung dense optical flow antara frame sebelumnya dan sekarang
         flow = calculate_dense_flow(prev_gray, curr_gray)
         
-        # Visualizations
+        # Buat dua jenis visualisasi flow:
+        # 1. HSV: warna = arah, brightness = kecepatan
         flow_hsv = flow_to_hsv(flow)
+        # 2. Arrows: panah menunjukkan arah dan magnitude flow
         flow_arrows = flow_to_arrows(frame, flow, step=20, scale=3.0)
         
-        # Add color wheel legend
-        wheel_h, wheel_w = color_wheel.shape[:2]
+        # Tambahkan color wheel legend ke visualisasi HSV
+        wheel_h, wheel_w = color_wheel.shape[:2]  # Ukuran color wheel
+        # Overlay wheel di pojok kanan atas dengan margin 10 pixel
         flow_hsv[10:10+wheel_h, width-wheel_w-10:width-10] = color_wheel
+        # Tambahkan label "Direction" di bawah wheel
         cv2.putText(flow_hsv, "Direction", (width-wheel_w-10, wheel_h+30),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
         
-        # Calculate average motion
+        # Hitung statistik motion untuk analisis
+        # np.sqrt: Hitung magnitude flow dari komponen x dan y
         mag = np.sqrt(flow[..., 0]**2 + flow[..., 1]**2)
-        avg_motion = np.mean(mag)
-        max_motion = np.max(mag)
+        avg_motion = np.mean(mag)  # Rata-rata motion di seluruh frame
+        max_motion = np.max(mag)   # Motion maksimum dalam frame
         
-        # Add info
+        # Tambahkan informasi teks pada visualisasi
+        # cv2.putText: Tampilkan nomor frame
         cv2.putText(flow_hsv, f"Frame: {frame_count}", (10, 30),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+        # Tampilkan rata-rata motion (indikator aktivitas gerakan)
         cv2.putText(flow_hsv, f"Avg motion: {avg_motion:.2f}", (10, 60),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+        # Tampilkan motion maksimum (gerakan tercepat)
         cv2.putText(flow_hsv, f"Max motion: {max_motion:.2f}", (10, 85),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
         
+        # Label untuk visualisasi arrows
         cv2.putText(flow_arrows, "Flow Vectors", (10, 30),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
         
-        # Combine views
+        # np.hstack: Gabungkan dua visualisasi secara horizontal (side by side)
         combined = np.hstack([flow_arrows, flow_hsv])
         
         # Write output

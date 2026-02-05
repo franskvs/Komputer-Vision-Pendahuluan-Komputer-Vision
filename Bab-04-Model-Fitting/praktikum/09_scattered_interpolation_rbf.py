@@ -40,6 +40,8 @@ NOISE_STD = 0.15
 NUM_OUTLIERS = 6
 # Tentukan seed random agar hasil konsisten.
 RANDOM_SEED = 42
+# Tentukan auto-close plot (detik) agar batch run tidak terhenti.
+AUTO_CLOSE_SECONDS = 2.0
 
 # ====================
 # FUNGSI HELPER
@@ -98,6 +100,15 @@ def predict_rbf(x_query, x_centers, sigma, weights):
     y_pred = phi @ weights
     # Kembalikan hasil prediksi.
     return y_pred
+
+# Definisikan fungsi untuk menampilkan plot dan menutup otomatis.
+def tampilkan_plot():
+    # Tampilkan plot tanpa blocking.
+    plt.show(block=False)
+    # Tunggu beberapa detik sesuai pengaturan.
+    plt.pause(AUTO_CLOSE_SECONDS)
+    # Tutup figure untuk lanjut ke plot berikutnya.
+    plt.close()
 
 # ====================
 # PROGRAM UTAMA
@@ -158,7 +169,7 @@ def main():
     # Atur layout agar rapi.
     plt.tight_layout()
     # Tampilkan plot.
-    plt.show()
+    tampilkan_plot()
 
     # Fit model robust dengan Huber loss.
     w_huber = fit_rbf_huber_irls(x_train, y_train, x_centers, RBF_SIGMA, 0.01, HUBER_DELTA, IRLS_ITER)
@@ -188,7 +199,7 @@ def main():
     # Atur grid.
     plt.grid(True, alpha=0.3)
     # Tampilkan plot.
-    plt.show()
+    tampilkan_plot()
 
 # Jalankan program utama jika file dieksekusi langsung.
 if __name__ == "__main__":

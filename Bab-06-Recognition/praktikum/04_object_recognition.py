@@ -1,203 +1,215 @@
 """
-=============================================================================
-PRAKTIKUM 04 - OBJECT RECOGNITION DAN CLASSIFICATION
-=============================================================================
-Program ini mendemonstrasikan Object Recognition dan Image Classification
-menggunakan pre-trained CNN models.
+Praktikum Computer Vision - Bab 06 (Recognition)
+Program 04: Object Recognition (MobileNet-SSD via OpenCV DNN)
 
-Konsep yang dipelajari:
-1. Image Classification dengan CNN
-2. Multi-label classification
-3. Top-K predictions
-4. Class Activation Maps (CAM) untuk interpretasi
-
-Object Recognition vs Object Detection:
-- Recognition: Mengidentifikasi APA yang ada di gambar (whole image)
-- Detection: Mengidentifikasi APA dan DI MANA (bounding boxes)
-
-Kebutuhan:
-- opencv-python >= 4.8.0
-- numpy
-- Pre-trained models (MobileNet, ResNet)
-
-Author: [Nama Mahasiswa]
-NIM: [NIM Mahasiswa]
-Tanggal: [Tanggal Praktikum]
-=============================================================================
+Tujuan:
+1) Melakukan pengenalan objek (recognition) dengan bounding box.
+2) Menyimpan hasil dan menampilkan output auto-close 2 detik.
 """
 
+# Import OpenCV untuk operasi DNN.
 import cv2
+# Import NumPy untuk pembuatan citra sintetis.
 import numpy as np
-import os
+# Import Path untuk penanganan path file.
+from pathlib import Path
+# Import urllib untuk mengunduh model.
 import urllib.request
+# Import time untuk pengukuran waktu.
+import time
 
 
-def download_imagenet_labels():
-    """
-    Download ImageNet class labels.
-    """
-    labels_url = "https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt"
-    labels_path = "imagenet_classes.txt"
-    
-    if not os.path.exists(labels_path):
-        try:
-            print("[INFO] Downloading ImageNet labels...")
-            urllib.request.urlretrieve(labels_url, labels_path)
-            print("[INFO] Download complete!")
-        except Exception as e:
-            print(f"[WARNING] Failed to download labels: {e}")
-            return None
-    
-    # Load labels
-    with open(labels_path, 'r') as f:
-        labels = [line.strip() for line in f.readlines()]
-    
-    return labels
+def create_output_dir():
+    """Buat folder output hasil object recognition."""
+    # Tentukan folder output.
+    output_dir = Path("output_object_recognition")
+    # Buat folder jika belum ada.
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # Kembalikan path output.
+    return output_dir
 
 
-def create_imagenet_labels():
-    """
-    Membuat subset ImageNet labels untuk demonstrasi.
-    """
-    # Common ImageNet classes subset
-    labels = [
-        "tench", "goldfish", "great white shark", "tiger shark", "hammerhead",
-        "electric ray", "stingray", "cock", "hen", "ostrich",
-        "brambling", "goldfinch", "house finch", "junco", "indigo bunting",
-        "robin", "bulbul", "jay", "magpie", "chickadee",
-        "water ouzel", "kite", "bald eagle", "vulture", "great grey owl",
-        "European fire salamander", "common newt", "eft", "spotted salamander", "axolotl",
-        "bullfrog", "tree frog", "tailed frog", "loggerhead", "leatherback turtle",
-        "mud turtle", "terrapin", "box turtle", "banded gecko", "common iguana",
-        "American chameleon", "whiptail", "agama", "frilled lizard", "alligator lizard",
-        "Gila monster", "green lizard", "African chameleon", "Komodo dragon", "African crocodile",
-        # ... more classes
-        "tabby cat", "tiger cat", "Persian cat", "Siamese cat", "Egyptian cat",
-        "cougar", "lynx", "leopard", "snow leopard", "jaguar",
-        "lion", "tiger", "cheetah", "brown bear", "American black bear",
-        "ice bear", "sloth bear", "mongoose", "meerkat", "tiger beetle",
-        # Objects
-        "iPod", "laptop", "mouse", "remote control", "keyboard",
-        "cellular telephone", "refrigerator", "microwave", "oven", "toaster",
-        "washing machine", "vacuum", "electric fan", "coffee maker", "iron",
-        "hair dryer", "toilet seat", "desk", "dining table", "wardrobe",
-        "bookcase", "china cabinet", "screen", "television", "monitor",
-        # Vehicles
-        "sports car", "taxi", "jeep", "pickup", "minivan",
-        "ambulance", "fire engine", "school bus", "trolleybus", "trailer truck",
-        "moving van", "police van", "recreational vehicle", "streetcar", "snowplow",
-        "garbage truck", "tractor", "racing car", "limousine", "convertible"
+def download_mobilenet_ssd():
+    """Unduh model MobileNet-SSD Caffe jika belum tersedia."""
+    # Tentukan folder model.
+    models_dir = Path("models")
+    # Buat folder jika belum ada.
+    models_dir.mkdir(parents=True, exist_ok=True)
+    # Tentukan file prototxt.
+    prototxt = models_dir / "MobileNetSSD_deploy.prototxt"
+    # Tentukan file caffemodel.
+    caffemodel = models_dir / "MobileNetSSD_deploy.caffemodel"
+    # Unduh prototxt jika belum ada.
+    if not prototxt.exists():
+        # Unduh prototxt dari repository OpenCV.
+        urllib.request.urlretrieve(
+            "https://raw.githubusercontent.com/chuanqi305/MobileNet-SSD/master/MobileNetSSD_deploy.prototxt",
+            prototxt,
+        )
+    # Unduh caffemodel jika belum ada.
+    if not caffemodel.exists():
+        # Unduh caffemodel dari repository OpenCV.
+        urllib.request.urlretrieve(
+            "https://raw.githubusercontent.com/chuanqi305/MobileNet-SSD/master/MobileNetSSD_deploy.caffemodel",
+            caffemodel,
+        )
+    # Kembalikan path model.
+    return prototxt, caffemodel
+
+
+def get_labels():
+    """Daftar label COCO kecil untuk MobileNet-SSD."""
+    # Daftar label bawaan MobileNet-SSD (21 kelas).
+    return [
+        "background",
+        "aeroplane",
+        "bicycle",
+        "bird",
+        "boat",
+        "bottle",
+        "bus",
+        "car",
+        "cat",
+        "chair",
+        "cow",
+        "diningtable",
+        "dog",
+        "horse",
+        "motorbike",
+        "person",
+        "pottedplant",
+        "sheep",
+        "sofa",
+        "train",
+        "tvmonitor",
     ]
-    
-    # Pad to 1000 classes
-    while len(labels) < 1000:
-        labels.append(f"class_{len(labels)}")
-    
-    return labels
 
 
-def softmax(x):
-    """
-    Compute softmax probabilities.
-    """
-    exp_x = np.exp(x - np.max(x))
-    return exp_x / exp_x.sum()
+def load_sample_image():
+    """Muat gambar dari folder data atau buat gambar sintetis."""
+    # Cari file pada folder data.
+    candidates = list(Path("data").glob("*.jpg")) + list(Path("data").glob("*.png"))
+    # Jika ada gambar, gunakan gambar pertama.
+    if candidates:
+        # Baca gambar dari disk.
+        return cv2.imread(str(candidates[0]))
+    # Buat kanvas putih.
+    image = np.ones((420, 640, 3), dtype=np.uint8) * 230
+    # Gambar objek sintetis (orang dan mobil sederhana).
+    cv2.rectangle(image, (70, 180), (140, 360), (80, 120, 200), -1)
+    # Gambar kepala orang sintetis.
+    cv2.circle(image, (105, 150), 30, (200, 170, 140), -1)
+    # Gambar mobil sintetis.
+    cv2.rectangle(image, (260, 250), (520, 330), (50, 50, 180), -1)
+    # Gambar roda mobil.
+    cv2.circle(image, (300, 335), 20, (20, 20, 20), -1)
+    # Gambar roda mobil.
+    cv2.circle(image, (480, 335), 20, (20, 20, 20), -1)
+    # Tambahkan label.
+    cv2.putText(image, "Synthetic Objects", (20, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (60, 60, 60), 2)
+    # Kembalikan gambar sintetis.
+    return image
 
 
-def demo_image_classification_concept():
-    """
-    Menampilkan konsep Image Classification.
-    """
-    print("\n" + "="*70)
-    print("KONSEP IMAGE CLASSIFICATION")
-    print("="*70)
-    
-    print("""
-    [DEFINISI]
-    ─────────────────────────────────────────────────────────────────────
-    
-    Image Classification: Memprediksi SATU atau LEBIH labels untuk 
-    keseluruhan gambar.
-    
-    Input: Gambar (H × W × C)
-    Output: Probability distribution over classes
-    
-    
-    [TYPES OF CLASSIFICATION]
-    ─────────────────────────────────────────────────────────────────────
-    
-    1. Single-label Classification
-       - Satu gambar = satu class
-       - Output: Softmax probabilities
-       - Contoh: "Ini adalah gambar kucing"
-    
-    2. Multi-label Classification
-       - Satu gambar bisa punya multiple labels
-       - Output: Sigmoid per class (independent)
-       - Contoh: "Gambar ini mengandung: kucing, sofa, jendela"
-    
-    
-    [PIPELINE]
-    ─────────────────────────────────────────────────────────────────────
-    
-    ┌─────────────┐     ┌────────────────┐     ┌───────────────┐
-    │   Input     │────→│ Preprocessing  │────→│   CNN Model   │
-    │   Image     │     │ (resize, norm) │     │ (backbone +   │
-    │ 224×224×3   │     │                │     │  classifier)  │
-    └─────────────┘     └────────────────┘     └───────┬───────┘
-                                                       │
-                                                       ▼
-    ┌─────────────┐     ┌────────────────┐     ┌───────────────┐
-    │  Top-K      │←────│   Softmax/     │←────│   Logits      │
-    │ Predictions │     │   Sigmoid      │     │ (raw scores)  │
-    └─────────────┘     └────────────────┘     └───────────────┘
-    
-    
-    [PREPROCESSING FOR CNN]
-    ─────────────────────────────────────────────────────────────────────
-    
-    1. Resize ke input size model (224×224 atau 299×299)
-    2. Normalize pixel values:
-       - [0, 255] → [0, 1] atau
-       - [0, 255] → [-1, 1] atau
-       - ImageNet normalization (mean subtraction + std division)
-    3. Convert BGR (OpenCV) to RGB (if needed)
-    4. Channel first format: (H, W, C) → (C, H, W)
-    
-    
-    [IMAGENET DATASET]
-    ─────────────────────────────────────────────────────────────────────
-    
-    - 1,000 classes
-    - ~1.2 million training images
-    - Categories: animals, objects, vehicles, food, etc.
-    - Benchmark untuk image classification
-    
-    Examples:
-    - n01440764: tench (fish)
-    - n02102040: English springer
-    - n02979186: cassette player
-    """)
+def detect_objects(image, prototxt, caffemodel, conf_threshold=0.4):
+    """Deteksi objek dengan MobileNet-SSD."""
+    # Muat model DNN.
+    net = cv2.dnn.readNetFromCaffe(str(prototxt), str(caffemodel))
+    # Ambil ukuran gambar.
+    h, w = image.shape[:2]
+    # Buat blob dari gambar.
+    blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 0.007843, (300, 300), 127.5)
+    # Set input ke jaringan.
+    net.setInput(blob)
+    # Catat waktu sebelum inferensi.
+    start = time.time()
+    # Jalankan forward pass.
+    detections = net.forward()
+    # Hitung waktu inferensi.
+    elapsed = time.time() - start
+    # Siapkan list hasil.
+    results = []
+    # Loop hasil deteksi.
+    for i in range(detections.shape[2]):
+        # Ambil confidence.
+        confidence = float(detections[0, 0, i, 2])
+        # Filter berdasarkan threshold.
+        if confidence >= conf_threshold:
+            # Ambil class id.
+            class_id = int(detections[0, 0, i, 1])
+            # Ambil koordinat bounding box.
+            x1 = int(detections[0, 0, i, 3] * w)
+            # Ambil y1.
+            y1 = int(detections[0, 0, i, 4] * h)
+            # Ambil x2.
+            x2 = int(detections[0, 0, i, 5] * w)
+            # Ambil y2.
+            y2 = int(detections[0, 0, i, 6] * h)
+            # Simpan hasil.
+            results.append((class_id, confidence, x1, y1, x2, y2))
+    # Kembalikan hasil dan waktu.
+    return results, elapsed
 
 
-def demo_classification_opencv():
-    """
-    Demonstrasi image classification dengan OpenCV DNN.
-    """
-    print("\n" + "="*70)
-    print("IMAGE CLASSIFICATION DENGAN OPENCV DNN")
-    print("="*70)
-    
-    # Get labels
-    labels = download_imagenet_labels()
-    if labels is None:
-        labels = create_imagenet_labels()
-    
-    print(f"\n[INFO] Loaded {len(labels)} class labels")
-    
-    # Create sample image
-    print("\n[INFO] Creating sample image for classification...")
-    sample_image = create_sample_object_image()
+def draw_results(image, results, labels):
+    """Gambar bounding box dan label pada gambar."""
+    # Salin gambar agar original aman.
+    output = image.copy()
+    # Loop setiap hasil deteksi.
+    for class_id, confidence, x1, y1, x2, y2 in results:
+        # Tentukan label kelas.
+        label = labels[class_id] if class_id < len(labels) else "object"
+        # Gambar bounding box.
+        cv2.rectangle(output, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        # Buat teks label.
+        text = f"{label}: {confidence:.2f}"
+        # Tulis teks label.
+        cv2.putText(output, text, (x1, max(0, y1 - 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+    # Kembalikan gambar hasil.
+    return output
+
+
+def show_image(title, image, delay_ms=2000):
+    """Tampilkan gambar dengan auto-close."""
+    # Coba tampilkan jendela jika GUI tersedia.
+    try:
+        # Tampilkan gambar.
+        cv2.imshow(title, image)
+        # Tunggu beberapa milidetik.
+        cv2.waitKey(delay_ms)
+        # Tutup jendela.
+        cv2.destroyAllWindows()
+    except Exception:
+        # Abaikan jika display tidak tersedia.
+        pass
+
+
+def main():
+    """Fungsi utama untuk demo object recognition."""
+    # Unduh model jika belum ada.
+    prototxt, caffemodel = download_mobilenet_ssd()
+    # Muat gambar sampel.
+    image = load_sample_image()
+    # Ambil label kelas.
+    labels = get_labels()
+    # Jalankan deteksi objek.
+    results, elapsed = detect_objects(image, prototxt, caffemodel)
+    # Gambar hasil deteksi.
+    output = draw_results(image, results, labels)
+    # Buat folder output.
+    output_dir = create_output_dir()
+    # Simpan hasil ke file.
+    cv2.imwrite(str(output_dir / "04_object_recognition.jpg"), output)
+    # Cetak ringkasan hasil.
+    print(f"Detected objects: {len(results)} | Time: {elapsed*1000:.2f} ms")
+    # Tampilkan hasil dengan auto-close.
+    show_image("Object Recognition", output)
+
+
+# Jalankan program saat dieksekusi langsung.
+if __name__ == "__main__":
+    # Panggil fungsi utama.
+    main()
     
     print("\n[STEP 1] Preprocessing")
     print("-"*50)

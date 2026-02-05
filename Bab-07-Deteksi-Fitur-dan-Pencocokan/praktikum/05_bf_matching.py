@@ -195,6 +195,16 @@ def compare_ratio_thresholds(img1_path, img2_path):
             flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS
         )
         
+        # Penjelasan parameter cv2.putText:
+        # cv2.putText(image, text, org, fontFace, fontScale, color, thickness, lineType)
+        # - image: gambar target
+        # - text: teks yang akan ditulis
+        # - org: posisi (x, y) kiri-bawah teks
+        # - fontFace: jenis font
+        # - fontScale: skala ukuran font
+        # - color: warna (BGR)
+        # - thickness: ketebalan teks
+        # - lineType: tipe garis (opsional)
         cv2.putText(result, f"Ratio={thresh}: {len(good)} matches", (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
         results.append(result)

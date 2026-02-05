@@ -224,6 +224,26 @@ pip install opencv-python opencv-contrib-python numpy scipy open3d matplotlib
 | Indoor | | | | |
 | Outdoor | | | | |
 
+### Tabel 7: Vanishing Points Calibration
+| VP1 (x,y) | VP2 (x,y) | Principal Point | Focal Length (px) |
+|-----------|-----------|-----------------|-------------------|
+| | | | |
+
+### Tabel 8: PnP Pose Estimation
+| rvec (GT) | rvec (Est) | tvec (GT) | tvec (Est) | Reproj Error (px) |
+|-----------|------------|-----------|------------|-------------------|
+| | | | | |
+
+### Tabel 9: Radial Distortion Plumb-Line
+| k1 Ground Truth | k1 Estimasi | Straightness Score |
+|-----------------|-------------|--------------------|
+| | | |
+
+### Tabel 10: Tomasi-Kanade Factorization
+| Frame | Num Points | Reconstruction Error (optional) |
+|-------|------------|----------------------------------|
+| | | |
+
 ---
 
 ## 🔍 5. Analisis

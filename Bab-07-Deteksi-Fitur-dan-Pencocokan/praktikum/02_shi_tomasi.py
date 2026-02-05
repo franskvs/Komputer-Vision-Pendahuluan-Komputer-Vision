@@ -152,6 +152,17 @@ def compare_parameters(image_path):
         
         # Tambah label
         label = f"{params['label']}: {len(corners) if corners is not None else 0}"
+
+        # Penjelasan parameter cv2.putText:
+        # cv2.putText(image, text, org, fontFace, fontScale, color, thickness, lineType)
+        # - image: gambar target
+        # - text: teks yang akan ditulis
+        # - org: posisi (x, y) kiri-bawah teks
+        # - fontFace: jenis font
+        # - fontScale: skala ukuran font
+        # - color: warna (BGR)
+        # - thickness: ketebalan teks
+        # - lineType: tipe garis (opsional)
         cv2.putText(result, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 
                     0.7, (0, 255, 255), 2)
         

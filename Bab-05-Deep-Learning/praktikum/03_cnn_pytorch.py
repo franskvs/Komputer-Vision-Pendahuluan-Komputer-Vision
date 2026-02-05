@@ -1,6 +1,8 @@
 """
+# Assignment - set nilai ke variabel
 =============================================================================
 PRAKTIKUM 03 - CONVOLUTIONAL NEURAL NETWORK DENGAN PYTORCH
+# Assignment - set nilai ke variabel
 =============================================================================
 Program ini membangun dan melatih CNN dari awal menggunakan PyTorch.
 Kita akan menggunakan dataset MNIST untuk klasifikasi digit handwritten.
@@ -19,6 +21,7 @@ Arsitektur yang dibangun:
 - ReLU activation
 
 Kebutuhan:
+# Assignment - set nilai ke variabel
 - torch >= 2.0.0
 - torchvision
 - numpy
@@ -29,24 +32,37 @@ Note: Jika PyTorch tidak tersedia, program akan menjalankan simulasi.
 Author: [Nama Mahasiswa]
 NIM: [NIM Mahasiswa]
 Tanggal: [Tanggal Praktikum]
+# Assignment - set nilai ke variabel
 =============================================================================
 """
 
+# Import library/module untuk digunakan
 import numpy as np
+# Import library/module untuk digunakan
 import os
 
 # Check apakah PyTorch tersedia
 PYTORCH_AVAILABLE = False
+# Blok try-except untuk error handling
 try:
+    # Import library/module untuk digunakan
     import torch
+    # Import library/module untuk digunakan
     import torch.nn as nn
+    # Import library/module untuk digunakan
     import torch.optim as optim
+    # Import library/module untuk digunakan
     import torch.nn.functional as F
+    # Import library/module untuk digunakan
     from torch.utils.data import DataLoader
+    # Import library/module untuk digunakan
     import torchvision
+    # Import library/module untuk digunakan
     import torchvision.transforms as transforms
+    # Assignment - set nilai ke variabel
     PYTORCH_AVAILABLE = True
     print("[INFO] PyTorch tersedia - menggunakan real implementation")
+# Tangkap exception jika ada error di blok try
 except ImportError:
     print("[WARNING] PyTorch tidak tersedia - menggunakan simulasi")
 
@@ -55,7 +71,9 @@ except ImportError:
 # DEFINISI ARSITEKTUR CNN
 # =============================================================================
 
+# Conditional statement - eksekusi jika kondisi True
 if PYTORCH_AVAILABLE:
+    # Definisi class untuk membuat object
     class SimpleCNN(nn.Module):
         """
         CNN sederhana untuk klasifikasi MNIST.
@@ -69,14 +87,17 @@ if PYTORCH_AVAILABLE:
         - FC2: 128 → 10 (output classes)
         
         Input: 28×28×1 grayscale image
+        # Definisi class untuk membuat object
         Output: 10 class probabilities
         """
         
+        # Definisi function dengan nama dan parameter
         def __init__(self, num_classes=10):
             """
             Inisialisasi layers CNN.
             
             Args:
+                # Definisi class untuk membuat object
                 num_classes: Jumlah class output (default: 10 untuk MNIST)
             """
             super(SimpleCNN, self).__init__()
@@ -89,9 +110,13 @@ if PYTORCH_AVAILABLE:
             # Input: 1×28×28 (grayscale)
             # Output: 32×26×26 (setelah conv 3×3 tanpa padding)
             self.conv1 = nn.Conv2d(
+                # Assignment - set nilai ke variabel
                 in_channels=1,       # Input channels (grayscale = 1)
+                # Assignment - set nilai ke variabel
                 out_channels=32,     # Number of filters
+                # Assignment - set nilai ke variabel
                 kernel_size=3,       # 3×3 filter
+                # Assignment - set nilai ke variabel
                 padding=1            # Same padding
             )
             # Output setelah conv1: 32×28×28
@@ -100,9 +125,13 @@ if PYTORCH_AVAILABLE:
             # Input: 32×14×14 (setelah pooling)
             # Output: 64×14×14
             self.conv2 = nn.Conv2d(
+                # Assignment - set nilai ke variabel
                 in_channels=32,
+                # Assignment - set nilai ke variabel
                 out_channels=64,
+                # Assignment - set nilai ke variabel
                 kernel_size=3,
+                # Assignment - set nilai ke variabel
                 padding=1
             )
             # Output setelah conv2: 64×14×14
@@ -121,11 +150,13 @@ if PYTORCH_AVAILABLE:
             # Setelah 2 pooling layers: 28 → 14 → 7
             # Feature map size: 64 × 7 × 7 = 3136
             self.fc1 = nn.Linear(64 * 7 * 7, 128)
+            # Assignment - set nilai ke variabel
             self.fc2 = nn.Linear(128, num_classes)
             
             # Dropout untuk regularization
             self.dropout = nn.Dropout(0.25)
         
+        # Definisi function dengan nama dan parameter
         def forward(self, x):
             """
             Forward pass melalui network.
@@ -149,19 +180,26 @@ if PYTORCH_AVAILABLE:
             
             # Fully connected layers
             x = self.dropout(x)
+            # Assignment - set nilai ke variabel
             x = F.relu(self.fc1(x))
+            # Assignment - set nilai ke variabel
             x = self.dropout(x)
+            # Assignment - set nilai ke variabel
             x = self.fc2(x)  # No activation (raw logits)
             
+            # Return value dari function
             return x
 
 
+# Definisi function dengan nama dan parameter
 def print_architecture():
     """
     Menampilkan arsitektur CNN dalam format visual.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("ARSITEKTUR CNN")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
     print("""
@@ -174,8 +212,10 @@ def print_architecture():
     │                        │                                         │
     │                        ▼                                         │
     │  ┌───────────────────────────────────────┐                      │
+    # Assignment - set nilai ke variabel
     │  │ Conv2D(1→32, kernel=3×3, padding=1)   │                      │
     │  │ Output: (batch, 32, 28, 28)           │                      │
+    # Assignment - set nilai ke variabel
     │  │ Parameters: 1×3×3×32 + 32 = 320       │                      │
     │  └───────────────────┬───────────────────┘                      │
     │                      ▼                                           │
@@ -185,13 +225,16 @@ def print_architecture():
     │  └───────────────────┬───────────────────┘                      │
     │                      ▼                                           │
     │  ┌───────────────────────────────────────┐                      │
+    # Assignment - set nilai ke variabel
     │  │ MaxPool2D(kernel=2×2, stride=2)       │                      │
     │  │ Output: (batch, 32, 14, 14)           │                      │
     │  └───────────────────┬───────────────────┘                      │
     │                      ▼                                           │
     │  ┌───────────────────────────────────────┐                      │
+    # Assignment - set nilai ke variabel
     │  │ Conv2D(32→64, kernel=3×3, padding=1)  │                      │
     │  │ Output: (batch, 64, 14, 14)           │                      │
+    # Assignment - set nilai ke variabel
     │  │ Parameters: 32×3×3×64 + 64 = 18,496   │                      │
     │  └───────────────────┬───────────────────┘                      │
     │                      ▼                                           │
@@ -201,6 +244,7 @@ def print_architecture():
     │  └───────────────────┬───────────────────┘                      │
     │                      ▼                                           │
     │  ┌───────────────────────────────────────┐                      │
+    # Assignment - set nilai ke variabel
     │  │ MaxPool2D(kernel=2×2, stride=2)       │                      │
     │  │ Output: (batch, 64, 7, 7)             │                      │
     │  └───────────────────┬───────────────────┘                      │
@@ -216,6 +260,7 @@ def print_architecture():
     │                      ▼                                           │
     │  ┌───────────────────────────────────────┐                      │
     │  │ Linear(3136 → 128)                    │                      │
+    # Assignment - set nilai ke variabel
     │  │ Parameters: 3136×128 + 128 = 401,536  │                      │
     │  └───────────────────┬───────────────────┘                      │
     │                      ▼                                           │
@@ -229,9 +274,11 @@ def print_architecture():
     │                      ▼                                           │
     │  ┌───────────────────────────────────────┐                      │
     │  │ Linear(128 → 10)                      │                      │
+    # Assignment - set nilai ke variabel
     │  │ Parameters: 128×10 + 10 = 1,290       │                      │
     │  └───────────────────┬───────────────────┘                      │
     │                      ▼                                           │
+    # Iterasi/loop melalui elemen dalam koleksi
     │  Output: (batch, 10) ─ Logits for 10 digit classes              │
     │                                                                  │
     │  Total Parameters: ~421,642                                      │
@@ -239,16 +286,20 @@ def print_architecture():
     """)
 
 
+# Definisi function dengan nama dan parameter
 def demo_training_pytorch():
     """
     Demonstrasi training CNN dengan PyTorch pada dataset MNIST.
     """
+    # Conditional statement - eksekusi jika kondisi True
     if not PYTORCH_AVAILABLE:
         print("[ERROR] PyTorch tidak tersedia. Gunakan demo_training_simulation()")
         return
     
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("TRAINING CNN DENGAN PYTORCH")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
     # ==========================================================================
@@ -261,7 +312,9 @@ def demo_training_pytorch():
     
     # Hyperparameters
     num_epochs = 5
+    # Assignment - set nilai ke variabel
     batch_size = 64
+    # Assignment - set nilai ke variabel
     learning_rate = 0.001
     
     print(f"[INFO] Hyperparameters:")
@@ -283,29 +336,45 @@ def demo_training_pytorch():
     
     # Download dan load dataset
     try:
+        # Assignment - set nilai ke variabel
         train_dataset = torchvision.datasets.MNIST(
+            # Assignment - set nilai ke variabel
             root='./data',
+            # Assignment - set nilai ke variabel
             train=True,
+            # Assignment - set nilai ke variabel
             transform=transform,
+            # Assignment - set nilai ke variabel
             download=True
         )
         
+        # Assignment - set nilai ke variabel
         test_dataset = torchvision.datasets.MNIST(
+            # Assignment - set nilai ke variabel
             root='./data',
+            # Assignment - set nilai ke variabel
             train=False,
+            # Assignment - set nilai ke variabel
             transform=transform
         )
         
         # DataLoaders
         train_loader = DataLoader(
+            # Assignment - set nilai ke variabel
             dataset=train_dataset,
+            # Assignment - set nilai ke variabel
             batch_size=batch_size,
+            # Assignment - set nilai ke variabel
             shuffle=True
         )
         
+        # Assignment - set nilai ke variabel
         test_loader = DataLoader(
+            # Assignment - set nilai ke variabel
             dataset=test_dataset,
+            # Assignment - set nilai ke variabel
             batch_size=batch_size,
+            # Assignment - set nilai ke variabel
             shuffle=False
         )
         
@@ -313,6 +382,7 @@ def demo_training_pytorch():
         print(f"[INFO] Test samples: {len(test_dataset)}")
         print(f"[INFO] Training batches: {len(train_loader)}")
         
+    # Tangkap exception jika ada error di blok try
     except Exception as e:
         print(f"[ERROR] Failed to load dataset: {e}")
         print("[INFO] Running simulation instead...")
@@ -324,16 +394,19 @@ def demo_training_pytorch():
     # ==========================================================================
     
     print("\n[INFO] Initializing model...")
+    # Assignment - set nilai ke variabel
     model = SimpleCNN(num_classes=10).to(device)
     
     # Print model summary
     total_params = sum(p.numel() for p in model.parameters())
+    # Iterasi/loop melalui elemen dalam koleksi
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"[INFO] Total parameters: {total_params:,}")
     print(f"[INFO] Trainable parameters: {trainable_params:,}")
     
     # Loss function dan optimizer
     criterion = nn.CrossEntropyLoss()
+    # Assignment - set nilai ke variabel
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     
     # ==========================================================================
@@ -343,22 +416,31 @@ def demo_training_pytorch():
     print("\n[INFO] Starting training...")
     print("-"*60)
     
+    # Assignment - set nilai ke variabel
     train_losses = []
+    # Assignment - set nilai ke variabel
     train_accuracies = []
     
+    # Iterasi/loop melalui elemen dalam koleksi
     for epoch in range(num_epochs):
         model.train()  # Set ke training mode
+        # Assignment - set nilai ke variabel
         running_loss = 0.0
+        # Assignment - set nilai ke variabel
         correct = 0
+        # Assignment - set nilai ke variabel
         total = 0
         
+        # Iterasi/loop melalui elemen dalam koleksi
         for i, (images, labels) in enumerate(train_loader):
             # Move data ke device
             images = images.to(device)
+            # Assignment - set nilai ke variabel
             labels = labels.to(device)
             
             # Forward pass
             outputs = model(images)
+            # Assignment - set nilai ke variabel
             loss = criterion(outputs, labels)
             
             # Backward pass dan optimization
@@ -368,8 +450,11 @@ def demo_training_pytorch():
             
             # Statistics
             running_loss += loss.item()
+            # Assignment - set nilai ke variabel
             _, predicted = torch.max(outputs.data, 1)
+            # Assignment - set nilai ke variabel
             total += labels.size(0)
+            # Assignment - set nilai ke variabel
             correct += (predicted == labels).sum().item()
             
             # Print progress setiap 100 batch
@@ -380,6 +465,7 @@ def demo_training_pytorch():
         
         # Epoch statistics
         epoch_loss = running_loss / len(train_loader)
+        # Assignment - set nilai ke variabel
         epoch_acc = 100 * correct / total
         train_losses.append(epoch_loss)
         train_accuracies.append(epoch_acc)
@@ -396,20 +482,30 @@ def demo_training_pytorch():
     print("\n[INFO] Evaluating on test set...")
     
     model.eval()  # Set ke evaluation mode
+    # Assignment - set nilai ke variabel
     correct = 0
+    # Assignment - set nilai ke variabel
     total = 0
     
     with torch.no_grad():  # Disable gradient computation
+        # Iterasi/loop melalui elemen dalam koleksi
         for images, labels in test_loader:
+            # Assignment - set nilai ke variabel
             images = images.to(device)
+            # Assignment - set nilai ke variabel
             labels = labels.to(device)
             
+            # Assignment - set nilai ke variabel
             outputs = model(images)
+            # Assignment - set nilai ke variabel
             _, predicted = torch.max(outputs.data, 1)
             
+            # Assignment - set nilai ke variabel
             total += labels.size(0)
+            # Assignment - set nilai ke variabel
             correct += (predicted == labels).sum().item()
     
+    # Assignment - set nilai ke variabel
     test_accuracy = 100 * correct / total
     print(f'\n[RESULT] Test Accuracy: {test_accuracy:.2f}%')
     
@@ -417,6 +513,7 @@ def demo_training_pytorch():
     # SAVE MODEL
     # ==========================================================================
     
+    # Assignment - set nilai ke variabel
     save_path = 'mnist_cnn.pth'
     torch.save(model.state_dict(), save_path)
     print(f"\n[INFO] Model saved to {save_path}")
@@ -424,18 +521,24 @@ def demo_training_pytorch():
     # Print training history
     print("\n[INFO] Training History:")
     print("-"*40)
+    # Iterasi/loop melalui elemen dalam koleksi
     for i, (loss, acc) in enumerate(zip(train_losses, train_accuracies)):
+        # Assignment - set nilai ke variabel
         bar = "█" * int(acc / 5)
+        # Assignment - set nilai ke variabel
         print(f"Epoch {i+1}: Loss={loss:.4f}, Acc={acc:.2f}% {bar}")
 
 
+# Definisi function dengan nama dan parameter
 def demo_training_simulation():
     """
     Simulasi training CNN tanpa PyTorch.
     Berguna untuk memahami konsep tanpa dependency.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("SIMULASI TRAINING CNN")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
     print("\n[INFO] Mode simulasi - tanpa PyTorch")
@@ -443,6 +546,7 @@ def demo_training_simulation():
     
     # Simulated training progress
     epochs = 5
+    # Assignment - set nilai ke variabel
     simulated_results = [
         {"loss": 0.4523, "train_acc": 85.2, "val_acc": 87.1},
         {"loss": 0.2134, "train_acc": 92.3, "val_acc": 93.5},
@@ -456,6 +560,7 @@ def demo_training_simulation():
     print(f"{'Epoch':<8} {'Loss':<12} {'Train Acc':<12} {'Val Acc':<12}")
     print("-"*60)
     
+    # Iterasi/loop melalui elemen dalam koleksi
     for i, result in enumerate(simulated_results, 1):
         print(f"{i:<8} {result['loss']:<12.4f} {result['train_acc']:<12.1f}% "
               f"{result['val_acc']:<12.1f}%")
@@ -465,14 +570,20 @@ def demo_training_simulation():
     # Visualisasi ASCII
     print("\n[TRAINING CURVE - ASCII]")
     print("Loss over epochs:")
+    # Iterasi/loop melalui elemen dalam koleksi
     for i, result in enumerate(simulated_results, 1):
+        # Assignment - set nilai ke variabel
         bar_length = int((1 - result['loss']) * 40)
+        # Assignment - set nilai ke variabel
         bar = "█" * bar_length
         print(f"Epoch {i}: {bar} {result['loss']:.4f}")
     
     print("\nAccuracy over epochs:")
+    # Iterasi/loop melalui elemen dalam koleksi
     for i, result in enumerate(simulated_results, 1):
+        # Assignment - set nilai ke variabel
         bar_length = int(result['train_acc'] / 2.5)
+        # Assignment - set nilai ke variabel
         bar = "█" * bar_length
         print(f"Epoch {i}: {bar} {result['train_acc']:.1f}%")
     
@@ -482,29 +593,41 @@ def demo_training_simulation():
     
     # Generate random-ish confusion matrix dengan diagonal dominant
     np.random.seed(42)
+    # Generate random integer dalam range tertentu
     cm = np.random.randint(0, 20, (10, 10))
+    # Iterasi/loop melalui elemen dalam koleksi
     for i in range(10):
+        # Generate random integer dalam range tertentu
         cm[i, i] = np.random.randint(80, 100)  # High diagonal
     
+    # Iterasi/loop melalui elemen dalam koleksi
     print("    " + "".join([f"{i:>5}" for i in range(10)]))
     print("    " + "-"*50)
+    # Iterasi/loop melalui elemen dalam koleksi
     for i in range(10):
+        # Assignment - set nilai ke variabel
         row_str = f"{i:>2} |"
+        # Iterasi/loop melalui elemen dalam koleksi
         for j in range(10):
+            # Assignment - set nilai ke variabel
             row_str += f"{cm[i,j]:>5}"
         print(row_str)
     
     print("\n[RESULT] Simulated Test Accuracy: 97.8%")
 
 
+# Definisi function dengan nama dan parameter
 def demo_forward_pass():
     """
     Demonstrasi forward pass step by step.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("DEMONSTRASI FORWARD PASS")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
+    # Conditional statement - eksekusi jika kondisi True
     if PYTORCH_AVAILABLE:
         # Create model dan dummy input
         model = SimpleCNN()
@@ -518,9 +641,13 @@ def demo_forward_pass():
         # Hook untuk capture intermediate outputs
         activations = {}
         
+        # Definisi function dengan nama dan parameter
         def get_activation(name):
+            # Definisi function dengan nama dan parameter
             def hook(model, input, output):
+                # Assignment - set nilai ke variabel
                 activations[name] = output.detach()
+            # Return value dari function
             return hook
         
         # Register hooks
@@ -531,6 +658,7 @@ def demo_forward_pass():
         
         # Forward pass
         with torch.no_grad():
+            # Assignment - set nilai ke variabel
             output = model(x)
         
         # Print shapes
@@ -582,12 +710,15 @@ def demo_forward_pass():
         """)
 
 
+# Definisi function dengan nama dan parameter
 def demo_backpropagation():
     """
     Demonstrasi konsep backpropagation.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("KONSEP BACKPROPAGATION")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
     print("""
@@ -598,6 +729,7 @@ def demo_backpropagation():
          ↓         ↓         ↓                ↓
         h₁        h₂        ...           Prediction
     
+    # Assignment - set nilai ke variabel
     L = CrossEntropy(ŷ, y) = -Σ yᵢ log(ŷᵢ)
     
     
@@ -606,6 +738,7 @@ def demo_backpropagation():
     
     Gradient flows backward:
     
+    # Assignment - set nilai ke variabel
     ∂L/∂w₁ = ∂L/∂ŷ × ∂ŷ/∂hₙ × ... × ∂h₂/∂h₁ × ∂h₁/∂w₁
     
                     ∂L/∂ŷ ← Loss derivative
@@ -619,6 +752,7 @@ def demo_backpropagation():
     [WEIGHT UPDATE - Gradient Descent]
     ─────────────────────────────────────────────────────────────────────
     
+    # Assignment - set nilai ke variabel
     w_new = w_old - η × ∂L/∂w
     
     Dimana η adalah learning rate
@@ -627,38 +761,52 @@ def demo_backpropagation():
     [OPTIMIZER VARIANTS]
     ─────────────────────────────────────────────────────────────────────
     
+    # Assignment - set nilai ke variabel
     SGD:    w = w - η × ∇L
     
     Momentum:
+            # Assignment - set nilai ke variabel
             v = β × v + ∇L
+            # Assignment - set nilai ke variabel
             w = w - η × v
     
     Adam (Adaptive Moment):
+            # Assignment - set nilai ke variabel
             m = β₁ × m + (1-β₁) × ∇L           # First moment
+            # Assignment - set nilai ke variabel
             v = β₂ × v + (1-β₂) × (∇L)²        # Second moment
+            # Assignment - set nilai ke variabel
             w = w - η × m / (√v + ε)
     """)
     
+    # Conditional statement - eksekusi jika kondisi True
     if PYTORCH_AVAILABLE:
         print("\n[DEMO] PyTorch Autograd")
         print("-"*50)
         
         # Simple example
         x = torch.tensor([2.0], requires_grad=True)
+        # Buat tensor PyTorch dari data
         w = torch.tensor([3.0], requires_grad=True)
         
         # Forward
         y = w * x  # y = 3 * 2 = 6
+        # Assignment - set nilai ke variabel
         loss = (y - 10) ** 2  # (6 - 10)^2 = 16
         
+        # Assignment - set nilai ke variabel
         print(f"x = {x.item()}, w = {w.item()}")
+        # Assignment - set nilai ke variabel
         print(f"y = w * x = {y.item()}")
+        # Assignment - set nilai ke variabel
         print(f"Loss = (y - 10)² = {loss.item()}")
         
         # Backward
         loss.backward()
         
+        # Assignment - set nilai ke variabel
         print(f"\n∂Loss/∂w = {w.grad.item()}")
+        # Assignment - set nilai ke variabel
         print(f"∂Loss/∂x = {x.grad.item()}")
         
         # Manual verification
@@ -667,20 +815,26 @@ def demo_backpropagation():
         print(f"\nVerification: 2*(6-10)*2 = {2*(6-10)*2}")
 
 
+# Definisi function dengan nama dan parameter
 def main():
     """
     Fungsi utama program.
     """
+    # Assignment - set nilai ke variabel
     print("="*70)
     print("PRAKTIKUM CNN DENGAN PYTORCH")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
+    # Conditional statement - eksekusi jika kondisi True
     if PYTORCH_AVAILABLE:
         print(f"\n[INFO] PyTorch version: {torch.__version__}")
         print(f"[INFO] CUDA available: {torch.cuda.is_available()}")
+        # Conditional statement - eksekusi jika kondisi True
         if torch.cuda.is_available():
             print(f"[INFO] CUDA device: {torch.cuda.get_device_name(0)}")
     
+    # Loop berulang selama kondisi bernilai True
     while True:
         print("\n" + "-"*50)
         print("MENU DEMONSTRASI:")
@@ -692,27 +846,36 @@ def main():
         print("5. Jalankan Semua Demo")
         print("0. Keluar")
         
+        # Assignment - set nilai ke variabel
         choice = input("\nPilih menu (0-5): ").strip()
         
+        # Conditional statement - eksekusi jika kondisi True
         if choice == '1':
             print_architecture()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '2':
+            # Conditional statement - eksekusi jika kondisi True
             if PYTORCH_AVAILABLE:
                 demo_training_pytorch()
             else:
                 demo_training_simulation()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '3':
             demo_forward_pass()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '4':
             demo_backpropagation()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '5':
             print_architecture()
+            # Conditional statement - eksekusi jika kondisi True
             if PYTORCH_AVAILABLE:
                 demo_training_pytorch()
             else:
                 demo_training_simulation()
             demo_forward_pass()
             demo_backpropagation()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '0':
             print("\n[INFO] Program selesai.")
             break
@@ -720,5 +883,6 @@ def main():
             print("[ERROR] Pilihan tidak valid!")
 
 
+# Conditional statement - eksekusi jika kondisi True
 if __name__ == "__main__":
     main()

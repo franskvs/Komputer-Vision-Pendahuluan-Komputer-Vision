@@ -93,8 +93,10 @@ def buat_gambar_sample():
     cv2.polylines(gambar, [doc_pts], True, (100, 100, 100), 2)
     
     # Text content (dengan perspektif)
+    # cv2.putText(a,b,c,d,e,f,g): a=img, b=teks, c=posisi(x,y), d=font, e=skala, f=warna, g=ketebalan
     cv2.putText(gambar, "DOCUMENT", (150, 120), 
                 cv2.FONT_HERSHEY_SIMPLEX, 1.2, (30, 30, 30), 2)
+    # cv2.putText(a,b,c,d,e,f,g): a=img, b=teks, c=posisi(x,y), d=font, e=skala, f=warna, g=ketebalan
     cv2.putText(gambar, "SCANNING", (170, 170), 
                 cv2.FONT_HERSHEY_SIMPLEX, 1.0, (50, 50, 50), 2)
     
@@ -324,6 +326,7 @@ PIPELINE:
         cv2.drawContours(img_corners, [corners.astype(int)], -1, (0, 255, 0), 3)
         for i, pt in enumerate(corners):
             cv2.circle(img_corners, tuple(pt.astype(int)), 8, (255, 0, 0), -1)
+            # cv2.putText(a,b,c,d,e,f,g): a=img, b=teks, c=posisi(x,y), d=font, e=skala, f=warna, g=ketebalan
             cv2.putText(img_corners, str(i), tuple(pt.astype(int) + [10, 10]),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
     
@@ -563,6 +566,7 @@ USE CASES:
     cv2.drawContours(img_corners, [corners.astype(int)], -1, (0, 255, 0), 3)
     for i, pt in enumerate(ordered):
         cv2.circle(img_corners, tuple(pt.astype(int)), 8, (255, 0, 0), -1)
+        # cv2.putText(a,b,c,d,e,f,g): a=img, b=teks, c=posisi(x,y), d=font, e=skala, f=warna, g=ketebalan
         cv2.putText(img_corners, labels[i][:2], 
                     tuple(pt.astype(int) + [10, -10]),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)

@@ -19,6 +19,10 @@ PROGRAMS = [
     "05_visual_odometry.py",
     "06_bundle_adjustment.py",
     "07_simple_slam.py",
+    "08_vanishing_points_calibration.py",
+    "09_pnp_pose_estimation.py",
+    "10_radial_distortion_plumbline.py",
+    "11_tomasi_kanade_factorization.py",
 ]
 
 def run_program(program_name, timeout=30):

@@ -1,6 +1,8 @@
 """
+# Assignment - set nilai ke variabel
 =============================================================================
 PRAKTIKUM 11 - ONNX EXPORT DAN DEPLOYMENT
+# Assignment - set nilai ke variabel
 =============================================================================
 Program ini mendemonstrasikan cara mengekspor model deep learning ke format
 ONNX untuk deployment lintas platform.
@@ -15,68 +17,99 @@ Konsep yang dipelajari:
 Kebutuhan:
 - onnx (pip install onnx)
 - onnxruntime (pip install onnxruntime)
+# Assignment - set nilai ke variabel
 - torch >= 2.0.0 (opsional)
+# Assignment - set nilai ke variabel
 - tensorflow >= 2.10.0 (opsional)
 - tf2onnx (pip install tf2onnx)
 
 Author: [Nama Mahasiswa]
 NIM: [NIM Mahasiswa]
 Tanggal: [Tanggal Praktikum]
+# Assignment - set nilai ke variabel
 =============================================================================
 """
 
+# Import library/module untuk digunakan
 import numpy as np
+# Import library/module untuk digunakan
 import time
+# Import library/module untuk digunakan
 import os
 
 # Check available libraries
 ONNX_AVAILABLE = False
+# Assignment - set nilai ke variabel
 ONNXRUNTIME_AVAILABLE = False
+# Assignment - set nilai ke variabel
 TORCH_AVAILABLE = False
+# Assignment - set nilai ke variabel
 TF_AVAILABLE = False
 
+# Blok try-except untuk error handling
 try:
+    # Import library/module untuk digunakan
     import onnx
+    # Import library/module untuk digunakan
     from onnx import numpy_helper
+    # Assignment - set nilai ke variabel
     ONNX_AVAILABLE = True
     print("[INFO] ONNX tersedia")
+# Tangkap exception jika ada error di blok try
 except ImportError:
     print("[WARNING] ONNX tidak tersedia")
 
+# Blok try-except untuk error handling
 try:
+    # Import library/module untuk digunakan
     import onnxruntime as ort
+    # Assignment - set nilai ke variabel
     ONNXRUNTIME_AVAILABLE = True
     print("[INFO] ONNX Runtime tersedia")
+# Tangkap exception jika ada error di blok try
 except ImportError:
     print("[WARNING] ONNX Runtime tidak tersedia")
 
+# Blok try-except untuk error handling
 try:
+    # Import library/module untuk digunakan
     import torch
+    # Import library/module untuk digunakan
     import torch.nn as nn
+    # Assignment - set nilai ke variabel
     TORCH_AVAILABLE = True
     print("[INFO] PyTorch tersedia")
+# Tangkap exception jika ada error di blok try
 except ImportError:
     print("[WARNING] PyTorch tidak tersedia")
 
+# Blok try-except untuk error handling
 try:
+    # Import library/module untuk digunakan
     import tensorflow as tf
+    # Assignment - set nilai ke variabel
     TF_AVAILABLE = True
     print("[INFO] TensorFlow tersedia")
+# Tangkap exception jika ada error di blok try
 except ImportError:
     print("[WARNING] TensorFlow tidak tersedia")
 
 
+# Definisi function dengan nama dan parameter
 def demo_onnx_overview():
     """
     Overview tentang ONNX dan pentingnya untuk deployment.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("ONNX OVERVIEW")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
     print("""
     [APA ITU ONNX?]
     ─────────────────────────────────────────────────────────────────────
+    # Assignment - set nilai ke variabel
     ONNX = Open Neural Network Exchange
     
     - Format open untuk merepresentasikan model machine learning
@@ -154,43 +187,59 @@ def demo_onnx_overview():
     │  18+    │ Latest ops, BiasAdd, LpPool                          │
     └─────────┴───────────────────────────────────────────────────────┘
     
+    # Iterasi/loop melalui elemen dalam koleksi
     Tip: Use opset 13+ for modern models, 11+ for compatibility
     """)
 
 
+# Definisi function dengan nama dan parameter
 def demo_pytorch_to_onnx():
     """
     Demonstrasi export model PyTorch ke ONNX.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("PYTORCH TO ONNX EXPORT")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
+    # Conditional statement - eksekusi jika kondisi True
     if not TORCH_AVAILABLE:
         print("\n[WARNING] PyTorch tidak tersedia - menampilkan panduan")
         print("""
     [CARA EXPORT PYTORCH KE ONNX]
     ─────────────────────────────────────────────────────────────────────
     
+    # Import library/module untuk digunakan
     import torch
     
     # 1. Define model
     class SimpleModel(torch.nn.Module):
+        # Definisi function dengan nama dan parameter
         def __init__(self):
             super().__init__()
+            # Assignment - set nilai ke variabel
             self.conv1 = torch.nn.Conv2d(3, 32, 3, padding=1)
+            # Assignment - set nilai ke variabel
             self.relu = torch.nn.ReLU()
+            # Assignment - set nilai ke variabel
             self.pool = torch.nn.AdaptiveAvgPool2d(1)
+            # Assignment - set nilai ke variabel
             self.fc = torch.nn.Linear(32, 10)
         
+        # Definisi function dengan nama dan parameter
         def forward(self, x):
+            # Assignment - set nilai ke variabel
             x = self.relu(self.conv1(x))
+            # Assignment - set nilai ke variabel
             x = self.pool(x).flatten(1)
+            # Return value dari function
             return self.fc(x)
     
     # 2. Create model and dummy input
     model = SimpleModel()
     model.eval()
+    # Assignment - set nilai ke variabel
     dummy_input = torch.randn(1, 3, 224, 224)
     
     # 3. Export to ONNX
@@ -198,11 +247,17 @@ def demo_pytorch_to_onnx():
         model,
         dummy_input,
         "model.onnx",
+        # Assignment - set nilai ke variabel
         export_params=True,         # Store trained weights
+        # Assignment - set nilai ke variabel
         opset_version=13,           # ONNX opset version
+        # Assignment - set nilai ke variabel
         do_constant_folding=True,   # Optimization
+        # Assignment - set nilai ke variabel
         input_names=['input'],      # Input name
+        # Assignment - set nilai ke variabel
         output_names=['output'],    # Output name
+        # Assignment - set nilai ke variabel
         dynamic_axes={              # Dynamic batch size
             'input': {0: 'batch_size'},
             'output': {0: 'batch_size'}
@@ -218,26 +273,40 @@ def demo_pytorch_to_onnx():
     # Define simple model
     class SimpleClassifier(nn.Module):
         """Simple CNN classifier for demonstration."""
+        # Definisi function dengan nama dan parameter
         def __init__(self, num_classes=10):
             super(SimpleClassifier, self).__init__()
+            # Assignment - set nilai ke variabel
             self.features = nn.Sequential(
+                # Assignment - set nilai ke variabel
                 nn.Conv2d(3, 32, 3, padding=1),
                 nn.BatchNorm2d(32),
+                # Assignment - set nilai ke variabel
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(2, 2),
+                # Assignment - set nilai ke variabel
                 nn.Conv2d(32, 64, 3, padding=1),
                 nn.BatchNorm2d(64),
+                # Assignment - set nilai ke variabel
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(2, 2),
             )
+            # Assignment - set nilai ke variabel
             self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+            # Assignment - set nilai ke variabel
             self.classifier = nn.Linear(64, num_classes)
         
+        # Definisi function dengan nama dan parameter
         def forward(self, x):
+            # Assignment - set nilai ke variabel
             x = self.features(x)
+            # Assignment - set nilai ke variabel
             x = self.avgpool(x)
+            # Assignment - set nilai ke variabel
             x = torch.flatten(x, 1)
+            # Assignment - set nilai ke variabel
             x = self.classifier(x)
+            # Return value dari function
             return x
     
     # Create model
@@ -250,10 +319,12 @@ def demo_pytorch_to_onnx():
     
     # Create dummy input
     batch_size = 1
+    # Assignment - set nilai ke variabel
     dummy_input = torch.randn(batch_size, 3, 64, 64)
     
     # Test forward pass
     with torch.no_grad():
+        # Assignment - set nilai ke variabel
         output = model(dummy_input)
     print(f"[INFO] Input shape: {dummy_input.shape}")
     print(f"[INFO] Output shape: {output.shape}")
@@ -267,15 +338,22 @@ def demo_pytorch_to_onnx():
         model,
         dummy_input,
         onnx_path,
+        # Assignment - set nilai ke variabel
         export_params=True,
+        # Assignment - set nilai ke variabel
         opset_version=13,
+        # Assignment - set nilai ke variabel
         do_constant_folding=True,
+        # Assignment - set nilai ke variabel
         input_names=['input'],
+        # Assignment - set nilai ke variabel
         output_names=['output'],
+        # Assignment - set nilai ke variabel
         dynamic_axes={
             'input': {0: 'batch_size'},
             'output': {0: 'batch_size'}
         },
+        # Assignment - set nilai ke variabel
         verbose=False
     )
     
@@ -285,6 +363,7 @@ def demo_pytorch_to_onnx():
     # Verify ONNX model
     if ONNX_AVAILABLE:
         print("\n[INFO] Verifying ONNX model...")
+        # Assignment - set nilai ke variabel
         onnx_model = onnx.load(onnx_path)
         onnx.checker.check_model(onnx_model)
         print("[INFO] ONNX model verified successfully!")
@@ -296,22 +375,30 @@ def demo_pytorch_to_onnx():
         
         # Print inputs and outputs
         print("\n[INFO] Model inputs:")
+        # Iterasi/loop melalui elemen dalam koleksi
         for input in onnx_model.graph.input:
+            # Iterasi/loop melalui elemen dalam koleksi
             print(f"  - {input.name}: {[d.dim_value for d in input.type.tensor_type.shape.dim]}")
         
         print("[INFO] Model outputs:")
+        # Iterasi/loop melalui elemen dalam koleksi
         for output in onnx_model.graph.output:
+            # Iterasi/loop melalui elemen dalam koleksi
             print(f"  - {output.name}: {[d.dim_value for d in output.type.tensor_type.shape.dim]}")
 
 
+# Definisi function dengan nama dan parameter
 def demo_keras_to_onnx():
     """
     Demonstrasi export model Keras ke ONNX.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("KERAS/TENSORFLOW TO ONNX EXPORT")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
+    # Conditional statement - eksekusi jika kondisi True
     if not TF_AVAILABLE:
         print("\n[WARNING] TensorFlow tidak tersedia - menampilkan panduan")
         print("""
@@ -331,11 +418,14 @@ def demo_keras_to_onnx():
     # Method 2: Using tf2onnx Python API
     # ───────────────────────────────────
     
+    # Import library/module untuk digunakan
     import tf2onnx
+    # Import library/module untuk digunakan
     import tensorflow as tf
     
     # Create Keras model
     model = tf.keras.Sequential([
+        # Assignment - set nilai ke variabel
         tf.keras.layers.Conv2D(32, 3, activation='relu', input_shape=(224, 224, 3)),
         tf.keras.layers.GlobalAveragePooling2D(),
         tf.keras.layers.Dense(10)
@@ -344,9 +434,12 @@ def demo_keras_to_onnx():
     # Convert to ONNX
     input_signature = [tf.TensorSpec([None, 224, 224, 3], tf.float32, name='input')]
     
+    # Assignment - set nilai ke variabel
     onnx_model, _ = tf2onnx.convert.from_keras(
         model,
+        # Assignment - set nilai ke variabel
         input_signature=input_signature,
+        # Assignment - set nilai ke variabel
         opset=13
     )
     
@@ -360,9 +453,12 @@ def demo_keras_to_onnx():
     
     # Create simple model
     model = tf.keras.Sequential([
+        # Assignment - set nilai ke variabel
         tf.keras.layers.Conv2D(32, 3, activation='relu', padding='same',
+                               # Assignment - set nilai ke variabel
                                input_shape=(64, 64, 3)),
         tf.keras.layers.MaxPooling2D(),
+        # Assignment - set nilai ke variabel
         tf.keras.layers.Conv2D(64, 3, activation='relu', padding='same'),
         tf.keras.layers.MaxPooling2D(),
         tf.keras.layers.GlobalAveragePooling2D(),
@@ -373,43 +469,55 @@ def demo_keras_to_onnx():
     
     # Test forward pass
     dummy_input = np.random.randn(1, 64, 64, 3).astype(np.float32)
+    # Assignment - set nilai ke variabel
     output = model(dummy_input)
     print(f"\n[INFO] Input shape: {dummy_input.shape}")
     print(f"[INFO] Output shape: {output.shape}")
     
     # Try to export using tf2onnx
     try:
+        # Import library/module untuk digunakan
         import tf2onnx
         
         print("\n[INFO] Exporting to ONNX using tf2onnx...")
         
+        # Assignment - set nilai ke variabel
         input_signature = [tf.TensorSpec([None, 64, 64, 3], tf.float32, name='input')]
         
+        # Assignment - set nilai ke variabel
         onnx_model, _ = tf2onnx.convert.from_keras(
             model,
+            # Assignment - set nilai ke variabel
             input_signature=input_signature,
+            # Assignment - set nilai ke variabel
             opset=13
         )
         
+        # Assignment - set nilai ke variabel
         onnx_path = "keras_model.onnx"
+        # Buka file dengan context manager (otomatis close)
         with open(onnx_path, 'wb') as f:
             f.write(onnx_model.SerializeToString())
         
         print(f"[INFO] Model exported to {onnx_path}")
         print(f"[INFO] File size: {os.path.getsize(onnx_path) / 1024:.2f} KB")
         
+    # Tangkap exception jika ada error di blok try
     except ImportError:
         print("\n[WARNING] tf2onnx not installed. Install with: pip install tf2onnx")
         print("[INFO] Alternatively, save as SavedModel and convert via CLI:")
         print("       python -m tf2onnx.convert --saved-model ./saved_model --output model.onnx")
 
 
+# Definisi function dengan nama dan parameter
 def demo_onnx_inference():
     """
     Demonstrasi inference menggunakan ONNX Runtime.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("ONNX RUNTIME INFERENCE")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
     print("""
@@ -442,6 +550,7 @@ def demo_onnx_inference():
     └──────────────────┴───────────────────────────────────────────────┘
     """)
     
+    # Conditional statement - eksekusi jika kondisi True
     if not ONNXRUNTIME_AVAILABLE:
         print("\n[WARNING] ONNX Runtime tidak tersedia")
         print("[INFO] Install dengan: pip install onnxruntime")
@@ -451,11 +560,15 @@ def demo_onnx_inference():
     # Check for existing ONNX model or create synthetic
     onnx_path = "simple_classifier.onnx"
     
+    # Conditional statement - eksekusi jika kondisi True
     if not os.path.exists(onnx_path):
+        # Conditional statement - eksekusi jika kondisi True
         if TORCH_AVAILABLE and ONNX_AVAILABLE:
+            # Iterasi/loop melalui elemen dalam koleksi
             print("\n[INFO] Creating ONNX model for demo...")
             demo_pytorch_to_onnx()
         else:
+            # Iterasi/loop melalui elemen dalam koleksi
             print("\n[WARNING] No ONNX model available for inference demo")
             print("[INFO] Create a model first using demo_pytorch_to_onnx()")
             return
@@ -471,10 +584,14 @@ def demo_onnx_inference():
     
     # Get input/output info
     input_name = session.get_inputs()[0].name
+    # Assignment - set nilai ke variabel
     input_shape = session.get_inputs()[0].shape
+    # Assignment - set nilai ke variabel
     input_type = session.get_inputs()[0].type
     
+    # Assignment - set nilai ke variabel
     output_name = session.get_outputs()[0].name
+    # Assignment - set nilai ke variabel
     output_shape = session.get_outputs()[0].shape
     
     print(f"\n[INFO] Input: {input_name}")
@@ -488,8 +605,10 @@ def demo_onnx_inference():
     batch_size = 1
     # Determine input size (handle dynamic batch)
     if isinstance(input_shape[0], str) or input_shape[0] is None:
+        # Assignment - set nilai ke variabel
         input_shape = [batch_size] + list(input_shape[1:])
     
+    # Assignment - set nilai ke variabel
     test_input = np.random.randn(*input_shape).astype(np.float32)
     print(f"\n[INFO] Test input shape: {test_input.shape}")
     
@@ -498,18 +617,25 @@ def demo_onnx_inference():
     
     # Warmup
     for _ in range(3):
+        # Assignment - set nilai ke variabel
         _ = session.run([output_name], {input_name: test_input})
     
     # Benchmark
     num_runs = 100
+    # Assignment - set nilai ke variabel
     times = []
     
+    # Iterasi/loop melalui elemen dalam koleksi
     for _ in range(num_runs):
+        # Assignment - set nilai ke variabel
         start = time.time()
+        # Assignment - set nilai ke variabel
         outputs = session.run([output_name], {input_name: test_input})
         times.append(time.time() - start)
     
+    # Hitung rata-rata dari array
     avg_time = np.mean(times) * 1000
+    # Hitung standard deviation dari array
     std_time = np.std(times) * 1000
     
     print(f"\n[BENCHMARK RESULTS]")
@@ -524,28 +650,40 @@ def demo_onnx_inference():
     # Batch inference demo
     print("\n[INFO] Testing batch inference...")
     
+    # Assignment - set nilai ke variabel
     batch_sizes = [1, 2, 4, 8, 16]
     
+    # Iterasi/loop melalui elemen dalam koleksi
     for bs in batch_sizes:
+        # Blok try-except untuk error handling
         try:
+            # Assignment - set nilai ke variabel
             batch_input = np.random.randn(bs, *input_shape[1:]).astype(np.float32)
             
+            # Assignment - set nilai ke variabel
             start = time.time()
+            # Iterasi/loop melalui elemen dalam koleksi
             for _ in range(10):
+                # Assignment - set nilai ke variabel
                 _ = session.run([output_name], {input_name: batch_input})
+            # Assignment - set nilai ke variabel
             avg_time = (time.time() - start) / 10 * 1000
             
             print(f"  Batch size {bs:2d}: {avg_time:.2f} ms ({bs*1000/avg_time:.1f} samples/sec)")
+        # Tangkap exception jika ada error di blok try
         except Exception as e:
             print(f"  Batch size {bs:2d}: Failed - {e}")
 
 
+# Definisi function dengan nama dan parameter
 def demo_onnx_optimization():
     """
     Demonstrasi optimasi model ONNX.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("ONNX MODEL OPTIMIZATION")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
     print("""
@@ -579,17 +717,23 @@ def demo_onnx_optimization():
     
     4. HARDWARE-SPECIFIC
        ──────────────────
+       # Iterasi/loop melalui elemen dalam koleksi
        - TensorRT for NVIDIA GPU
+       # Iterasi/loop melalui elemen dalam koleksi
        - OpenVINO for Intel
+       # Iterasi/loop melalui elemen dalam koleksi
        - CoreML for Apple
     """)
     
+    # Conditional statement - eksekusi jika kondisi True
     if not ONNXRUNTIME_AVAILABLE:
         print("\n[WARNING] ONNX Runtime tidak tersedia untuk demo optimisasi")
         return
     
+    # Assignment - set nilai ke variabel
     onnx_path = "simple_classifier.onnx"
     
+    # Conditional statement - eksekusi jika kondisi True
     if not os.path.exists(onnx_path):
         print(f"\n[WARNING] {onnx_path} tidak ditemukan")
         print("[INFO] Jalankan demo_pytorch_to_onnx() terlebih dahulu")
@@ -605,42 +749,55 @@ def demo_onnx_optimization():
         ('All', ort.GraphOptimizationLevel.ORT_ENABLE_ALL),
     ]
     
+    # Assignment - set nilai ke variabel
     results = []
     
+    # Iterasi/loop melalui elemen dalam koleksi
     for name, level in opt_levels:
         # Create session options
         sess_options = ort.SessionOptions()
+        # Assignment - set nilai ke variabel
         sess_options.graph_optimization_level = level
         
         # Create session
         session = ort.InferenceSession(
             onnx_path, 
             sess_options,
+            # Assignment - set nilai ke variabel
             providers=['CPUExecutionProvider']
         )
         
         # Get input info
         input_name = session.get_inputs()[0].name
+        # Assignment - set nilai ke variabel
         input_shape = session.get_inputs()[0].shape
+        # Assignment - set nilai ke variabel
         output_name = session.get_outputs()[0].name
         
         # Handle dynamic batch
         if isinstance(input_shape[0], str) or input_shape[0] is None:
+            # Assignment - set nilai ke variabel
             input_shape = [1] + list(input_shape[1:])
         
+        # Assignment - set nilai ke variabel
         test_input = np.random.randn(*input_shape).astype(np.float32)
         
         # Warmup
         for _ in range(5):
+            # Assignment - set nilai ke variabel
             _ = session.run([output_name], {input_name: test_input})
         
         # Benchmark
         times = []
+        # Iterasi/loop melalui elemen dalam koleksi
         for _ in range(50):
+            # Assignment - set nilai ke variabel
             start = time.time()
+            # Assignment - set nilai ke variabel
             _ = session.run([output_name], {input_name: test_input})
             times.append(time.time() - start)
         
+        # Hitung rata-rata dari array
         avg_time = np.mean(times) * 1000
         results.append((name, avg_time))
         
@@ -653,39 +810,57 @@ def demo_onnx_optimization():
     from onnxruntime.quantization import quantize_dynamic, QuantType
     
     quantize_dynamic(
+        # Assignment - set nilai ke variabel
         model_input='model.onnx',
+        # Assignment - set nilai ke variabel
         model_output='model_quantized.onnx',
+        # Assignment - set nilai ke variabel
         weight_type=QuantType.QUInt8
     )
     
     # Static quantization (better accuracy, needs calibration data)
     from onnxruntime.quantization import quantize_static, CalibrationDataReader
     
+    # Definisi class untuk membuat object
     class MyCalibrationDataReader(CalibrationDataReader):
+        # Definisi function dengan nama dan parameter
         def __init__(self, calibration_data):
+            # Assignment - set nilai ke variabel
             self.data = calibration_data
+            # Assignment - set nilai ke variabel
             self.iter = iter(self.data)
         
+        # Definisi function dengan nama dan parameter
         def get_next(self):
+            # Blok try-except untuk error handling
             try:
+                # Return value dari function
                 return {'input': next(self.iter)}
+            # Tangkap exception jika ada error di blok try
             except StopIteration:
+                # Return value dari function
                 return None
     
     quantize_static(
+        # Assignment - set nilai ke variabel
         model_input='model.onnx',
+        # Assignment - set nilai ke variabel
         model_output='model_static_quantized.onnx',
+        # Assignment - set nilai ke variabel
         calibration_data_reader=MyCalibrationDataReader(data)
     )
     """)
 
 
+# Definisi function dengan nama dan parameter
 def demo_onnx_visualization():
     """
     Demonstrasi visualisasi model ONNX.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("ONNX MODEL VISUALIZATION")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
     print("""
@@ -710,12 +885,15 @@ def demo_onnx_visualization():
        - Visualize graph
     """)
     
+    # Conditional statement - eksekusi jika kondisi True
     if not ONNX_AVAILABLE:
         print("\n[WARNING] ONNX tidak tersedia untuk analisis model")
         return
     
+    # Assignment - set nilai ke variabel
     onnx_path = "simple_classifier.onnx"
     
+    # Conditional statement - eksekusi jika kondisi True
     if not os.path.exists(onnx_path):
         print(f"\n[WARNING] {onnx_path} tidak ditemukan")
         return
@@ -733,25 +911,36 @@ def demo_onnx_visualization():
     
     # Inputs
     print("\n[INPUTS]")
+    # Iterasi/loop melalui elemen dalam koleksi
     for input in model.graph.input:
+        # Conditional statement - eksekusi jika kondisi True
         shape = [d.dim_value if d.dim_value else d.dim_param 
+                 # Iterasi/loop melalui elemen dalam koleksi
                  for d in input.type.tensor_type.shape.dim]
         print(f"  {input.name}: {shape}")
     
     # Outputs
     print("\n[OUTPUTS]")
+    # Iterasi/loop melalui elemen dalam koleksi
     for output in model.graph.output:
+        # Conditional statement - eksekusi jika kondisi True
         shape = [d.dim_value if d.dim_value else d.dim_param
+                 # Iterasi/loop melalui elemen dalam koleksi
                  for d in output.type.tensor_type.shape.dim]
         print(f"  {output.name}: {shape}")
     
     # Count operators
     print("\n[OPERATORS]")
+    # Assignment - set nilai ke variabel
     op_counts = {}
+    # Iterasi/loop melalui elemen dalam koleksi
     for node in model.graph.node:
+        # Assignment - set nilai ke variabel
         op_type = node.op_type
+        # Assignment - set nilai ke variabel
         op_counts[op_type] = op_counts.get(op_type, 0) + 1
     
+    # Iterasi/loop melalui elemen dalam koleksi
     for op, count in sorted(op_counts.items()):
         print(f"  {op}: {count}")
     
@@ -760,16 +949,24 @@ def demo_onnx_visualization():
     # Count parameters
     total_params = 0
     print("\n[INITIALIZERS (Weights)]")
+    # Iterasi/loop melalui elemen dalam koleksi
     for init in model.graph.initializer[:5]:  # Show first 5
+        # Assignment - set nilai ke variabel
         arr = numpy_helper.to_array(init)
+        # Assignment - set nilai ke variabel
         params = arr.size
+        # Assignment - set nilai ke variabel
         total_params += params
         print(f"  {init.name}: {arr.shape} ({params:,} params)")
     
+    # Conditional statement - eksekusi jika kondisi True
     if len(model.graph.initializer) > 5:
         print(f"  ... and {len(model.graph.initializer) - 5} more")
+        # Iterasi/loop melalui elemen dalam koleksi
         for init in model.graph.initializer[5:]:
+            # Assignment - set nilai ke variabel
             arr = numpy_helper.to_array(init)
+            # Assignment - set nilai ke variabel
             total_params += arr.size
     
     print(f"\nTotal parameters: {total_params:,}")
@@ -779,16 +976,20 @@ def demo_onnx_visualization():
     print("  Option 1: Open https://netron.app/ and upload the file")
     print(f"  Option 2: Run 'netron {onnx_path}' in terminal")
     print("  Option 3: Import in Python:")
+    # Import library/module untuk digunakan
     print("    import netron")
     print(f"    netron.start('{onnx_path}')")
 
 
+# Definisi function dengan nama dan parameter
 def demo_deployment_patterns():
     """
     Demonstrasi pola deployment untuk ONNX models.
     """
+    # Assignment - set nilai ke variabel
     print("\n" + "="*70)
     print("DEPLOYMENT PATTERNS")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
     print("""
@@ -808,17 +1009,26 @@ def demo_deployment_patterns():
        
        Example (FastAPI):
        ```python
+       # Import library/module untuk digunakan
        from fastapi import FastAPI
+       # Import library/module untuk digunakan
        import onnxruntime as ort
+       # Import library/module untuk digunakan
        import numpy as np
        
+       # Assignment - set nilai ke variabel
        app = FastAPI()
+       # Assignment - set nilai ke variabel
        session = ort.InferenceSession("model.onnx")
        
        @app.post("/predict")
+       # Definisi function dengan nama dan parameter
        async def predict(data: dict):
+           # Buat array numpy dari list/data
            input_data = np.array(data["input"]).astype(np.float32)
+           # Assignment - set nilai ke variabel
            output = session.run(None, {"input": input_data})
+           # Return value dari function
            return {"prediction": output[0].tolist()}
        ```
     
@@ -826,6 +1036,7 @@ def demo_deployment_patterns():
        ──────────────────────────────────────
        
        - Use lightweight models (MobileNet, EfficientNet-Lite)
+       # Iterasi/loop melalui elemen dalam koleksi
        - Quantize to INT8 for better performance
        - Consider ONNX Runtime Mobile or TensorFlow Lite
        
@@ -839,6 +1050,7 @@ def demo_deployment_patterns():
        
        iOS:
        - Convert ONNX → CoreML using coremltools
+       # Iterasi/loop melalui elemen dalam koleksi
        - Use Vision framework for preprocessing
        
        Android:
@@ -854,8 +1066,11 @@ def demo_deployment_patterns():
        
        ```javascript
        // ONNX Runtime Web
+       # Assignment - set nilai ke variabel
        const session = await ort.InferenceSession.create('model.onnx');
+       # Assignment - set nilai ke variabel
        const input = new ort.Tensor('float32', data, [1, 3, 224, 224]);
+       # Assignment - set nilai ke variabel
        const output = await session.run({ input: input });
        ```
     
@@ -872,6 +1087,7 @@ def demo_deployment_patterns():
     □ Error handling implemented
     □ Logging and monitoring set up
     □ Model versioning strategy defined
+    # Conditional statement - eksekusi jika kondisi True
     □ A/B testing framework ready (if needed)
     
     
@@ -884,16 +1100,19 @@ def demo_deployment_patterns():
        - Normalize inputs consistently
     
     2. BATCHING
+       # Iterasi/loop melalui elemen dalam koleksi
        - Implement request batching for throughput
        - Consider dynamic batching
     
     3. CACHING
        - Cache model in memory
+       # Iterasi/loop melalui elemen dalam koleksi
        - Consider prediction caching for common inputs
     
     4. MONITORING
        - Log inference times
        - Track prediction distribution
+       # Iterasi/loop melalui elemen dalam koleksi
        - Set up alerts for anomalies
     
     5. VERSIONING
@@ -903,14 +1122,18 @@ def demo_deployment_patterns():
     """)
 
 
+# Definisi function dengan nama dan parameter
 def main():
     """
     Fungsi utama program.
     """
+    # Assignment - set nilai ke variabel
     print("="*70)
     print("PRAKTIKUM ONNX EXPORT DAN DEPLOYMENT")
+    # Assignment - set nilai ke variabel
     print("="*70)
     
+    # Loop berulang selama kondisi bernilai True
     while True:
         print("\n" + "-"*50)
         print("MENU DEMONSTRASI:")
@@ -925,22 +1148,31 @@ def main():
         print("8. Jalankan Semua Demo")
         print("0. Keluar")
         
+        # Assignment - set nilai ke variabel
         choice = input("\nPilih menu (0-8): ").strip()
         
+        # Conditional statement - eksekusi jika kondisi True
         if choice == '1':
             demo_onnx_overview()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '2':
             demo_pytorch_to_onnx()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '3':
             demo_keras_to_onnx()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '4':
             demo_onnx_inference()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '5':
             demo_onnx_optimization()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '6':
             demo_onnx_visualization()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '7':
             demo_deployment_patterns()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '8':
             demo_onnx_overview()
             demo_pytorch_to_onnx()
@@ -949,6 +1181,7 @@ def main():
             demo_onnx_optimization()
             demo_onnx_visualization()
             demo_deployment_patterns()
+        # Conditional statement - eksekusi jika kondisi True
         elif choice == '0':
             print("\n[INFO] Program selesai.")
             break
@@ -956,5 +1189,6 @@ def main():
             print("[ERROR] Pilihan tidak valid!")
 
 
+# Conditional statement - eksekusi jika kondisi True
 if __name__ == "__main__":
     main()

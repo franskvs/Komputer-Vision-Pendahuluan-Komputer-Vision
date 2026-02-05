@@ -146,6 +146,17 @@ def compare_orb_sift(image_path):
     
     # Tambah label
     font = cv2.FONT_HERSHEY_SIMPLEX
+
+    # Penjelasan parameter cv2.putText:
+    # cv2.putText(image, text, org, fontFace, fontScale, color, thickness, lineType)
+    # - image: gambar target
+    # - text: teks yang akan ditulis
+    # - org: posisi (x, y) kiri-bawah teks
+    # - fontFace: jenis font
+    # - fontScale: skala ukuran font
+    # - color: warna (BGR)
+    # - thickness: ketebalan teks
+    # - lineType: tipe garis (opsional)
     cv2.putText(result_orb, f"ORB: {len(kp_orb)} kp, {time_orb:.1f}ms", 
                 (10, 30), font, 0.7, (0, 255, 255), 2)
     cv2.putText(result_sift, f"SIFT: {len(kp_sift)} kp, {time_sift:.1f}ms", 

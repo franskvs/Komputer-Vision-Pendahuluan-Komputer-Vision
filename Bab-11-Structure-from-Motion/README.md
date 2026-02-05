@@ -46,6 +46,10 @@ Bab-11-Structure-from-Motion/
 │   ├── 05_visual_odometry.py
 │   ├── 06_bundle_adjustment.py
 │   ├── 07_simple_slam.py
+│   ├── 08_vanishing_points_calibration.py
+│   ├── 09_pnp_pose_estimation.py
+│   ├── 10_radial_distortion_plumbline.py
+│   ├── 11_tomasi_kanade_factorization.py
 │   ├── download_sample_data.py       ← Utility: download data
 │   ├── test_all_programs.py          ← Utility: automated testing
 │   ├── data/images/                  ← Sample images
@@ -93,6 +97,22 @@ Bab-11-Structure-from-Motion/
 - Simultaneous Localization and Mapping
 - Keyframe-based approach
 - Aplikasi: AR/VR, autonomous robots
+
+### 8. Vanishing Points Calibration
+- Estimasi focal length dari titik hilang ortogonal
+- Aplikasi: Kalibrasi kamera arsitektur
+
+### 9. PnP Pose Estimation
+- Estimasi pose kamera dari korespondensi 3D-2D
+- Aplikasi: AR marker tracking
+
+### 10. Radial Distortion
+- Estimasi distorsi lensa (k1)
+- Aplikasi: Koreksi lensa wide-angle
+
+### 11. Tomasi-Kanade Factorization
+- Rekonstruksi 3D dari multi-frame orthographic
+- Aplikasi: Inisialisasi SfM
 
 ---
 

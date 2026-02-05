@@ -305,13 +305,15 @@ def main():
                 # good_old: posisi lama yang berhasil di-track
                 good_old = prev_pts[status.flatten() == 1]
                 
-                # Update tracks
-                track_idx = 0
+                # Update track histories: tambahkan posisi baru ke history
+                track_idx = 0  # Index untuk good points
                 for i, st in enumerate(status.flatten()):
-                    if st == 1 and track_idx < len(good_new):
+                    if st == 1 and track_idx < len(good_new):  # Jika tracking berhasil
+                        # Tambahkan posisi baru ke track history
                         tracks[i].append(good_new[track_idx].ravel())
-                        # Limit track length
+                        # Batasi panjang track agar tidak terlalu panjang (hemat memori)
                         if len(tracks[i]) > TRACK_LENGTH:
+                            # Ambil hanya TRACK_LENGTH terakhir
                             tracks[i] = tracks[i][-TRACK_LENGTH:]
                         track_idx += 1
                 
@@ -367,19 +369,24 @@ def main():
         key = cv2.waitKey(1 if using_webcam else 30) & 0xFF
         
         # Handle keyboard input
+        # Handle keyboard input
         if key == ord('q'):  # Tekan 'q' untuk quit
             break
-        elif key == ord('r'):
-            # Reset features
+        elif key == ord('r'):  # Tekan 'r' untuk reset (deteksi ulang features)
+            # Deteksi ulang features pada frame saat ini
             prev_pts = detect_features(curr_gray)
+            # Reset semua track histories
             tracks = [[] for _ in range(MAX_CORNERS)]
+            # Inisialisasi tracks dengan features baru
             if prev_pts is not None:
                 for i, pt in enumerate(prev_pts):
                     if i < len(tracks):
                         tracks[i].append(pt.ravel())
             print(f"Reset: detected {len(prev_pts) if prev_pts is not None else 0} features")
-        elif key == ord('s'):
+        elif key == ord('s'):  # Tekan 's' untuk save screenshot
+            # Buat nama file dengan nomor frame
             screenshot_path = os.path.join(OUTPUT_DIR, f"01_screenshot_{frame_count}.png")
+            # cv2.imwrite: Simpan frame ke file image
             cv2.imwrite(screenshot_path, vis_frame)
             print(f"Saved: {screenshot_path}")
         

@@ -174,6 +174,17 @@ def compare_scale_invariance(image_path):
     
     # Tambah label
     font = cv2.FONT_HERSHEY_SIMPLEX
+
+    # Penjelasan parameter cv2.putText:
+    # cv2.putText(image, text, org, fontFace, fontScale, color, thickness, lineType)
+    # - image: gambar target
+    # - text: teks yang akan ditulis
+    # - org: posisi (x, y) kiri-bawah teks
+    # - fontFace: jenis font
+    # - fontScale: skala ukuran font
+    # - color: warna (BGR)
+    # - thickness: ketebalan teks
+    # - lineType: tipe garis (opsional)
     cv2.putText(result1, f"Original: {len(kp1)} kp", (10, 30), font, 0.7, (0, 255, 255), 2)
     cv2.putText(result2, f"Scaled 50%: {len(kp2)} kp", (10, 30), font, 0.7, (0, 255, 255), 2)
     cv2.putText(result3, f"Rotated 45°: {len(kp3)} kp", (10, 30), font, 0.7, (0, 255, 255), 2)

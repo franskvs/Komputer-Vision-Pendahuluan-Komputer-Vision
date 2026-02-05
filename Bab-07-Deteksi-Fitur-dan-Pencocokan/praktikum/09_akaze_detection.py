@@ -26,6 +26,10 @@ PARAMETER YANG BISA DIUBAH (Silakan eksperimen!)
 # Nilai kecil = lebih banyak keypoint
 AKAZE_THRESHOLD = 0.001  # Coba ubah: 0.0005, 0.001, 0.005
 
+# Gunakan mode aman (default AKAZE) untuk stabilitas
+# True = gunakan parameter default OpenCV
+USE_SAFE_DEFAULTS = True
+
 # Ukuran descriptor (0 = default)
 DESCRIPTOR_SIZE = 0  # Coba ubah: 0, 64, 128
 
@@ -59,11 +63,15 @@ def akaze_detection(image_path):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # Buat AKAZE detector
-    akaze = cv2.AKAZE_create(
-        descriptor_type=DESCRIPTOR_TYPE,
-        descriptor_size=DESCRIPTOR_SIZE,
-        threshold=AKAZE_THRESHOLD
-    )
+    # Mode aman: gunakan parameter default OpenCV
+    if USE_SAFE_DEFAULTS:
+        akaze = cv2.AKAZE_create()
+    else:
+        akaze = cv2.AKAZE_create(
+            descriptor_type=DESCRIPTOR_TYPE,
+            descriptor_size=DESCRIPTOR_SIZE,
+            threshold=AKAZE_THRESHOLD
+        )
 
     # Mulai timing
     start_time = time.time()
@@ -90,6 +98,7 @@ def main():
 
     # Print parameter yang digunakan
     print("Parameter yang digunakan:")
+    print(f"  - Safe Defaults: {USE_SAFE_DEFAULTS}")
     print(f"  - AKAZE Threshold: {AKAZE_THRESHOLD}")
     print(f"  - Descriptor Size: {DESCRIPTOR_SIZE}")
     print(f"  - Descriptor Type: {DESCRIPTOR_TYPE}")

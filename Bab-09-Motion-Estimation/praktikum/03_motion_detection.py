@@ -81,18 +81,28 @@ def create_background_subtractor(method):
         bg_subtractor: Object background subtractor
     """
     if method == 'MOG2':
+        # cv2.createBackgroundSubtractorMOG2: Mixture of Gaussians adaptive method
+        # Parameter:
+        # - history: jumlah frame untuk membangun model background
+        # - varThreshold: threshold untuk mahalanobis distance (deteksi foreground)
+        # - detectShadows: True = deteksi dan tandai shadow (nilai 127 di mask)
         return cv2.createBackgroundSubtractorMOG2(
             history=500,
             varThreshold=16,
             detectShadows=True
         )
     elif method == 'KNN':
+        # cv2.createBackgroundSubtractorKNN: K-Nearest Neighbors method
+        # Parameter:
+        # - history: jumlah frame untuk membangun model
+        # - dist2Threshold: threshold squared distance untuk deteksi foreground
+        # - detectShadows: deteksi shadow
         return cv2.createBackgroundSubtractorKNN(
             history=500,
             dist2Threshold=400.0,
             detectShadows=True
         )
-    else:  # DIFF - akan ditangani secara manual
+    else:  # DIFF - frame differencing manual (tidak ada object subtractor)
         return None
 
 def apply_morphology(mask):
@@ -105,15 +115,20 @@ def apply_morphology(mask):
     Returns:
         cleaned: Cleaned mask
     """
+    # cv2.getStructuringElement: Buat kernel ellipse untuk morphological operations
+    # MORPH_ELLIPSE: bentuk elips, lebih smooth dibanding rectangle
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (KERNEL_SIZE, KERNEL_SIZE))
     
-    # Opening untuk menghilangkan noise kecil
+    # cv2.morphologyEx MORPH_OPEN: erosi kemudian dilasi
+    # Menghilangkan noise kecil (white dots) di foreground
     cleaned = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     
-    # Closing untuk mengisi lubang
+    # cv2.morphologyEx MORPH_CLOSE: dilasi kemudian erosi
+    # Mengisi lubang kecil (black holes) di dalam objek foreground
     cleaned = cv2.morphologyEx(cleaned, cv2.MORPH_CLOSE, kernel)
     
-    # Dilate sedikit untuk memperbesar region
+    # cv2.dilate: Perlebar region foreground sedikit
+    # iterations=2: lakukan dilasi 2 kali untuk memperbesar deteksi
     cleaned = cv2.dilate(cleaned, kernel, iterations=2)
     
     return cleaned
@@ -128,14 +143,22 @@ def find_moving_objects(mask):
     Returns:
         objects: List of (x, y, w, h, area) untuk setiap objek
     """
+    # cv2.findContours: Temukan kontur (outline) dari objek di mask
+    # Parameter:
+    # - mask: binary image (255=foreground, 0=background)
+    # - RETR_EXTERNAL: hanya ambil kontur terluar (ignore holes)
+    # - CHAIN_APPROX_SIMPLE: compress kontur (hanya simpan endpoint)
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    objects = []
+    objects = []  # List untuk menyimpan objek yang terdeteksi
     for contour in contours:
+        # cv2.contourArea: Hitung luas area kontur
         area = cv2.contourArea(contour)
+        # Filter: hanya ambil objek dengan area >= MIN_AREA (buang noise kecil)
         if area >= MIN_AREA:
+            # cv2.boundingRect: Dapatkan bounding box (x,y,w,h) dari kontur
             x, y, w, h = cv2.boundingRect(contour)
-            objects.append((x, y, w, h, area))
+            objects.append((x, y, w, h, area))  # Simpan info objek
     
     return objects
 
@@ -151,19 +174,24 @@ def draw_detections(frame, objects, mask):
     Returns:
         output: Frame dengan visualisasi
     """
-    output = frame.copy()
+    output = frame.copy()  # Copy frame agar asli tidak berubah
     
-    # Draw bounding boxes
+    # Gambar bounding box untuk setiap objek terdeteksi
     for (x, y, w, h, area) in objects:
+        # cv2.rectangle: Gambar kotak hijau di sekitar objek
+        # (x,y) = pojok kiri atas, (x+w, y+h) = pojok kanan bawah
         cv2.rectangle(output, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # Tampilkan area objek di atas bounding box
         cv2.putText(output, f"Area: {area}", (x, y - 10),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
     
-    # Create colored mask overlay
-    mask_colored = np.zeros_like(frame)
-    mask_colored[:, :, 1] = mask  # Green channel
+    # Buat colored mask overlay untuk visualisasi foreground
+    mask_colored = np.zeros_like(frame)  # Array kosong seperti frame
+    mask_colored[:, :, 1] = mask  # Set green channel dengan mask (hijau = foreground)
     
-    # Blend with original
+    # cv2.addWeighted: Blend frame asli dengan mask colored (transparency)
+    # Formula: output = frame*1.0 + mask_colored*0.3 + 0
+    # 0.3 = alpha transparency (30% mask, 70% frame)
     output = cv2.addWeighted(output, 1.0, mask_colored, 0.3, 0)
     
     return output
@@ -180,7 +208,11 @@ def frame_differencing(prev_frame, curr_frame, threshold=DIFF_THRESHOLD):
     Returns:
         mask: Binary motion mask
     """
+    # cv2.absdiff: Hitung absolute difference antara dua frame
+    # |prev_frame - curr_frame| = deteksi pixel yang berubah
     diff = cv2.absdiff(prev_frame, curr_frame)
+    # cv2.threshold: Binarisasi difference image
+    # Pixel > threshold = 255 (motion), sisanya = 0 (static)
     _, mask = cv2.threshold(diff, threshold, 255, cv2.THRESH_BINARY)
     return mask
 
@@ -248,32 +280,39 @@ def main():
                 continue
             break
         
+        # Konversi ke grayscale untuk frame differencing
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         
-        # Apply background subtraction
+        # Aplikasikan metode background subtraction sesuai pilihan
         if current_method == 'DIFF':
+            # Frame differencing: bandingkan frame sekarang dengan sebelumnya
             if prev_gray is not None:
                 fg_mask = frame_differencing(prev_gray, gray)
             else:
+                # Frame pertama: mask kosong
                 fg_mask = np.zeros_like(gray)
-            prev_gray = gray.copy()
+            prev_gray = gray.copy()  # Simpan untuk iterasi berikutnya
         else:
+            # MOG2/KNN: apply adaptive background subtractor
+            # learningRate: rate adaptasi background model (0=static, 1=full update)
             fg_mask = bg_subtractor.apply(frame, learningRate=LEARNING_RATE)
             
-            # Remove shadow pixels (127 in MOG2/KNN)
+            # Hapus shadow pixels (nilai 127 di MOG2/KNN)
+            # Shadow bukan foreground sebenarnya, set ke 0 (background)
             fg_mask[fg_mask == 127] = 0
         
         # Clean mask
         clean_mask = apply_morphology(fg_mask)
         
-        # Find objects
+        # Temukan objek bergerak dari mask yang sudah dibersihkan
         objects = find_moving_objects(clean_mask)
-        total_detections += len(objects)
+        total_detections += len(objects)  # Akumulasi jumlah deteksi
         
-        # Calculate motion percentage
-        motion_pixels = np.sum(clean_mask > 0)
-        total_pixels = clean_mask.shape[0] * clean_mask.shape[1]
+        # Hitung persentase motion di frame (untuk statistik)
+        motion_pixels = np.sum(clean_mask > 0)  # Jumlah pixel foreground
+        total_pixels = clean_mask.shape[0] * clean_mask.shape[1]  # Total pixel
         motion_percentage = (motion_pixels / total_pixels) * 100
+        # Simpan ke deque (circular buffer, max 100 entry)
         motion_history.append(motion_percentage)
         
         # Draw

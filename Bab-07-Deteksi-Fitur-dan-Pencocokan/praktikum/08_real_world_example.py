@@ -166,6 +166,17 @@ def create_demo_document():
     
     # Tambah teks
     font = cv2.FONT_HERSHEY_SIMPLEX
+
+    # Penjelasan parameter cv2.putText:
+    # cv2.putText(image, text, org, fontFace, fontScale, color, thickness, lineType)
+    # - image: gambar target
+    # - text: teks yang akan ditulis
+    # - org: posisi (x, y) kiri-bawah teks
+    # - fontFace: jenis font
+    # - fontScale: skala ukuran font
+    # - color: warna (BGR)
+    # - thickness: ketebalan teks
+    # - lineType: tipe garis (opsional)
     cv2.putText(canvas, "DEMO DOCUMENT", (150, 100), font, 2, (0, 0, 0), 3)
     cv2.putText(canvas, "Document Scanner Test", (200, 200), font, 1, (0, 0, 0), 2)
     cv2.putText(canvas, "This is a sample document", (150, 300), font, 0.8, (100, 100, 100), 2)

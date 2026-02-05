@@ -59,6 +59,30 @@ python3 07_simple_slam.py
 ```
 **Output**: SLAM map dan trajectory
 
+#### Program 8: Vanishing Points Calibration (3 detik)
+```bash
+python3 08_vanishing_points_calibration.py
+```
+**Output**: Visualisasi titik hilang dan estimasi focal length
+
+#### Program 9: PnP Pose Estimation (3 detik)
+```bash
+python3 09_pnp_pose_estimation.py
+```
+**Output**: Pose kamera dan reprojection error
+
+#### Program 10: Radial Distortion Plumb-Line (3 detik)
+```bash
+python3 10_radial_distortion_plumbline.py
+```
+**Output**: Distorsi radial dan hasil undistorsi
+
+#### Program 11: Tomasi-Kanade Factorization (3 detik)
+```bash
+python3 11_tomasi_kanade_factorization.py
+```
+**Output**: Rekonstruksi 3D dari multi-frame
+
 ### 3. Lihat Hasil
 
 ```bash
@@ -87,7 +111,12 @@ Bab-11-Structure-from-Motion/
 │   ├── 05_visual_odometry.py
 │   ├── 06_bundle_adjustment.py
 │   ├── 07_simple_slam.py
+│   ├── 08_vanishing_points_calibration.py
+│   ├── 09_pnp_pose_estimation.py
+│   ├── 10_radial_distortion_plumbline.py
+│   ├── 11_tomasi_kanade_factorization.py
 │   ├── download_sample_data.py
+│   ├── test_all_programs.py
 │   ├── test_all_programs.py
 │   ├── data/
 │   │   └── images/          ← Sample images

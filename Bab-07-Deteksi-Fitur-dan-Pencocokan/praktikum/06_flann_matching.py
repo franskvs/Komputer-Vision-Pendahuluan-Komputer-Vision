@@ -232,6 +232,17 @@ def compare_bf_vs_flann(img1_path, img2_path):
     
     # Tambah label
     font = cv2.FONT_HERSHEY_SIMPLEX
+
+    # Penjelasan parameter cv2.putText:
+    # cv2.putText(image, text, org, fontFace, fontScale, color, thickness, lineType)
+    # - image: gambar target
+    # - text: teks yang akan ditulis
+    # - org: posisi (x, y) kiri-bawah teks
+    # - fontFace: jenis font
+    # - fontScale: skala ukuran font
+    # - color: warna (BGR)
+    # - thickness: ketebalan teks
+    # - lineType: tipe garis (opsional)
     cv2.putText(result_bf, f"BF: {len(good_bf)} matches, {time_bf:.1f}ms", 
                 (10, 30), font, 0.8, (0, 255, 255), 2)
     cv2.putText(result_flann, f"FLANN: {len(good_flann)} matches, {time_flann:.1f}ms", 

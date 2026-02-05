@@ -164,24 +164,20 @@ def straightness_score(img):
 # Fungsi untuk mencari k1 terbaik dengan grid search
 
 def estimate_k1_plumbline(distorted_img, k1_candidates):
-    # Inisialisasi best k1
-    best_k1 = None
-    # Inisialisasi best score
-    best_score = 1e9
-    # Ambil ukuran image
-    h, w = distorted_img.shape[:2]
-    # Hitung center
-    cx, cy = w / 2.0, h / 2.0
+    # Inisialisasi best k1 dengan kandidat pertama
+    best_k1 = float(k1_candidates[0])
+    # Inisialisasi best score dengan nilai besar
+    best_score = 1e12
     # Loop kandidat k1
     for k1 in k1_candidates:
         # Undistort dengan k1 kandidat (inverse kira-kira)
         undistorted = distort_image(distorted_img, -k1)
         # Hitung straightness score
         score = straightness_score(undistorted)
-        # Update best jika lebih kecil
-        if score < best_score:
+        # Update best jika lebih kecil atau sama
+        if score <= best_score:
             best_score = score
-            best_k1 = k1
+            best_k1 = float(k1)
     # Kembalikan best k1
     return best_k1
 

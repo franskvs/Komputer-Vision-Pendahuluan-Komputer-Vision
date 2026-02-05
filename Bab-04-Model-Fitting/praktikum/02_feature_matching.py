@@ -101,6 +101,7 @@ def buat_gambar_sample_pair():
             if (i + j) % 2 == 0:
                 cv2.rectangle(gambar1, (x, y), (x+25, y+25), (255, 255, 255), -1)
     
+    # cv2.putText(a,b,c,d,e,f,g): a=img, b=teks, c=posisi(x,y), d=font, e=skala, f=warna, g=ketebalan
     cv2.putText(gambar1, "QUERY", (150, 280), 
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
     
@@ -116,6 +117,7 @@ def buat_gambar_sample_pair():
     
     # Ubah text
     cv2.rectangle(gambar2, (100, 250), (250, 290), (50, 50, 50), -1)
+    # cv2.putText(a,b,c,d,e,f,g): a=img, b=teks, c=posisi(x,y), d=font, e=skala, f=warna, g=ketebalan
     cv2.putText(gambar2, "TRAIN", (150, 280), 
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
     

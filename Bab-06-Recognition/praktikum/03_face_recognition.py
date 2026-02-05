@@ -1,203 +1,206 @@
 """
-=============================================================================
-PRAKTIKUM 03 - FACE RECOGNITION
-=============================================================================
-Program ini mendemonstrasikan Face Recognition menggunakan berbagai metode.
+Praktikum Computer Vision - Bab 06 (Recognition)
+Program 03: Face Recognition (Embedding + Matching)
 
-Konsep yang dipelajari:
-1. Face embedding dan face encoding
-2. Perbandingan wajah dengan distance metrics
-3. Face database management
-4. One-shot learning untuk face recognition
-
-Face Recognition vs Face Detection:
-- Detection: Menemukan LOKASI wajah dalam gambar
-- Recognition: MENGIDENTIFIKASI siapa wajah tersebut
-
-Kebutuhan:
-- opencv-python >= 4.8.0
-- numpy
-- face_recognition (optional, untuk embedding)
-- dlib (optional, untuk landmark)
-
-Author: [Nama Mahasiswa]
-NIM: [NIM Mahasiswa]
-Tanggal: [Tanggal Praktikum]
-=============================================================================
+Tujuan:
+1) Mengekstrak embedding wajah (face_recognition jika tersedia).
+2) Melakukan pencocokan wajah berbasis jarak (Euclidean/Cosine).
+3) Menyimpan hasil dengan auto-close 2 detik.
 """
 
+# Import OpenCV untuk operasi citra.
 import cv2
+# Import NumPy untuk operasi numerik.
 import numpy as np
-import os
+# Import Path untuk penanganan path file.
 from pathlib import Path
 
-# Check optional libraries
-FACE_RECOGNITION_AVAILABLE = False
+# Coba import face_recognition (opsional).
 try:
+    # Import face_recognition jika tersedia.
     import face_recognition
+    # Tandai bahwa library tersedia.
     FACE_RECOGNITION_AVAILABLE = True
-    print("[INFO] face_recognition library tersedia")
-except ImportError:
-    print("[WARNING] face_recognition tidak tersedia - menggunakan OpenCV")
+except Exception:
+    # Tandai bahwa library tidak tersedia.
+    FACE_RECOGNITION_AVAILABLE = False
 
 
-def print_face_recognition_concepts():
-    """
-    Menampilkan konsep Face Recognition.
-    """
-    print("\n" + "="*70)
-    print("KONSEP FACE RECOGNITION")
-    print("="*70)
-    
-    print("""
-    [FACE RECOGNITION PIPELINE]
-    ─────────────────────────────────────────────────────────────────────
-    
-    1. Face Detection
-       Input Image → Detect Faces → Bounding Boxes
-    
-    2. Face Alignment (Optional)
-       Cropped Face → Detect Landmarks → Align to Template
-    
-    3. Feature Extraction (Embedding)
-       Aligned Face → Deep Network → 128/512-dim Vector
-    
-    4. Face Matching
-       Query Embedding ←→ Database Embeddings → Similarity Score
-    
-    
-    [FACE EMBEDDING]
-    ─────────────────────────────────────────────────────────────────────
-    
-    Face Embedding adalah representasi numerik wajah dalam vector space.
-    
-    Karakteristik embedding yang baik:
-    - Wajah orang SAMA → Vector DEKAT (low distance)
-    - Wajah orang BEDA → Vector JAUH (high distance)
-    
-    ┌─────────────┐     Deep CNN      ┌─────────────┐
-    │  Face Image │ ───────────────→  │ 128-d Vector│
-    │  224×224×3  │    (FaceNet,      │ [0.1, 0.3,  │
-    │             │     ArcFace)      │  ..., 0.5]  │
-    └─────────────┘                   └─────────────┘
-    
-    
-    [DISTANCE METRICS]
-    ─────────────────────────────────────────────────────────────────────
-    
-    1. Euclidean Distance
-       d = √(Σ(ai - bi)²)
-       Threshold: ~0.6 untuk face_recognition library
-    
-    2. Cosine Similarity
-       sim = (a·b) / (||a|| × ||b||)
-       Range: [-1, 1], higher = more similar
-    
-    3. L2 Normalized Euclidean
-       Normalize vectors ke unit length, lalu Euclidean
-    
-    
-    [POPULAR FACE RECOGNITION MODELS]
-    ─────────────────────────────────────────────────────────────────────
-    
-    ┌─────────────────┬─────────────────┬─────────────────────────────┐
-    │ Model           │ Embedding Dim   │ Notes                        │
-    ├─────────────────┼─────────────────┼─────────────────────────────┤
-    │ FaceNet         │ 128             │ Google, triplet loss         │
-    │ ArcFace         │ 512             │ State-of-the-art accuracy    │
-    │ VGGFace         │ 2048/4096       │ VGG-based                    │
-    │ DeepFace        │ 4096            │ Facebook                     │
-    │ dlib (ResNet)   │ 128             │ Used by face_recognition lib │
-    └─────────────────┴─────────────────┴─────────────────────────────┘
-    """)
+def create_output_dir():
+    """Buat folder output hasil face recognition."""
+    # Tentukan folder output.
+    output_dir = Path("output_face_recognition")
+    # Buat folder jika belum ada.
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # Kembalikan path output.
+    return output_dir
 
 
-def create_sample_face_images():
-    """
-    Membuat sample face images untuk demonstrasi.
-    """
-    faces_dir = "sample_faces"
-    os.makedirs(faces_dir, exist_ok=True)
-    
-    # Buat beberapa sample synthetic faces
-    for i in range(3):
-        # Generate synthetic face-like image
-        img = np.ones((200, 200, 3), dtype=np.uint8) * 200
-        
-        # Add face-like features
-        center = (100, 100)
-        
-        # Face oval
-        cv2.ellipse(img, center, (60, 80), 0, 0, 360, (180, 160, 140), -1)
-        
-        # Eyes
-        eye_y = 80
-        cv2.ellipse(img, (70, eye_y), (15, 10), 0, 0, 360, (255, 255, 255), -1)
-        cv2.ellipse(img, (130, eye_y), (15, 10), 0, 0, 360, (255, 255, 255), -1)
-        cv2.circle(img, (70 + i*2, eye_y), 5, (50, 50, 50), -1)
-        cv2.circle(img, (130 + i*2, eye_y), 5, (50, 50, 50), -1)
-        
-        # Nose
-        pts = np.array([[100, 90], [90, 120], [110, 120]], np.int32)
-        cv2.fillPoly(img, [pts], (160, 140, 120))
-        
-        # Mouth
-        cv2.ellipse(img, (100, 145), (25, 10+i*3), 0, 0, 180, (150, 100, 100), -1)
-        
-        # Variation
-        if i == 1:
-            cv2.rectangle(img, (60, 50), (140, 65), (50, 30, 20), -1)  # Hair
-        elif i == 2:
-            cv2.rectangle(img, (55, 75), (80, 90), (100, 100, 100), 2)  # Glasses
-            cv2.rectangle(img, (120, 75), (145, 90), (100, 100, 100), 2)
-        
-        cv2.imwrite(os.path.join(faces_dir, f"person_{i+1}.jpg"), img)
-    
-    return faces_dir
+def load_face_images():
+    """Muat dua gambar wajah dari folder data atau buat sintetis."""
+    # Cari file pada folder data.
+    candidates = list(Path("data").glob("*.jpg")) + list(Path("data").glob("*.png"))
+    # Jika ada minimal dua gambar, gunakan dua pertama.
+    if len(candidates) >= 2:
+        # Baca gambar pertama.
+        img1 = cv2.imread(str(candidates[0]))
+        # Baca gambar kedua.
+        img2 = cv2.imread(str(candidates[1]))
+        # Kembalikan pasangan gambar.
+        return img1, img2
+    # Buat gambar sintetis jika data kurang.
+    img1 = np.ones((220, 220, 3), dtype=np.uint8) * 220
+    # Gambar wajah sintetis pertama.
+    cv2.ellipse(img1, (110, 120), (70, 90), 0, 0, 360, (200, 170, 140), -1)
+    # Tambahkan mata pada wajah pertama.
+    cv2.circle(img1, (80, 100), 12, (255, 255, 255), -1)
+    # Tambahkan mata kedua.
+    cv2.circle(img1, (140, 100), 12, (255, 255, 255), -1)
+    # Tambahkan pupil.
+    cv2.circle(img1, (80, 100), 5, (40, 40, 40), -1)
+    # Tambahkan pupil.
+    cv2.circle(img1, (140, 100), 5, (40, 40, 40), -1)
+    # Tambahkan mulut.
+    cv2.ellipse(img1, (110, 155), (35, 15), 0, 0, 180, (120, 80, 80), 2)
+    # Salin wajah pertama untuk kedua.
+    img2 = img1.copy()
+    # Tambahkan variasi kecil pada wajah kedua.
+    cv2.rectangle(img2, (70, 70), (150, 85), (60, 40, 30), -1)
+    # Kembalikan dua gambar sintetis.
+    return img1, img2
 
 
-def demo_face_recognition_opencv():
-    """
-    Demonstrasi face recognition menggunakan OpenCV's LBPH recognizer.
-    
-    LBPH = Local Binary Pattern Histograms
-    - Tidak memerlukan deep learning
-    - Cepat tapi kurang akurat
-    - Cocok untuk pembelajaran dasar
-    """
-    print("\n" + "="*70)
-    print("FACE RECOGNITION DENGAN OPENCV LBPH")
-    print("="*70)
-    
-    # Create sample faces
-    faces_dir = create_sample_face_images()
-    
-    print("\n[INFO] OpenCV Face Recognizers:")
-    print("  1. LBPH (Local Binary Pattern Histograms)")
-    print("  2. EigenFaces")
-    print("  3. FisherFaces")
-    
-    # Check if face module available
+def get_embedding_face_recognition(image):
+    """Ekstrak embedding menggunakan face_recognition jika tersedia."""
+    # Konversi BGR ke RGB untuk face_recognition.
+    rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    # Deteksi lokasi wajah.
+    locations = face_recognition.face_locations(rgb)
+    # Jika tidak ada wajah, kembalikan None.
+    if not locations:
+        return None
+    # Hitung embedding wajah.
+    encodings = face_recognition.face_encodings(rgb, locations)
+    # Kembalikan embedding pertama.
+    return encodings[0]
+
+
+def get_embedding_lbph(image):
+    """Ekstrak fitur sederhana menggunakan histogram LBP sebagai fallback."""
+    # Konversi ke grayscale.
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # Resize untuk konsistensi ukuran.
+    gray = cv2.resize(gray, (128, 128))
+    # Buat LBP sederhana (neighbor 8).
+    lbp = np.zeros_like(gray)
+    # Loop piksel pusat.
+    for y in range(1, gray.shape[0] - 1):
+        # Loop piksel pusat horizontal.
+        for x in range(1, gray.shape[1] - 1):
+            # Ambil nilai pusat.
+            center = gray[y, x]
+            # Buat nilai biner dari 8 tetangga.
+            code = 0
+            # Cek tetangga atas-kiri.
+            code |= (gray[y - 1, x - 1] >= center) << 7
+            # Cek tetangga atas.
+            code |= (gray[y - 1, x] >= center) << 6
+            # Cek tetangga atas-kanan.
+            code |= (gray[y - 1, x + 1] >= center) << 5
+            # Cek tetangga kanan.
+            code |= (gray[y, x + 1] >= center) << 4
+            # Cek tetangga bawah-kanan.
+            code |= (gray[y + 1, x + 1] >= center) << 3
+            # Cek tetangga bawah.
+            code |= (gray[y + 1, x] >= center) << 2
+            # Cek tetangga bawah-kiri.
+            code |= (gray[y + 1, x - 1] >= center) << 1
+            # Cek tetangga kiri.
+            code |= (gray[y, x - 1] >= center) << 0
+            # Simpan kode LBP.
+            lbp[y, x] = code
+    # Hitung histogram LBP sebagai embedding.
+    hist = cv2.calcHist([lbp], [0], None, [256], [0, 256]).flatten()
+    # Normalisasi histogram agar stabil.
+    hist = hist / (np.linalg.norm(hist) + 1e-6)
+    # Kembalikan embedding histogram.
+    return hist
+
+
+def compute_distances(vec1, vec2):
+    """Hitung jarak Euclidean dan Cosine antara dua embedding."""
+    # Hitung jarak Euclidean.
+    euclidean = float(np.linalg.norm(vec1 - vec2))
+    # Hitung cosine similarity.
+    cosine = float(np.dot(vec1, vec2) / ((np.linalg.norm(vec1) * np.linalg.norm(vec2)) + 1e-6))
+    # Kembalikan kedua metrik.
+    return euclidean, cosine
+
+
+def show_image(title, image, delay_ms=2000):
+    """Tampilkan gambar dan auto-close setelah delay tertentu."""
+    # Coba tampilkan jendela jika GUI tersedia.
     try:
-        # Create LBPH Face Recognizer
-        recognizer = cv2.face.LBPHFaceRecognizer_create(
-            radius=1,           # Radius untuk LBP operator
-            neighbors=8,        # Jumlah neighbors
-            grid_x=8,           # Grid cells horizontal
-            grid_y=8            # Grid cells vertical
-        )
-        print("\n[INFO] LBPH Recognizer created successfully")
-        
-    except AttributeError:
-        print("\n[WARNING] cv2.face module tidak tersedia")
-        print("[INFO] Install dengan: pip install opencv-contrib-python")
-        demo_face_recognition_simulation()
+        # Tampilkan gambar.
+        cv2.imshow(title, image)
+        # Tunggu beberapa milidetik.
+        cv2.waitKey(delay_ms)
+        # Tutup semua jendela.
+        cv2.destroyAllWindows()
+    except Exception:
+        # Abaikan jika display tidak tersedia.
+        pass
+
+
+def main():
+    """Fungsi utama untuk demo face recognition."""
+    # Muat dua gambar wajah.
+    img1, img2 = load_face_images()
+    # Pilih metode embedding.
+    if FACE_RECOGNITION_AVAILABLE:
+        # Ambil embedding dengan face_recognition.
+        emb1 = get_embedding_face_recognition(img1)
+        # Ambil embedding gambar kedua.
+        emb2 = get_embedding_face_recognition(img2)
+    else:
+        # Gunakan embedding LBP fallback.
+        emb1 = get_embedding_lbph(img1)
+        # Gunakan embedding LBP untuk gambar kedua.
+        emb2 = get_embedding_lbph(img2)
+    # Pastikan embedding tersedia.
+    if emb1 is None or emb2 is None:
+        # Informasikan jika embedding gagal.
+        print("Embedding wajah tidak ditemukan pada salah satu gambar.")
+        # Keluar dari program.
         return
-    
-    # Prepare training data
-    print("\n[STEP 1] Preparing training data...")
-    
-    faces = []
+    # Hitung jarak antar embedding.
+    euclidean, cosine = compute_distances(emb1, emb2)
+    # Buat anotasi pada gambar pertama.
+    cv2.putText(img1, "Face A", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 100, 0), 2)
+    # Buat anotasi pada gambar kedua.
+    cv2.putText(img2, "Face B", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 100, 0), 2)
+    # Buat kanvas gabungan.
+    combined = np.hstack((cv2.resize(img1, (220, 220)), cv2.resize(img2, (220, 220))))
+    # Tambahkan teks hasil jarak.
+    cv2.putText(combined, f"Euclidean: {euclidean:.3f}", (10, 210), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+    # Tambahkan teks cosine similarity.
+    cv2.putText(combined, f"Cosine: {cosine:.3f}", (10, 230), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+    # Buat folder output.
+    output_dir = create_output_dir()
+    # Simpan hasil ke file.
+    cv2.imwrite(str(output_dir / "03_face_recognition.jpg"), combined)
+    # Cetak ringkasan ke terminal.
+    print(f"Euclidean distance: {euclidean:.3f}")
+    # Cetak cosine similarity.
+    print(f"Cosine similarity: {cosine:.3f}")
+    # Tampilkan hasil dengan auto-close.
+    show_image("Face Recognition Result", combined)
+
+
+# Jalankan program saat dieksekusi langsung.
+if __name__ == "__main__":
+    # Panggil fungsi utama.
+    main()
     labels = []
     label_names = {}
     

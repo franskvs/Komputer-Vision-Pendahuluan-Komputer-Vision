@@ -81,16 +81,21 @@ def moving_average(curve, radius):
     Returns:
         smoothed: Smoothed curve
     """
+    # Moving average: smooth camera trajectory dengan window filter
+    # radius: setengah ukuran window (window = 2*radius + 1)
     window_size = 2 * radius + 1
+    # Buat kernel uniform (semua nilai sama, sum = 1)
     kernel = np.ones(window_size) / window_size
     
-    # Pad curve untuk edge handling
+    # np.pad: Tambahkan padding di edge agar tidak hilang data
+    # mode='edge': replicate nilai edge
     curve_padded = np.pad(curve, (radius, radius), mode='edge')
     
-    # Convolve
+    # np.convolve: Apply kernel filter dengan convolution
+    # mode='same': output size sama dengan input
     smoothed = np.convolve(curve_padded, kernel, mode='same')
     
-    # Remove padding
+    # Hapus padding untuk kembalikan ke size asli
     smoothed = smoothed[radius:-radius]
     
     return smoothed
@@ -107,32 +112,34 @@ def estimate_motion(prev_gray, curr_gray, prev_pts):
     Returns:
         transform: Transformation matrix (2x3 affine)
     """
-    # Lucas-Kanade parameters
+    # Estimasi motion antar frame menggunakan Lucas-Kanade optical flow
+    # Parameter untuk optical flow
     lk_params = dict(
-        winSize=(15, 15),
-        maxLevel=2,
+        winSize=(15, 15),  # Ukuran window pencarian
+        maxLevel=2,        # Level pyramid untuk multi-scale
         criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03)
     )
     
-    # Track features
+    # cv2.calcOpticalFlowPyrLK: Track features dari prev ke curr frame
     curr_pts, status, err = cv2.calcOpticalFlowPyrLK(
         prev_gray, curr_gray, prev_pts, None, **lk_params
     )
     
-    # Filter valid points
+    # Filter hanya points yang berhasil di-track (status=1)
     idx = np.where(status == 1)[0]
-    prev_pts_good = prev_pts[idx]
-    curr_pts_good = curr_pts[idx]
+    prev_pts_good = prev_pts[idx]  # Points asli yang valid
+    curr_pts_good = curr_pts[idx]  # Points baru yang valid
     
-    # Estimate affine transformation
-    if len(prev_pts_good) >= 3:
+    # Estimasi affine transformation dari correspondences
+    if len(prev_pts_good) >= 3:  # Minimal 3 points untuk affine
+        # cv2.estimateAffinePartial2D: Estimasi similarity transform (rotation+scale+translation)
         transform, _ = cv2.estimateAffinePartial2D(
             prev_pts_good, curr_pts_good
         )
-        if transform is None:
-            transform = np.eye(2, 3, dtype=np.float32)
+        if transform is None:  # Jika estimasi gagal
+            transform = np.eye(2, 3, dtype=np.float32)  # Identity transform
     else:
-        transform = np.eye(2, 3, dtype=np.float32)
+        transform = np.eye(2, 3, dtype=np.float32)  # Tidak cukup points
     
     return transform
 

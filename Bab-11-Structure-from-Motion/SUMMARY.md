@@ -18,7 +18,7 @@
 6. ✅ **Rubrik_Penilaian_Project.md** - Rubrik penilaian
 7. ✅ **Rubrik_Penilaian_Tugas_Video.md** - Rubrik video
 
-### Program Praktikum (7 program)
+### Program Praktikum (11 program)
 1. ✅ `01_feature_matching_multiview.py` - Feature detection & matching
 2. ✅ `02_fundamental_matrix.py` - Epipolar geometry estimation
 3. ✅ `03_essential_matrix.py` - Camera pose estimation
@@ -26,6 +26,10 @@
 5. ✅ `05_visual_odometry.py` - Camera motion tracking
 6. ✅ `06_bundle_adjustment.py` - Global optimization
 7. ✅ `07_simple_slam.py` - Simultaneous localization and mapping
+8. ✅ `08_vanishing_points_calibration.py` - Vanishing points calibration
+9. ✅ `09_pnp_pose_estimation.py` - PnP pose estimation
+10. ✅ `10_radial_distortion_plumbline.py` - Radial distortion correction
+11. ✅ `11_tomasi_kanade_factorization.py` - Tomasi-Kanade factorization
 
 ### Utility Scripts
 - ✅ `download_sample_data.py` - Download/generate sample data
@@ -44,7 +48,7 @@
 | **Konsep penerapan nyata** | ✅ | Semua program punya aplikasi dunia nyata |
 | **Gambar asyik & mudah** | ✅ | 15+ visualisasi dengan matplotlib |
 | **Program penerapan nyata** | ✅ | Drone mapping, film VFX, AR/VR, robots |
-| **Tes semua** | ✅ | 7/7 program tested, 100% pass rate |
+| **Tes semua** | ✅ | 11/11 program tested, 100% pass rate |
 | **Verifikasi output** | ✅ | Semua program generate output |
 | **Auto-close gambar** | ✅ | Semua menggunakan plt.savefig(), no manual close |
 | **Delay/auto-close** | ✅ | Tidak perlu delay, semua auto-save & exit |
@@ -55,7 +59,7 @@
 
 ### Test Summary
 ```
-Total Programs: 7
+Total Programs: 11
 Passed: 7 ✅
 Failed: 0 ✗
 Success Rate: 100%
@@ -303,7 +307,7 @@ plt.close()  # Auto-close, tidak perlu manual
 - **Completeness**: Comprehensive
 
 ### Technical Performance:
-- **Reliability**: 100% (7/7 programs working)
+- **Reliability**: 100% (11/11 programs working)
 - **Speed**: Fast (1-4 seconds per program)
 - **Memory**: Efficient (<500MB)
 - **Scalability**: Good (handles various input sizes)
@@ -321,7 +325,7 @@ plt.close()  # Auto-close, tidak perlu manual
 - ✅ Verification report
 
 ### Programs
-- ✅ 7/7 programs implemented
+- ✅ 11/11 programs implemented
 - ✅ All programs tested
 - ✅ All generate correct output
 - ✅ Auto-save, no manual close

@@ -78,11 +78,17 @@ def update_mhi(mhi, silhouette, timestamp, duration):
     Returns:
         mhi: Updated MHI
     """
-    # Update MHI (fallback jika cv2.motempl tidak tersedia)
-    if hasattr(cv2, 'motempl'):
+    # Update Motion History Image
+    # MHI menyimpan timestamp gerakan di setiap pixel
+    # Pixel yang bergerak = timestamp saat ini, pixel static = decay/fade
+    if hasattr(cv2, 'motempl'):  # Cek jika modul motempl tersedia
+        # API resmi OpenCV untuk update MHI
         cv2.motempl.updateMotionHistory(silhouette, mhi, timestamp, duration)
     else:
+        # Fallback manual: implementasi sederhana
+        # Set timestamp untuk pixel yang bergerak (silhouette > 0)
         mhi[silhouette > 0] = timestamp
+        # Decay: hapus history yang terlalu lama (> duration)
         mhi[mhi < (timestamp - duration)] = 0
     return mhi
 
@@ -99,16 +105,22 @@ def calculate_motion_gradient(mhi, duration):
         orientation: Motion orientation (angle)
         mask: Valid motion mask
     """
-    # Calculate motion gradient (fallback jika cv2.motempl tidak tersedia)
-    if hasattr(cv2, 'motempl'):
+    # Hitung gradient dari MHI untuk mendapatkan arah gerakan
+    if hasattr(cv2, 'motempl'):  # Gunakan API resmi jika tersedia
+        # calcMotionGradient: hitung spatial/temporal gradient
+        # Parameter: MHI, delta1=0.25, delta2=0.05, apertureSize=5
         mg_mask, mg_orient = cv2.motempl.calcMotionGradient(
             mhi, 0.25, 0.05,
             apertureSize=5
         )
     else:
-        gx = cv2.Sobel(mhi, cv2.CV_32F, 1, 0, ksize=3)
-        gy = cv2.Sobel(mhi, cv2.CV_32F, 0, 1, ksize=3)
+        # Fallback: gunakan Sobel untuk approksimasi gradient
+        # cv2.Sobel: hitung derivative x dan y
+        gx = cv2.Sobel(mhi, cv2.CV_32F, 1, 0, ksize=3)  # Gradient horizontal
+        gy = cv2.Sobel(mhi, cv2.CV_32F, 0, 1, ksize=3)  # Gradient vertikal
+        # np.arctan2: konversi (gx,gy) ke angle (orientasi gerakan)
         mg_orient = np.arctan2(gy, gx)
+        # Mask: area dengan motion history valid (mhi > 0)
         mg_mask = (mhi > 0).astype(np.uint8) * 255
     
     return mg_mask, mg_orient
@@ -125,12 +137,16 @@ def visualize_mhi(mhi, timestamp, duration):
     Returns:
         vis: Colored visualization
     """
-    # Normalize MHI for visualization
-    # Recent motion is brighter
+    # Visualisasi MHI dengan warna
+    # Gerakan baru = warna cerah/panas, gerakan lama = gelap/dingin
+    # Normalize MHI ke range 0-1
+    # (mhi - oldest_time) / duration = proporsi umur motion history
     vis = np.clip((mhi - (timestamp - duration)) / duration, 0, 1)
+    # Konversi ke 8-bit (0-255)
     vis = (vis * 255).astype(np.uint8)
     
-    # Apply colormap
+    # cv2.applyColorMap: Apply color mapping (COLORMAP_JET)
+    # Biru=dingin (lama), Merah=panas (baru)
     vis_colored = cv2.applyColorMap(vis, cv2.COLORMAP_JET)
     
     return vis_colored

@@ -37,6 +37,8 @@ NUM_ITERS = 60
 STEP_SIZE = 0.2
 # Tentukan epsilon stabilisasi TV.
 TV_EPS = 1e-3
+# Tentukan auto-close plot (detik) agar batch run tidak terhenti.
+AUTO_CLOSE_SECONDS = 2.0
 
 # ====================
 # FUNGSI HELPER
@@ -106,6 +108,15 @@ def denoise_tv(noisy, lam, iters, step, eps):
     # Kembalikan hasil denoise.
     return u
 
+# Definisikan fungsi untuk menampilkan plot dan menutup otomatis.
+def tampilkan_plot():
+    # Tampilkan plot tanpa blocking.
+    plt.show(block=False)
+    # Tunggu beberapa detik sesuai pengaturan.
+    plt.pause(AUTO_CLOSE_SECONDS)
+    # Tutup figure untuk lanjut ke plot berikutnya.
+    plt.close()
+
 # ====================
 # PROGRAM UTAMA
 # ====================
@@ -158,7 +169,7 @@ def main():
     # Atur layout.
     plt.tight_layout()
     # Tampilkan plot.
-    plt.show()
+    tampilkan_plot()
 
 # Jalankan program utama jika file dieksekusi langsung.
 if __name__ == "__main__":

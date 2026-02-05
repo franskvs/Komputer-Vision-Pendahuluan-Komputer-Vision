@@ -35,6 +35,8 @@ SMOOTH_WEIGHT = 1.0
 ICM_ITERS = 10
 # Tentukan seed random agar hasil konsisten.
 RANDOM_SEED = 123
+# Tentukan auto-close plot (detik) agar batch run tidak terhenti.
+AUTO_CLOSE_SECONDS = 2.0
 
 # ====================
 # FUNGSI HELPER
@@ -101,6 +103,15 @@ def icm_denoise(noisy, data_w, smooth_w, iters):
     # Kembalikan hasil denoise.
     return x
 
+# Definisikan fungsi untuk menampilkan plot dan menutup otomatis.
+def tampilkan_plot():
+    # Tampilkan plot tanpa blocking.
+    plt.show(block=False)
+    # Tunggu beberapa detik sesuai pengaturan.
+    plt.pause(AUTO_CLOSE_SECONDS)
+    # Tutup figure untuk lanjut ke plot berikutnya.
+    plt.close()
+
 # ====================
 # PROGRAM UTAMA
 # ====================
@@ -143,7 +154,7 @@ def main():
     # Atur layout.
     plt.tight_layout()
     # Tampilkan plot.
-    plt.show()
+    tampilkan_plot()
 
 # Jalankan program utama jika file dieksekusi langsung.
 if __name__ == "__main__":

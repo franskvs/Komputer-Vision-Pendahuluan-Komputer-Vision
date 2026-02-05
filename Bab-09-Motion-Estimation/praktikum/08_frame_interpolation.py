@@ -58,10 +58,16 @@ def create_synthetic_pair(size=(480, 640), shift=(16, 0)):
 
 def warp_with_flow(img, flow):
     """Warp image dengan flow field."""
-    h, w = img.shape[:2]
+    h, w = img.shape[:2]  # Tinggi dan lebar image
+    # np.meshgrid: Buat grid koordinat (x,y) untuk setiap pixel
     grid_x, grid_y = np.meshgrid(np.arange(w), np.arange(h))
-    map_x = (grid_x + flow[..., 0]).astype(np.float32)
-    map_y = (grid_y + flow[..., 1]).astype(np.float32)
+    # Hitung koordinat tujuan dengan menambahkan flow
+    # flow[..., 0] = dx (pergeseran x), flow[..., 1] = dy (pergeseran y)
+    map_x = (grid_x + flow[..., 0]).astype(np.float32)  # X setelah warp
+    map_y = (grid_y + flow[..., 1]).astype(np.float32)  # Y setelah warp
+    # cv2.remap: Warp image menggunakan koordinat mapping
+    # INTER_LINEAR: interpolasi bilinear untuk smooth result
+    # BORDER_REFLECT: handle pixel di luar boundary dengan reflect
     return cv2.remap(img, map_x, map_y, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
 
 
@@ -78,25 +84,33 @@ def main():
         print("Frame sample tidak ditemukan, membuat pasangan sintetis...")
         img1, img2 = create_synthetic_pair()
 
+    # Konversi ke grayscale untuk optical flow
     img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
     img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
-    # Optical flow forward & backward
+    # Hitung optical flow bidirectional (forward dan backward)
+    # flow_12: dari frame1 ke frame2 (forward)
+    # cv2.calcOpticalFlowFarneback: Dense optical flow dengan Farneback method
     flow_12 = cv2.calcOpticalFlowFarneback(
         img1_gray, img2_gray, None,
         pyr_scale=0.5, levels=3, winsize=15,
         iterations=3, poly_n=5, poly_sigma=1.2, flags=0
     )
+    # flow_21: dari frame2 ke frame1 (backward)
     flow_21 = cv2.calcOpticalFlowFarneback(
         img2_gray, img1_gray, None,
         pyr_scale=0.5, levels=3, winsize=15,
         iterations=3, poly_n=5, poly_sigma=1.2, flags=0
     )
 
-    # Interpolate at t=0.5
-    t = 0.5
+    # Interpolasi di tengah (t=0.5) antara frame1 dan frame2
+    t = 0.5  # Parameter waktu: 0=frame1, 1=frame2, 0.5=tengah
+    # Warp frame1 menuju frame2 dengan flow*t
     warp1 = warp_with_flow(img1, flow_12 * t)
+    # Warp frame2 menuju frame1 dengan flow*(1-t)
     warp2 = warp_with_flow(img2, flow_21 * (1 - t))
+    # Blend kedua warped frame dengan weighted average
+    # cv2.addWeighted: 0.5*warp1 + 0.5*warp2 = rata-rata
     interp = cv2.addWeighted(warp1, 0.5, warp2, 0.5, 0)
 
     # Compose visualization
