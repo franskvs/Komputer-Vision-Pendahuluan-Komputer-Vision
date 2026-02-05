@@ -53,6 +53,9 @@ MOTION_THRESHOLD = 32
 # Minimum area untuk valid motion region
 MIN_AREA = 1000
 
+# Auto close window (detik) untuk testing cepat
+AUTO_CLOSE_SECONDS = 2.0
+
 # Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(SCRIPT_DIR, "data", "videos")
@@ -75,8 +78,12 @@ def update_mhi(mhi, silhouette, timestamp, duration):
     Returns:
         mhi: Updated MHI
     """
-    # Update MHI
-    cv2.motempl.updateMotionHistory(silhouette, mhi, timestamp, duration)
+    # Update MHI (fallback jika cv2.motempl tidak tersedia)
+    if hasattr(cv2, 'motempl'):
+        cv2.motempl.updateMotionHistory(silhouette, mhi, timestamp, duration)
+    else:
+        mhi[silhouette > 0] = timestamp
+        mhi[mhi < (timestamp - duration)] = 0
     return mhi
 
 def calculate_motion_gradient(mhi, duration):
@@ -92,11 +99,17 @@ def calculate_motion_gradient(mhi, duration):
         orientation: Motion orientation (angle)
         mask: Valid motion mask
     """
-    # Calculate motion gradient
-    mg_mask, mg_orient = cv2.motempl.calcMotionGradient(
-        mhi, 0.25, 0.05,
-        apertureSize=5
-    )
+    # Calculate motion gradient (fallback jika cv2.motempl tidak tersedia)
+    if hasattr(cv2, 'motempl'):
+        mg_mask, mg_orient = cv2.motempl.calcMotionGradient(
+            mhi, 0.25, 0.05,
+            apertureSize=5
+        )
+    else:
+        gx = cv2.Sobel(mhi, cv2.CV_32F, 1, 0, ksize=3)
+        gy = cv2.Sobel(mhi, cv2.CV_32F, 0, 1, ksize=3)
+        mg_orient = np.arctan2(gy, gx)
+        mg_mask = (mhi > 0).astype(np.uint8) * 255
     
     return mg_mask, mg_orient
 
@@ -235,6 +248,7 @@ def main():
     
     frame_count = 0
     start_time = time.time()
+    display_start_time = time.time()
     
     print("\nProcessing...")
     print("Tekan 'q' untuk keluar, 's' untuk save")
@@ -332,6 +346,11 @@ def main():
         
         prev_gray = gray.copy()
         frame_count += 1
+
+        if AUTO_CLOSE_SECONDS > 0 and not using_webcam:
+            if (time.time() - display_start_time) >= AUTO_CLOSE_SECONDS:
+                print("Auto-close: waktu uji selesai.")
+                break
     
     cap.release()
     out.release()

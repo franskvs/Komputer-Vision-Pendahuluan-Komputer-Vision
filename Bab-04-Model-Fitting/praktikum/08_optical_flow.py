@@ -6,7 +6,6 @@
 # 
 # Tujuan Pembelajaran:
 #   1. Memahami konsep optical flow
-#   2. Perbandingan sparse vs dense optical flow
 #   3. Aplikasi motion detection dan tracking
 # ============================================================
 
@@ -55,6 +54,9 @@ TRACK_LENGTH = 10          # Panjang track history
 FLOW_SCALE = 5             # Scale untuk visualisasi dense flow
 MIN_FLOW_MAGNITUDE = 1.0   # Minimum magnitude untuk display
 
+# 7. Auto-close plot (detik)
+AUTO_CLOSE_SECONDS = 2.0
+
 # ============================================================
 # FUNGSI HELPER
 # ============================================================
@@ -97,6 +99,13 @@ def create_synthetic_video():
         frames.append(frame)
     
     return frames
+
+
+def tampilkan_plot():
+    """Tampilkan plot sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(AUTO_CLOSE_SECONDS)
+    plt.close()
 
 
 def draw_flow_vectors(img, flow, step=16, scale=1.0):
@@ -324,7 +333,7 @@ gunakan local window → least squares solution.
     
     plt.suptitle("Sparse Optical Flow (Lucas-Kanade)", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_dense_flow():
@@ -404,7 +413,7 @@ Visualisasi:
     
     plt.suptitle("Dense Optical Flow (Farneback)", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_comparison():
@@ -508,7 +517,7 @@ Dense (Farneback):
     
     plt.suptitle("Sparse vs Dense Optical Flow Comparison", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 # ============================================================
@@ -599,7 +608,6 @@ next_pts, status, error = cv2.calcOpticalFlowPyrLK(
 )
 
 # Dense Flow (Farneback)
-flow = cv2.calcOpticalFlowFarneback(
     prev_gray, curr_gray, None,
     pyr_scale=0.5,
     levels=3,

@@ -38,6 +38,7 @@ Tanggal: [Tanggal Praktikum]
 import cv2
 import numpy as np
 import os
+import time
 from collections import deque
 
 # ============================================================
@@ -49,6 +50,9 @@ TRACKER_TYPE = 'CSRT'
 
 # Panjang trail trajectory
 TRAIL_LENGTH = 50
+
+# Auto close window (detik) untuk testing cepat
+AUTO_CLOSE_SECONDS = 2.0
 
 # Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -69,20 +73,38 @@ def create_tracker(tracker_type):
     Returns:
         tracker: OpenCV tracker object
     """
-    trackers = {
-        'CSRT': cv2.TrackerCSRT_create,
-        'KCF': cv2.TrackerKCF_create,
-        'MOSSE': cv2.legacy.TrackerMOSSE_create if hasattr(cv2, 'legacy') else None,
-        'MIL': cv2.TrackerMIL_create,
-    }
-    
-    create_func = trackers.get(tracker_type)
-    
+    def get_tracker_factory(name):
+        if name == 'CSRT':
+            if hasattr(cv2, 'TrackerCSRT_create'):
+                return cv2.TrackerCSRT_create
+            if hasattr(cv2, 'legacy') and hasattr(cv2.legacy, 'TrackerCSRT_create'):
+                return cv2.legacy.TrackerCSRT_create
+        if name == 'KCF':
+            if hasattr(cv2, 'TrackerKCF_create'):
+                return cv2.TrackerKCF_create
+            if hasattr(cv2, 'legacy') and hasattr(cv2.legacy, 'TrackerKCF_create'):
+                return cv2.legacy.TrackerKCF_create
+        if name == 'MOSSE':
+            if hasattr(cv2, 'legacy') and hasattr(cv2.legacy, 'TrackerMOSSE_create'):
+                return cv2.legacy.TrackerMOSSE_create
+        if name == 'MIL':
+            if hasattr(cv2, 'TrackerMIL_create'):
+                return cv2.TrackerMIL_create
+            if hasattr(cv2, 'legacy') and hasattr(cv2.legacy, 'TrackerMIL_create'):
+                return cv2.legacy.TrackerMIL_create
+        return None
+
+    create_func = get_tracker_factory(tracker_type)
+
     if create_func is None:
-        print(f"Tracker {tracker_type} tidak tersedia, menggunakan CSRT")
-        return cv2.TrackerCSRT_create()
-    
-    return create_func()
+        for fallback in ['KCF', 'MIL', 'CSRT', 'MOSSE']:
+            create_func = get_tracker_factory(fallback)
+            if create_func is not None:
+                print(f"Tracker {tracker_type} tidak tersedia, menggunakan {fallback}")
+                return create_func(), fallback
+        raise RuntimeError("Tidak ada tracker OpenCV yang tersedia.")
+
+    return create_func(), tracker_type
 
 def select_roi_auto(frame):
     """
@@ -208,7 +230,7 @@ def main():
         bbox = (width//4, height//4, width//2, height//2)
     
     # Initialize tracker
-    tracker = create_tracker(TRACKER_TYPE)
+    tracker, current_tracker_type = create_tracker(TRACKER_TYPE)
     tracker.init(frame, bbox)
     
     # Trajectory
@@ -217,8 +239,7 @@ def main():
     # Stats
     frame_count = 0
     tracking_success = 0
-    
-    current_tracker_type = TRACKER_TYPE
+    start_time = time.time()
     
     print("\nTracking...")
     print("Tekan 'q' untuk keluar, 'r' untuk re-select")
@@ -231,7 +252,7 @@ def main():
                 cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                 # Reinitialize tracker
                 ret, frame = cap.read()
-                tracker = create_tracker(current_tracker_type)
+                tracker, current_tracker_type = create_tracker(current_tracker_type)
                 if bbox:
                     tracker.init(frame, bbox)
                 trajectory.clear()
@@ -295,7 +316,7 @@ def main():
             bbox = cv2.selectROI("Select Object", frame, fromCenter=False, showCrosshair=True)
             cv2.destroyWindow("Select Object")
             if bbox != (0, 0, 0, 0):
-                tracker = create_tracker(current_tracker_type)
+                tracker, current_tracker_type = create_tracker(current_tracker_type)
                 tracker.init(frame, bbox)
                 trajectory.clear()
                 print("Re-initialized tracker")
@@ -303,26 +324,27 @@ def main():
             cv2.imwrite(os.path.join(OUTPUT_DIR, f"04_tracking_{frame_count}.png"), vis_frame)
             print(f"Saved frame {frame_count}")
         elif key == ord('1'):
-            current_tracker_type = 'CSRT'
             if bbox:
-                tracker = create_tracker('CSRT')
+                tracker, current_tracker_type = create_tracker('CSRT')
                 tracker.init(frame, bbox)
-            print("Switched to CSRT")
+            print(f"Switched to {current_tracker_type}")
         elif key == ord('2'):
-            current_tracker_type = 'KCF'
             if bbox:
-                tracker = create_tracker('KCF')
+                tracker, current_tracker_type = create_tracker('KCF')
                 tracker.init(frame, bbox)
-            print("Switched to KCF")
+            print(f"Switched to {current_tracker_type}")
         elif key == ord('3'):
-            current_tracker_type = 'MOSSE'
             if bbox:
-                tracker = create_tracker('MOSSE')
-                if tracker:
-                    tracker.init(frame, bbox)
-            print("Switched to MOSSE")
+                tracker, current_tracker_type = create_tracker('MOSSE')
+                tracker.init(frame, bbox)
+            print(f"Switched to {current_tracker_type}")
         
         frame_count += 1
+
+        if AUTO_CLOSE_SECONDS > 0 and not using_webcam:
+            if (time.time() - start_time) >= AUTO_CLOSE_SECONDS:
+                print("Auto-close: waktu uji selesai.")
+                break
     
     cap.release()
     out.release()

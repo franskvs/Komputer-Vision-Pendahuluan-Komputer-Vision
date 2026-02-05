@@ -347,6 +347,41 @@ Camera View                Bird's Eye View
 
 ---
 
+## 4. Materi PDF: Model Fitting & Optimization (Bab 4)
+
+### 4.1 Scattered Data Interpolation
+Scattered data interpolation bertujuan membangun fungsi $f(x)$ yang melewati data tak beraturan. Pada praktikum ini digunakan **RBF** (Radial Basis Function) dengan kernel Gaussian:
+
+$$
+\phi(r) = \exp\left(-\frac{r^2}{2\sigma^2}\right)
+$$
+
+Regularisasi $\lambda$ digunakan untuk mengontrol **overfitting** dan **underfitting**.
+
+### 4.2 Robust Data Fitting (Huber / IRLS)
+Untuk mengurangi efek outlier, digunakan **Huber loss** dan diselesaikan dengan **IRLS** (Iteratively Reweighted Least Squares). Ini meniru konsep robust fitting pada PDF.
+
+### 4.3 Variational Methods & Regularization
+Energi variational umum:
+
+$$
+E(u)=\|u-f\|^2 + \lambda \|\nabla u\|^2
+$$
+
+- **L2 (Tikhonov)** menghasilkan smoothing kuat.
+- **Total Variation (TV)** mempertahankan tepi (edge-preserving).
+
+### 4.4 Markov Random Field (MRF)
+MRF memodelkan prior smoothness dengan energi lokal antar piksel:
+
+$$
+E(x)=\sum_i D_i(x_i)+\sum_{(i,j)} V_{ij}(x_i,x_j)
+$$
+
+Praktikum menggunakan **ICM** untuk optimisasi sederhana pada citra biner.
+
+---
+
 ## 5. Ringkasan
 
 ### Tabel Perbandingan Teknik

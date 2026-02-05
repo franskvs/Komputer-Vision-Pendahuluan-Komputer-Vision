@@ -10,6 +10,7 @@ Setelah menyelesaikan bab ini, mahasiswa diharapkan mampu:
 4. Memahami konsep kalibrasi kamera dan koreksi distorsi lensa
 5. Melakukan operasi transformasi perspektif untuk aplikasi nyata seperti document scanner
 6. Memahami photometric image formation dan proses sampling dalam sensor digital
+7. Menerapkan seluruh konsep melalui program praktikum yang menghasilkan output visual
 
 ---
 
@@ -398,6 +399,40 @@ b* = 200 [f(Y/Yn) - f(Z/Zn)]
 f(t) = t^(1/3)        if t > δ³
 f(t) = t/(3δ²) + 4/29  otherwise
 ```
+
+---
+
+## 7️⃣ Pemetaan Materi ke Program Praktikum
+
+Semua program menyimpan hasil ke `praktikum/output/outputN` sesuai nomor percobaan.
+
+| Materi | Program | Output Folder | Hasil yang Diharapkan |
+|---|---|---|---|
+| Translasi 2D | `01_translasi.py` | output/output1 | Gambar bergeser + perbandingan border |
+| Rotasi 2D | `02_rotasi.py` | output/output2 | Rotasi berbagai sudut & pusat |
+| Scaling & Interpolasi | `03_scaling.py` | output/output3 | Perbandingan metode resize |
+| Transformasi Affine | `04_affine_transform.py` | output/output4 | Shear/rotasi/kombinasi |
+| Perspektif (Homography) | `05_perspektif_transform.py` | output/output5 | Bird’s eye view |
+| Document Scanner | `06_document_scanner.py` | output/output6 | Deteksi + koreksi dokumen |
+| Kalibrasi Kamera | `07_kalibrasi_kamera.py` | output/output7 | Intrinsik + undistort |
+| Rotasi 3D (Axis-Angle) | `08_3d_rotation.py` | output/output8 | Kubus berotasi 3D |
+| Proyeksi 3D ke 2D | `09_projection_perspective.py` | output/output9 | Ortografik vs perspektif |
+| Distorsi Lensa | `10_lens_distortion.py` | output/output10 | Barrel/pincushion + koreksi |
+| Sampling & Aliasing | `11_sampling_aliasing.py` | output/output11 | Downsample + anti-aliasing |
+| Color Spaces | `12_color_spaces.py` | output/output12 | Channel RGB/HSV/LAB/YCrCb/XYZ |
+| Gamma Correction | `13_gamma_correction.py` | output/output13 | Perbandingan linear vs gamma |
+| Photometric Shading | `14_photometric_shading.py` | output/output14 | Diffuse vs specular |
+| Artefak Kompresi | `15_compression_artifacts.py` | output/output15 | JPEG quality comparison |
+
+---
+
+## 8️⃣ Catatan Implementasi Nyata
+
+1. **Transformasi 2D/3D** digunakan pada stabilisasi, AR, dan normalisasi data.
+2. **Homography & document scanner** adalah contoh langsung aplikasi industri.
+3. **Kalibrasi kamera & distorsi** penting untuk akurasi pengukuran 3D.
+4. **Sampling, gamma, color space** memengaruhi kualitas input sebelum pemrosesan lanjutan.
+5. **Kompresi** berdampak pada artefak yang sering muncul di dataset dunia nyata.
 
 #### YUV/YCbCr Video:
 

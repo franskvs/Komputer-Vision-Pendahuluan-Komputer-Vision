@@ -44,6 +44,8 @@ import cv2
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 # ============================================================
 # PARAMETER YANG DAPAT DIMODIFIKASI
@@ -234,78 +236,116 @@ def main():
     """
     Fungsi utama untuk exposure fusion demo.
     """
+    # Cetak header program
     print("=" * 60)
+    # Cetak judul demo
     print("EXPOSURE FUSION (MERTENS METHOD)")
+    # Cetak garis pemisah
     print("=" * 60)
     
+    # Pastikan folder output tersedia
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
-    # Load images
+    # Tentukan folder exposure bracket
     hdr_dir = os.path.join(DATA_DIR, "hdr_bracket")
     
+    # Informasi proses loading
     print("\nLoading exposure bracket...")
+    # Muat gambar exposure
     images = load_exposure_bracket(hdr_dir)
     
+    # Validasi jumlah exposure
     if len(images) < 2:
+        # Pesan jika data kurang
         print("\nTidak cukup images!")
+        # Instruksi download data
         print("Jalankan download_sample_data.py terlebih dahulu.")
+        # Hentikan program
         return
     
+    # Tampilkan jumlah exposure
     print(f"\nLoaded {len(images)} exposures")
+    # Tampilkan ukuran gambar
     print(f"Image size: {images[0].shape}")
     
-    # Compute weights
+    # Informasi perhitungan quality measures
     print("\nComputing quality measures...")
+    # Tampilkan bobot contrast
     print(f"  Contrast weight: {CONTRAST_WEIGHT}")
+    # Tampilkan bobot saturation
     print(f"  Saturation weight: {SATURATION_WEIGHT}")
+    # Tampilkan bobot exposure
     print(f"  Exposure weight: {EXPOSURE_WEIGHT}")
     
+    # Hitung weight maps
     weights = compute_weights(images)
     
-    # Visualize weights
+    # Visualisasikan weight maps
     visualize_weights(images, weights, os.path.join(OUTPUT_DIR, "02_weight_maps.png"))
     
-    # Method 1: OpenCV Mertens
+    # Informasi metode Mertens
     print("\nFusion dengan OpenCV Mertens...")
+    # Fusion dengan OpenCV
     fusion_opencv = exposure_fusion_opencv(images)
+    # Simpan hasil Mertens
     cv2.imwrite(os.path.join(OUTPUT_DIR, "02_fusion_mertens.jpg"), fusion_opencv)
     
-    # Method 2: Manual implementation
+    # Informasi metode manual
     print("Fusion dengan manual pyramid blending...")
+    # Fusion manual pyramid
     fusion_manual = exposure_fusion_manual(images, weights)
+    # Simpan hasil manual
     cv2.imwrite(os.path.join(OUTPUT_DIR, "02_fusion_manual.jpg"), fusion_manual)
     
-    # Comparison figure
+    # Siapkan figure perbandingan
     fig, axes = plt.subplots(2, 3, figsize=(15, 10))
     
-    # Original exposures
+    # Plot exposure asli
     for i, img in enumerate(images[:3]):
+        # Konversi BGR ke RGB untuk matplotlib
         axes[0, i].imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        # Judul tiap exposure
         axes[0, i].set_title(f"Exposure {i+1}")
+        # Matikan axis
         axes[0, i].axis('off')
     
-    # Fusion results
+    # Plot hasil Mertens
     axes[1, 0].imshow(cv2.cvtColor(fusion_opencv, cv2.COLOR_BGR2RGB))
+    # Judul hasil Mertens
     axes[1, 0].set_title("OpenCV Mertens")
+    # Matikan axis
     axes[1, 0].axis('off')
     
+    # Plot hasil manual
     axes[1, 1].imshow(cv2.cvtColor(fusion_manual, cv2.COLOR_BGR2RGB))
+    # Judul hasil manual
     axes[1, 1].set_title("Manual Pyramid")
+    # Matikan axis
     axes[1, 1].axis('off')
     
-    # Difference
+    # Hitung perbedaan hasil
     diff = cv2.absdiff(fusion_opencv, fusion_manual)
+    # Tampilkan perbedaan (diperkuat)
     axes[1, 2].imshow(diff * 5)  # Amplify for visibility
+    # Judul perbedaan
     axes[1, 2].set_title("Difference (5x)")
+    # Matikan axis
     axes[1, 2].axis('off')
     
+    # Rapikan layout
     plt.tight_layout()
+    # Simpan gambar perbandingan
     plt.savefig(os.path.join(OUTPUT_DIR, "02_fusion_comparison.png"), dpi=150)
+    # Tutup figure
     plt.close()
     
+    # Cetak ringkasan
     print("\n" + "=" * 60)
+    # Judul ringkasan
     print("SUMMARY")
+    # Garis pemisah ringkasan
     print("=" * 60)
+    # Tampilkan daftar output
     print(f"""
 Exposure fusion complete!
 
@@ -321,11 +361,15 @@ Quality Measures:
   - Well-exposedness: Distance from 0.5
 """)
     
-    # Display
+    # Tampilkan exposure tengah
     cv2.imshow("Original (middle exposure)", images[len(images)//2])
+    # Tampilkan hasil fusion
     cv2.imshow("Exposure Fusion", fusion_opencv)
-    print("\nTekan sembarang tombol untuk menutup...")
-    cv2.waitKey(0)
+    # Informasi auto-close
+    print("\nMenampilkan hasil (akan otomatis tertutup dalam 2 detik)...")
+    # Tunggu 2 detik
+    cv2.waitKey(2000)
+    # Tutup semua window
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":

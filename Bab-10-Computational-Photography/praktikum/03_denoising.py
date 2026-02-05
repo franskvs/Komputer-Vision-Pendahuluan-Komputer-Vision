@@ -321,8 +321,8 @@ Files generated:
     cv2.imshow("Clean", clean)
     cv2.imshow("Noisy", noisy)
     cv2.imshow(f"Best: {sorted_results[0][0]}", sorted_results[0][1]['image'])
-    print("Tekan sembarang tombol untuk menutup...")
-    cv2.waitKey(0)
+    print("\nMenampilkan hasil (akan otomatis tertutup dalam 2 detik)...")
+    cv2.waitKey(2000)
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":

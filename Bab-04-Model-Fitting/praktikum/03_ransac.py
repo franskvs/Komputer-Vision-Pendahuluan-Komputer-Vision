@@ -42,6 +42,9 @@ LINE_C = 50              # Intercept
 CANVAS_WIDTH = 500
 CANVAS_HEIGHT = 400
 
+# 6. Auto-close plot (detik)
+AUTO_CLOSE_SECONDS = 2.0
+
 # ============================================================
 # FUNGSI RANSAC
 # ============================================================
@@ -87,6 +90,13 @@ def generate_line_data(n_inliers, n_outliers, m, c, noise_level,
     points, labels = zip(*combined)
     
     return np.array(points), np.array(labels)
+
+
+def tampilkan_plot():
+    """Tampilkan plot sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(AUTO_CLOSE_SECONDS)
+    plt.close()
 
 
 def fit_line_least_squares(points):
@@ -292,7 +302,7 @@ def visualize_comparison(points, labels, ls_params, ransac_params, ransac_inlier
     ax.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def visualize_ransac_progress(history):
@@ -310,7 +320,7 @@ def visualize_ransac_progress(history):
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 # ============================================================
@@ -373,7 +383,7 @@ def demo_outlier_ratio_effect():
     
     plt.suptitle("Pengaruh Rasio Outliers pada Least Squares vs RANSAC", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_threshold_effect():
@@ -429,7 +439,7 @@ Threshold besar (relaxed):
     
     plt.suptitle("Pengaruh Threshold pada RANSAC", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 # ============================================================

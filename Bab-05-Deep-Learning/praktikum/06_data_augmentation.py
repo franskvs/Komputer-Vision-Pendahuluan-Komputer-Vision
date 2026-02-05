@@ -570,8 +570,11 @@ def demo_geometric_augmentations():
         
         print(f"  Variants: {', '.join(labels)}")
     
-    print("\n[INFO] Tekan tombol apa saja untuk lanjut...")
-    cv2.waitKey(0)
+    print("\n[INFO] Tekan 'q' untuk menutup gambar...")
+    while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q') or key == 27:  # 'q' atau ESC
+            break
     cv2.destroyAllWindows()
 
 
@@ -610,8 +613,11 @@ def demo_color_augmentations():
         
         print(f"  Variants: {', '.join(labels)}")
     
-    print("\n[INFO] Tekan tombol apa saja untuk lanjut...")
-    cv2.waitKey(0)
+    print("\n[INFO] Tekan 'q' untuk menutup gambar...")
+    while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q') or key == 27:  # 'q' atau ESC
+            break
     cv2.destroyAllWindows()
 
 
@@ -655,8 +661,11 @@ def demo_noise_blur():
     cv2.imshow("Blur Augmentations", combined)
     print(f"  Variants: {', '.join(blur_results.keys())}")
     
-    print("\n[INFO] Tekan tombol apa saja untuk lanjut...")
-    cv2.waitKey(0)
+    print("\n[INFO] Tekan 'q' untuk menutup gambar...")
+    while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q') or key == 27:  # 'q' atau ESC
+            break
     cv2.destroyAllWindows()
 
 
@@ -727,8 +736,11 @@ def demo_advanced_augmentations():
     
     cv2.imshow("CutMix", np.hstack(images_row))
     
-    print("\n[INFO] Tekan tombol apa saja untuk lanjut...")
-    cv2.waitKey(0)
+    print("\n[INFO] Tekan 'q' untuk menutup gambar...")
+    while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q') or key == 27:  # 'q' atau ESC
+            break
     cv2.destroyAllWindows()
 
 
@@ -810,8 +822,11 @@ def demo_augmentation_pipeline():
     
     cv2.imshow("Augmentation Pipeline Results", combined)
     
-    print("[INFO] Tekan tombol apa saja untuk keluar...")
-    cv2.waitKey(0)
+    print("[INFO] Tekan 'q' untuk keluar...")
+    while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q') or key == 27:  # 'q' atau ESC
+            break
     cv2.destroyAllWindows()
 
 

@@ -52,6 +52,8 @@ import cv2
 import numpy as np
 import os
 import time
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 def get_script_dir():
     """Mendapatkan direktori script ini berada"""
@@ -130,6 +132,17 @@ def create_visualization(original, result, harris_response, corner_count, proc_t
     
     # Tambah teks informasi
     font = cv2.FONT_HERSHEY_SIMPLEX
+
+    # Penjelasan parameter cv2.putText:
+    # cv2.putText(image, text, org, fontFace, fontScale, color, thickness, lineType)
+    # - image: gambar target
+    # - text: teks yang akan ditulis
+    # - org: posisi (x, y) kiri-bawah teks
+    # - fontFace: jenis font
+    # - fontScale: skala ukuran font
+    # - color: warna (BGR)
+    # - thickness: ketebalan teks
+    # - lineType: tipe garis (opsional)
     cv2.putText(original, "Original", (10, 30), font, 1, (0, 255, 0), 2)
     cv2.putText(result, f"Corners: {corner_count}", (10, 30), font, 1, (0, 255, 0), 2)
     cv2.putText(harris_color, "Harris Response", (10, 30), font, 1, (255, 255, 255), 2)
@@ -155,7 +168,7 @@ def main():
     
     # Path setup
     script_dir = get_script_dir()
-    data_dir = os.path.join(os.path.dirname(script_dir), "data", "images")
+    data_dir = os.path.join(script_dir, "data", "images")
     output_dir = os.path.join(script_dir, "output")
     os.makedirs(output_dir, exist_ok=True)
     

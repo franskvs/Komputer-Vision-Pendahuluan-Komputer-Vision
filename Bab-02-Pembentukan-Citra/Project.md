@@ -74,6 +74,12 @@ Anda adalah developer di startup "QuickScan Indonesia" yang sedang mengembangkan
    - cv2.approxPolyDP()
    - cv2.getPerspectiveTransform()
    - cv2.warpPerspective()
+
+**Referensi Program Praktikum** (sebagai bahan belajar/validasi):
+- `05_perspektif_transform.py` (homography dasar)
+- `06_document_scanner.py` (pipeline lengkap scanner)
+- `10_lens_distortion.py` (distorsi dan koreksi)
+- `12_color_spaces.py` (analisis warna untuk enhancement)
 ```
 
 ### Tahap 2: Implementasi Core (Week 2)
@@ -166,6 +172,9 @@ Bab-02-Project/
 ├── requirements.txt        # Dependencies
 └── README.md              # Dokumentasi project
 ```
+
+**Catatan Output**:
+- Simpan hasil ke folder `output/` project dan sertakan preview sebelum/ sesudah.
 
 ---
 

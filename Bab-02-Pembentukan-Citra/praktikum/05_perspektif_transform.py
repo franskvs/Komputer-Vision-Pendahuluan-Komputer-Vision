@@ -1,117 +1,150 @@
 # ============================================================
-# PROGRAM: 05_perspektif_transform.py
+# PROGRAM: 05_perspektif_transform_real.py
 # PRAKTIKUM COMPUTER VISION - BAB 2: PEMBENTUKAN CITRA
 # ============================================================
 # Deskripsi: Program ini mendemonstrasikan transformasi perspektif
-#            (homography) untuk koreksi sudut pandang
+#            dengan FOTO NYATA dan interaktif click 4 titik
 # 
-# Tujuan Pembelajaran:
-#   1. Memahami transformasi perspektif dan homography
-#   2. Menentukan transformation matrix dari 4 pasang titik
-#   3. Aplikasi praktis untuk koreksi dokumen
+# Cara Penggunaan:
+#   1. Program akan menampilkan foto di window
+#   2. KLIK 4 TITIK (TL → TR → BR → BL) di gambar
+#   3. Program otomatis apply perspective transform
+#   4. Hasil disimpan di output/
 # ============================================================
 
-# ====================
-# IMPORT LIBRARY
-# ====================
 import cv2
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')  # Gunakan backend non-GUI
-import matplotlib.pyplot as plt
 import os
 
 # ============================================================
-# VARIABEL YANG BISA DIUBAH-UBAH (EKSPERIMEN)
+# KONFIGURASI
 # ============================================================
 
-# ============================================================
-# KONFIGURASI PATH
-# ============================================================
-
-# Dapatkan direktori script (praktikum folder)
 DIR_SCRIPT = os.path.dirname(os.path.abspath(__file__))
-DIR_DATA = os.path.join(DIR_SCRIPT, "data", "images")
-DIR_OUTPUT = os.path.join(DIR_SCRIPT, "output5")
+DIR_OUTPUT = os.path.join(DIR_SCRIPT, "output", "output5_real")
 
-# Pastikan folder output ada
 os.makedirs(DIR_OUTPUT, exist_ok=True)
 
-
-# 1. File gambar yang akan diproses
+# Nama file gambar (pilih salah satu yang ada)
 NAMA_FILE_GAMBAR = "portrait.jpg"
 
-# 2. Ukuran output untuk bird's eye view
+# Ukuran output untuk bird's eye view
 OUTPUT_WIDTH = 400
 OUTPUT_HEIGHT = 500
 
+
 # ============================================================
-# FUNGSI HELPER
+# FUNGSI: Mencari path gambar
 # ============================================================
 
 def dapatkan_path_gambar(nama_file):
-    """Mendapatkan path lengkap file gambar"""
-    direktori_script = os.path.dirname(os.path.abspath(__file__))
-    path_data = os.path.join(direktori_script, "data", "images", nama_file)
+    """Mendapatkan path lengkap file gambar."""
+    # Coba di folder data/images
+    path_data = os.path.join(DIR_SCRIPT, "data", "images", nama_file)
+    if os.path.exists(path_data):
+        return path_data
     
-    if not os.path.exists(path_data):
-        path_data = os.path.join(direktori_script, "..", "..", 
-                                  "Bab-01-Pendahuluan", "data", "images", nama_file)
+    # Coba di folder Bab-01
+    path_data = os.path.join(DIR_SCRIPT, "..", "..", 
+                             "Bab-01-Pendahuluan", "data", "images", nama_file)
+    if os.path.exists(path_data):
+        return path_data
     
-    if not os.path.exists(path_data):
-        path_data = os.path.join(direktori_script, nama_file)
+    # Coba langsung di folder praktikum
+    path_data = os.path.join(DIR_SCRIPT, nama_file)
+    if os.path.exists(path_data):
+        return path_data
     
-    return path_data
-
-
-def buat_gambar_perspektif():
-    """Membuat gambar dengan objek dalam perspektif"""
-    gambar = np.zeros((500, 600, 3), dtype=np.uint8)
-    
-    # Background gradient
-    for i in range(500):
-        gambar[i, :] = [int(30 + i/10), int(40 + i/15), int(50 + i/20)]
-    
-    # Gambar "dokumen" dalam perspektif (trapezoid)
-    # Titik-titik sudut dokumen
-    pts = np.array([
-        [150, 80],    # top-left
-        [450, 100],   # top-right
-        [500, 400],   # bottom-right
-        [100, 380]    # bottom-left
-    ], np.int32)
-    
-    # Isi dokumen dengan warna cream
-    cv2.fillPoly(gambar, [pts], (200, 220, 240))
-    
-    # Border dokumen
-    cv2.polylines(gambar, [pts], True, (50, 50, 50), 3)
-    
-    # Konten dalam dokumen
-    # Garis-garis teks (simulasi)
-    for i in range(5):
-        y_offset = 120 + i * 50
-        # Interpolasi untuk menyesuaikan dengan perspektif
-        left_x = int(160 + (100 - 160) * (y_offset - 80) / 300)
-        right_x = int(440 + (490 - 440) * (y_offset - 100) / 300)
-        cv2.line(gambar, (left_x + 20, y_offset), (right_x - 20, y_offset), 
-                (100, 100, 100), 2)
-    
-    # Marker sudut
-    for pt in pts:
-        cv2.circle(gambar, tuple(pt), 8, (0, 0, 255), -1)
-    
-    return gambar, pts
+    # Tidak ditemukan
+    return None
 
 
 # ============================================================
-# FUNGSI TRANSFORMASI PERSPEKTIF
+# FUNGSI: Interactive Click untuk pilih 4 titik
+# ============================================================
+
+class PointSelector:
+    """Kelas untuk select 4 titik dengan mouse click."""
+    
+    def __init__(self, gambar):
+        """Inisialisasi dengan gambar input."""
+        # Simpan gambar asli untuk ditampilkan
+        self.gambar_asli = gambar.copy()
+        # Buat copy untuk drawing (menampilkan titik)
+        self.gambar_draw = gambar.copy()
+        # List untuk menyimpan 4 titik yang diklik
+        self.points = []
+        # Label untuk setiap titik
+        self.labels = ['TL (Top-Left)', 'TR (Top-Right)', 
+                       'BR (Bottom-Right)', 'BL (Bottom-Left)']
+        # Warna untuk setiap titik
+        self.colors = [(0, 255, 0), (0, 255, 255), 
+                       (0, 0, 255), (255, 0, 255)]
+    
+    def mouse_callback(self, event, x, y, flags, param):
+        """Callback ketika mouse diklik."""
+        # Jika mouse button kiri diklik
+        if event == cv2.EVENT_LBUTTONDOWN:
+            # Tampilkan info ke console
+            print(f"✓ Titik {len(self.points)+1}/{4}: {self.labels[len(self.points)]} = ({x}, {y})")
+            
+            # Tambahkan titik ke list
+            self.points.append([x, y])
+            
+            # Gambar lingkaran pada gambar
+            cv2.circle(self.gambar_draw, (x, y), 10, 
+                      self.colors[len(self.points)-1], -1)
+            # Tambahkan teks pada gambar
+            cv2.putText(self.gambar_draw, self.labels[len(self.points)-1], 
+                       (x+15, y-15), cv2.FONT_HERSHEY_SIMPLEX, 
+                       0.6, self.colors[len(self.points)-1], 2)
+            
+            # Tampilkan gambar yang sudah digambar
+            cv2.imshow('SELECT 4 TITIK', self.gambar_draw)
+            
+            # Jika sudah 4 titik, selesai
+            if len(self.points) == 4:
+                # Cetak informasi ke console
+                print("\n✓ Semua 4 titik sudah dipilih!")
+    
+    def select(self):
+        """Tampilkan window dan tunggu user pilih 4 titik."""
+        # Cetak informasi ke console
+        print("=" * 60)
+        # Cetak informasi ke console
+        print("INSTRUKSI: KLIK 4 TITIK SUDUT DOKUMEN (Urut: TL→TR→BR→BL)")
+        # Cetak informasi ke console
+        print("=" * 60)
+        # Tampilkan gambar pada window
+        cv2.imshow('SELECT 4 TITIK', self.gambar_draw)
+        # Set callback untuk mouse click
+        cv2.setMouseCallback('SELECT 4 TITIK', self.mouse_callback)
+        
+        # Tunggu sampai 4 titik dipilih atau ESC ditekan
+        while len(self.points) < 4:
+            # Tunggu key press (1ms timeout)
+            key = cv2.waitKey(1) & 0xFF
+            # Jika ESC ditekan, keluar
+            if key == 27:
+                # Cetak informasi ke console
+                print("Pembatalan oleh user.")
+                # Tutup window
+                cv2.destroyAllWindows()
+                return None
+        
+        # Tutup window
+        cv2.destroyAllWindows()
+        # Kembalikan hasil dari fungsi
+        return np.array(self.points, dtype=np.float32)
+
+
+# ============================================================
+# FUNGSI: Urutkan 4 titik (TL, TR, BR, BL)
 # ============================================================
 
 def order_points(pts):
-    """
-    Mengurutkan 4 titik dalam urutan: top-left, top-right, bottom-right, bottom-left
-    """
+    """Urutkan 4 titik: top-left, top-right, bottom-right, bottom-left."""
+    # Buat array numpy dari data
     pts = np.array(pts, dtype=np.float32)
     
     # Urutkan berdasarkan koordinat Y
@@ -125,470 +158,249 @@ def order_points(pts):
     top_left, top_right = top_points[np.argsort(top_points[:, 0])]
     bottom_left, bottom_right = bottom_points[np.argsort(bottom_points[:, 0])]
     
-    return np.array([top_left, top_right, bottom_right, bottom_left], dtype=np.float32)
+    # Kembalikan hasil dari fungsi
+    return np.array([top_left, top_right, bottom_right, bottom_left], 
+                    dtype=np.float32)
 
 
-def transformasi_perspektif(gambar, pts_src, lebar=None, tinggi=None):
-    """
-    Melakukan transformasi perspektif (bird's eye view)
-    
-    Parameter:
-    - gambar: input image
-    - pts_src: 4 titik sudut sumber (belum terurut)
-    - lebar, tinggi: ukuran output
-    
-    Return:
-    - gambar hasil transformasi
-    - matrix perspektif
-    """
-    # Urutkan titik
+# ============================================================
+# FUNGSI: Apply Perspective Transform
+# ============================================================
+
+def apply_perspective_transform(gambar, pts_src):
+    """Apply perspective transform untuk bird's eye view."""
+    # Urutkan titik ke urutan baku
     pts_src = order_points(pts_src)
     
-    # Hitung dimensi output jika tidak diberikan
-    if lebar is None or tinggi is None:
-        # Gunakan jarak terbesar sebagai dimensi
-        lebar_top = np.linalg.norm(pts_src[0] - pts_src[1])
-        lebar_bottom = np.linalg.norm(pts_src[3] - pts_src[2])
-        tinggi_left = np.linalg.norm(pts_src[0] - pts_src[3])
-        tinggi_right = np.linalg.norm(pts_src[1] - pts_src[2])
-        
-        lebar = int(max(lebar_top, lebar_bottom))
-        tinggi = int(max(tinggi_left, tinggi_right))
-    
-    # Titik tujuan (persegi panjang)
+    # Titik tujuan (persegi panjang sempurna)
     pts_dst = np.float32([
-        [0, 0],              # top-left
-        [lebar - 1, 0],      # top-right
-        [lebar - 1, tinggi - 1],  # bottom-right
-        [0, tinggi - 1]      # bottom-left
+        [0, 0],
+        [OUTPUT_WIDTH - 1, 0],
+        [OUTPUT_WIDTH - 1, OUTPUT_HEIGHT - 1],
+        [0, OUTPUT_HEIGHT - 1]
     ])
     
-    # Hitung perspective transform matrix
+    # Hitung matriks transformasi perspektif
     M = cv2.getPerspectiveTransform(pts_src, pts_dst)
     
-    # Terapkan transformasi
-    hasil = cv2.warpPerspective(gambar, M, (lebar, tinggi))
+    # Terapkan transformasi perspektif pada gambar
+    hasil = cv2.warpPerspective(gambar, M, (OUTPUT_WIDTH, OUTPUT_HEIGHT))
     
+    # Kembalikan hasil dari fungsi
     return hasil, M, pts_src, pts_dst
 
 
-def demo_perbedaan_affine_perspective(gambar, pts):
-    """
-    Membandingkan transformasi affine vs perspective
-    """
+# ============================================================
+# FUNGSI: Tampilkan Perbandingan Original vs Hasil
+# ============================================================
+
+def tampilkan_perbandingan(gambar_asli, pts_src, hasil_transform):
+    """Tampilkan 2 gambar side-by-side dan simpan."""
+    # Cetak informasi ke console
     print("\n" + "=" * 60)
-    print("PERBANDINGAN AFFINE vs PERSPECTIVE TRANSFORM")
+    # Cetak informasi ke console
+    print("HASIL TRANSFORMASI PERSPEKTIF")
+    # Cetak informasi ke console
     print("=" * 60)
     
-    print("""
-PERBEDAAN UTAMA:
-
-AFFINE TRANSFORM:
-├── Membutuhkan 3 pasang titik
-├── DOF = 6
-├── Garis paralel TETAP paralel
-├── Matrix 2x3
-
-PERSPECTIVE TRANSFORM:
-├── Membutuhkan 4 pasang titik
-├── DOF = 8
-├── Garis paralel BISA tidak paralel
-├── Matrix 3x3 (homography)
-    """)
-    
-    tinggi, lebar = gambar.shape[:2]
-    
-    # Perspective transform
-    hasil_persp, _, _, _ = transformasi_perspektif(gambar, pts, OUTPUT_WIDTH, OUTPUT_HEIGHT)
-    
-    # Affine transform (gunakan 3 titik pertama)
-    pts_src_affine = np.float32(pts[:3])
-    pts_dst_affine = np.float32([
-        [0, 0],
-        [OUTPUT_WIDTH - 1, 0],
-        [OUTPUT_WIDTH - 1, OUTPUT_HEIGHT - 1]
-    ])
-    M_affine = cv2.getAffineTransform(pts_src_affine, pts_dst_affine)
-    hasil_affine = cv2.warpAffine(gambar, M_affine, (OUTPUT_WIDTH, OUTPUT_HEIGHT))
-    
-    # Tampilkan perbandingan
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-    
-    # Original dengan titik ditandai
-    gambar_marked = gambar.copy()
-    pts_ordered = order_points(pts)
+    # Buat copy untuk marking titik
+    gambar_marked = gambar_asli.copy()
+    pts_ordered = order_points(pts_src)
     labels = ['TL', 'TR', 'BR', 'BL']
     colors = [(0, 255, 0), (0, 255, 255), (0, 0, 255), (255, 0, 255)]
+    
+    # Gambar lingkaran dan label untuk setiap titik
     for i, (pt, label, color) in enumerate(zip(pts_ordered, labels, colors)):
-        cv2.circle(gambar_marked, tuple(pt.astype(int)), 10, color, -1)
-        cv2.putText(gambar_marked, label, (int(pt[0])+15, int(pt[1])), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+        # Gambar lingkaran pada gambar
+        cv2.circle(gambar_marked, tuple(pt.astype(int)), 8, color, -1)
+        # Tambahkan teks pada gambar
+        cv2.putText(gambar_marked, label, (int(pt[0])+10, int(pt[1])-10),
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
     
+    # Buat figure untuk plot
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    
+    # Tampilkan gambar pada subplot tertentu
     axes[0].imshow(cv2.cvtColor(gambar_marked, cv2.COLOR_BGR2RGB))
-    axes[0].set_title("Original dengan 4 Titik")
+    # Set judul untuk subplot
+    axes[0].set_title("Original dengan 4 Titik Sudut", fontsize=12)
+    # Nonaktifkan atau atur axis pada subplot
     axes[0].axis('off')
     
-    axes[1].imshow(cv2.cvtColor(hasil_affine, cv2.COLOR_BGR2RGB))
-    axes[1].set_title("Affine Transform\n(3 titik, distorsi terlihat)")
+    # Tampilkan gambar pada subplot tertentu
+    axes[1].imshow(cv2.cvtColor(hasil_transform, cv2.COLOR_BGR2RGB))
+    # Set judul untuk subplot
+    axes[1].set_title("Bird's Eye View (Perspective Corrected)", fontsize=12)
+    # Nonaktifkan atau atur axis pada subplot
     axes[1].axis('off')
     
-    axes[2].imshow(cv2.cvtColor(hasil_persp, cv2.COLOR_BGR2RGB))
-    axes[2].set_title("Perspective Transform\n(4 titik, koreksi sempurna)")
-    axes[2].axis('off')
-    
-    plt.suptitle("Affine vs Perspective Transform", fontsize=14)
+    # Set judul keseluruhan figure
+    plt.suptitle("Perspective Transform - Foto Nyata", fontsize=14, fontweight='bold')
+    # Atur spacing antar subplot
     plt.tight_layout()
-    output_path = os.path.join(DIR_OUTPUT, "output.png")
-
-    plt.savefig(output_path, dpi=100, bbox_inches="tight")
-
-    print(f"[SAVED] {output_path}")
-
+    
+    # Simpan figure ke file dengan kualitas DPI tertentu
+    output_path = os.path.join(DIR_OUTPUT, "hasil_transform.png")
+    # Simpan figure ke file dengan kualitas DPI tertentu
+    plt.savefig(output_path, dpi=150, bbox_inches="tight")
+    # Cetak informasi ke console
+    print(f"\n[SAVED] {output_path}")
+    # Tutup figure untuk menghemat memory
     plt.close()
 
 
-def demo_berbagai_perspektif():
-    """
-    Demonstrasi berbagai sudut perspektif
-    """
+# ============================================================
+# FUNGSI: Tampilkan Info Matriks Homography
+# ============================================================
+
+def tampilkan_info_homography(M, pts_src, pts_dst):
+    """Tampilkan informasi matriks homography."""
+    # Cetak informasi ke console
     print("\n" + "=" * 60)
-    print("DEMO BERBAGAI SUDUT PERSPEKTIF")
+    # Cetak informasi ke console
+    print("INFORMASI MATRIKS HOMOGRAPHY (3×3)")
+    # Cetak informasi ke console
     print("=" * 60)
-    
-    # Buat gambar dasar (persegi)
-    gambar = np.zeros((400, 400, 3), dtype=np.uint8)
-    gambar[:] = (200, 220, 240)  # Cream background
-    cv2.rectangle(gambar, (50, 50), (350, 350), (100, 100, 100), 2)
-    
-    # Grid
-    for i in range(50, 350, 50):
-        cv2.line(gambar, (i, 50), (i, 350), (150, 150, 150), 1)
-        cv2.line(gambar, (50, i), (350, i), (150, 150, 150), 1)
-    
-    cv2.putText(gambar, "ORIGINAL", (130, 210), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (50, 50, 50), 2)
-    
-    tinggi, lebar = gambar.shape[:2]
-    
-    # Titik asli (persegi penuh)
-    pts_orig = np.float32([
-        [0, 0], [lebar-1, 0], [lebar-1, tinggi-1], [0, tinggi-1]
-    ])
-    
-    # Berbagai perspektif tujuan
-    perspektif_list = [
-        (pts_orig, "Original"),
-        (np.float32([[50, 0], [lebar-51, 0], [lebar-1, tinggi-1], [0, tinggi-1]]), 
-         "View dari Bawah"),
-        (np.float32([[0, 50], [lebar-1, 0], [lebar-1, tinggi-1], [0, tinggi-51]]), 
-         "View dari Kanan"),
-        (np.float32([[0, 0], [lebar-1, 50], [lebar-51, tinggi-1], [50, tinggi-1]]), 
-         "View dari Atas"),
-        (np.float32([[50, 50], [lebar-51, 0], [lebar-1, tinggi-51], [0, tinggi-1]]), 
-         "Diagonal"),
-        (np.float32([[80, 80], [lebar-81, 80], [lebar-81, tinggi-81], [80, tinggi-81]]), 
-         "Zoom In"),
-    ]
-    
-    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
-    axes = axes.flatten()
-    
-    for i, (pts_dst, label) in enumerate(perspektif_list):
-        M = cv2.getPerspectiveTransform(pts_orig, pts_dst)
-        hasil = cv2.warpPerspective(gambar, M, (lebar, tinggi))
-        
-        axes[i].imshow(cv2.cvtColor(hasil, cv2.COLOR_BGR2RGB))
-        axes[i].set_title(label)
-        axes[i].axis('off')
-    
-    plt.suptitle("Berbagai Transformasi Perspektif", fontsize=14)
-    plt.tight_layout()
-    output_path = os.path.join(DIR_OUTPUT, "output.png")
-
-    plt.savefig(output_path, dpi=100, bbox_inches="tight")
-
-    print(f"[SAVED] {output_path}")
-
-    plt.close()
-
-
-def visualisasi_homography_matrix():
-    """
-    Penjelasan struktur homography matrix
-    """
-    print("\n" + "=" * 60)
-    print("STRUKTUR HOMOGRAPHY MATRIX")
-    print("=" * 60)
-    
-    print("""
-HOMOGRAPHY MATRIX (3x3):
-
-    | h00  h01  h02 |     | x |     | x' × w |
-    | h10  h11  h12 |  ×  | y |  =  | y' × w |
-    | h20  h21  h22 |     | 1 |     |   w    |
-
-Koordinat final:
-    x_final = x' / w = (h00×x + h01×y + h02) / (h20×x + h21×y + h22)
-    y_final = y' / w = (h10×x + h11×y + h12) / (h20×x + h21×y + h22)
-
-MENGAPA 4 TITIK?
-├── Matrix 3x3 dengan h22=1 memiliki 8 unknowns
-├── Setiap titik memberikan 2 persamaan
-├── 4 titik × 2 = 8 persamaan untuk 8 unknowns
-
-DEGREE OF FREEDOM (DOF):
-┌────────────────────┬──────┬─────────────────────────┐
-│ Transformasi       │ DOF  │ Titik yang Dibutuhkan   │
-├────────────────────┼──────┼─────────────────────────┤
-│ Translasi          │ 2    │ 1 titik                 │
-│ Euclidean (rigid)  │ 3    │ 2 titik                 │
-│ Similarity         │ 4    │ 2 titik                 │
-│ Affine             │ 6    │ 3 titik                 │
-│ Projective (homog.)│ 8    │ 4 titik                 │
-└────────────────────┴──────┴─────────────────────────┘
-
-PROPERTI HOMOGRAPHY:
-├── Garis lurus TETAP lurus (collinearity preserved)
-├── Garis paralel BISA menjadi tidak paralel
-├── Cross-ratio preserved
-└── Dapat memodelkan rotasi 3D dari bidang datar
-    """)
-
-
-def demo_inverse_perspective():
-    """
-    Demonstrasi inverse perspective transform
-    """
-    print("\n" + "=" * 60)
-    print("INVERSE PERSPECTIVE TRANSFORM")
-    print("=" * 60)
-    
-    # Buat gambar dan transform
-    gambar, pts = buat_gambar_perspektif()
-    hasil, M, pts_src, pts_dst = transformasi_perspektif(gambar, pts, OUTPUT_WIDTH, OUTPUT_HEIGHT)
-    
-    # Inverse transform
-    M_inv = np.linalg.inv(M)
-    tinggi_orig, lebar_orig = gambar.shape[:2]
-    hasil_inv = cv2.warpPerspective(hasil, M_inv, (lebar_orig, tinggi_orig))
-    
-    # Tampilkan
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-    
-    axes[0].imshow(cv2.cvtColor(gambar, cv2.COLOR_BGR2RGB))
-    axes[0].set_title("Original (Perspective View)")
-    axes[0].axis('off')
-    
-    axes[1].imshow(cv2.cvtColor(hasil, cv2.COLOR_BGR2RGB))
-    axes[1].set_title("Bird's Eye View\n(Perspective Corrected)")
-    axes[1].axis('off')
-    
-    axes[2].imshow(cv2.cvtColor(hasil_inv, cv2.COLOR_BGR2RGB))
-    axes[2].set_title("Inverse Transform\n(Kembali ke Perspective)")
-    axes[2].axis('off')
-    
-    plt.suptitle("Forward dan Inverse Perspective Transform", fontsize=14)
-    plt.tight_layout()
-    output_path = os.path.join(DIR_OUTPUT, "output.png")
-
-    plt.savefig(output_path, dpi=100, bbox_inches="tight")
-
-    print(f"[SAVED] {output_path}")
-
-    plt.close()
-    
-    print("\nPerspective Matrix (3x3):")
+    # Cetak informasi ke console
+    print("\nMatriks M (Perspective Transform Matrix):")
+    # Cetak matriks M ke console
     print(M)
-    print("\nInverse Matrix:")
+    
+    # Cetak informasi ke console
+    print("\nTitik Sumber (Asli - Perspektif):")
+    # Cetak informasi ke console
+    print(f"  TL: {pts_src[0]}")
+    # Cetak informasi ke console
+    print(f"  TR: {pts_src[1]}")
+    # Cetak informasi ke console
+    print(f"  BR: {pts_src[2]}")
+    # Cetak informasi ke console
+    print(f"  BL: {pts_src[3]}")
+    
+    # Cetak informasi ke console
+    print("\nTitik Tujuan (Bird's Eye View):")
+    # Cetak informasi ke console
+    print(f"  TL: {pts_dst[0]}")
+    # Cetak informasi ke console
+    print(f"  TR: {pts_dst[1]}")
+    # Cetak informasi ke console
+    print(f"  BR: {pts_dst[2]}")
+    # Cetak informasi ke console
+    print(f"  BL: {pts_dst[3]}")
+    
+    # Hitung determinan matriks
+    det = np.linalg.det(M)
+    # Cetak informasi ke console
+    print(f"\nDeterminan: {det:.4f}")
+    # Hitung inverse matriks
+    M_inv = np.linalg.inv(M)
+    # Cetak informasi ke console
+    print(f"\nInverse Matrix (untuk transform balik):")
+    # Cetak matriks inverse ke console
     print(M_inv)
 
 
-def demo_find_homography():
-    """
-    Demonstrasi cv2.findHomography untuk banyak titik
-    """
-    print("\n" + "=" * 60)
-    print("FIND HOMOGRAPHY DENGAN BANYAK TITIK")
-    print("=" * 60)
-    
-    print("""
-cv2.findHomography() dapat menghitung homography dari:
-- Lebih dari 4 pasang titik (menggunakan least squares)
-- Dengan RANSAC untuk menangani outliers
-
-Berguna untuk:
-├── Feature matching (SIFT, ORB, dll)
-├── Panorama stitching
-└── Object detection dengan template matching
-    """)
-    
-    # Simulasi titik-titik dengan beberapa outlier
-    np.random.seed(42)
-    
-    # Titik sumber (grid 4x4)
-    pts_src = []
-    for i in range(4):
-        for j in range(4):
-            pts_src.append([100 + j*100, 100 + i*100])
-    pts_src = np.float32(pts_src)
-    
-    # True homography (rotasi 15 derajat + perspektif)
-    angle = np.radians(15)
-    H_true = np.array([
-        [np.cos(angle), -np.sin(angle), 50],
-        [np.sin(angle), np.cos(angle), 30],
-        [0.0001, 0.0002, 1]
-    ])
-    
-    # Transformasi titik
-    pts_dst = []
-    for pt in pts_src:
-        pt_h = np.array([pt[0], pt[1], 1])
-        pt_t = H_true @ pt_h
-        pts_dst.append([pt_t[0]/pt_t[2], pt_t[1]/pt_t[2]])
-    pts_dst = np.float32(pts_dst)
-    
-    # Tambahkan noise
-    noise = np.random.randn(*pts_dst.shape) * 3
-    pts_dst_noisy = pts_dst + noise
-    
-    # Tambahkan outliers
-    pts_dst_noisy[5] += [100, 100]  # Outlier
-    pts_dst_noisy[10] += [-80, 50]  # Outlier
-    
-    # Find homography dengan berbagai metode
-    H_lsq, _ = cv2.findHomography(pts_src, pts_dst_noisy, 0)  # Least squares
-    H_ransac, mask_ransac = cv2.findHomography(pts_src, pts_dst_noisy, cv2.RANSAC, 5.0)
-    H_lmeds, mask_lmeds = cv2.findHomography(pts_src, pts_dst_noisy, cv2.LMEDS)
-    
-    # Visualisasi
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-    
-    methods = [
-        (H_lsq, None, "Least Squares\n(tanpa rejection)"),
-        (H_ransac, mask_ransac, "RANSAC\n(outlier rejection)"),
-        (H_lmeds, mask_lmeds, "LMedS\n(outlier rejection)"),
-    ]
-    
-    for ax, (H, mask, title) in zip(axes, methods):
-        ax.scatter(pts_src[:, 0], pts_src[:, 1], c='blue', s=50, label='Source')
-        ax.scatter(pts_dst_noisy[:, 0], pts_dst_noisy[:, 1], c='red', s=50, label='Destination (noisy)')
-        
-        if mask is not None:
-            inliers = mask.ravel() == 1
-            ax.scatter(pts_src[inliers, 0], pts_src[inliers, 1], 
-                      facecolors='none', edgecolors='green', s=100, linewidths=2, label='Inliers')
-        
-        ax.set_title(title)
-        ax.legend()
-        ax.set_xlim(0, 500)
-        ax.set_ylim(500, 0)
-        ax.set_aspect('equal')
-    
-    plt.suptitle("Perbandingan Metode findHomography", fontsize=14)
-    plt.tight_layout()
-    output_path = os.path.join(DIR_OUTPUT, "output.png")
-
-    plt.savefig(output_path, dpi=100, bbox_inches="tight")
-
-    print(f"[SAVED] {output_path}")
-
-    plt.close()
-
-
 # ============================================================
-# PROGRAM UTAMA
+# FUNGSI UTAMA
 # ============================================================
 
 def main():
-    """Fungsi utama program"""
-    
+    """Fungsi utama program."""
+    # Cetak informasi ke console
     print("\n" + "=" * 60)
-    print("PRAKTIKUM: TRANSFORMASI PERSPEKTIF")
-    print("Bab 2 - Pembentukan Citra")
+    # Cetak informasi ke console
+    print("PERSPEKTIF TRANSFORM - FOTO NYATA")
+    # Cetak informasi ke console
     print("=" * 60)
     
-    # Buat gambar dengan perspektif
-    gambar, pts = buat_gambar_perspektif()
-    print(f"[INFO] Ukuran gambar: {gambar.shape}")
-    print(f"[INFO] Titik sudut dokumen: {pts.tolist()}")
+    # Cari dan load gambar
+    path_gambar = dapatkan_path_gambar(NAMA_FILE_GAMBAR)
     
-    # 1. Penjelasan homography matrix
-    visualisasi_homography_matrix()
+    # Jika file tidak ditemukan
+    if path_gambar is None or not os.path.exists(path_gambar):
+        # Cetak informasi ke console
+        print(f"\n❌ Error: File '{NAMA_FILE_GAMBAR}' tidak ditemukan!")
+        # Cetak informasi ke console
+        print(f"Lokasi pencarian:")
+        # Cetak informasi ke console
+        print(f"  1. {os.path.join(DIR_SCRIPT, 'data', 'images')}")
+        # Cetak informasi ke console
+        print(f"  2. Bab-01-Pendahuluan/data/images")
+        # Cetak informasi ke console
+        print(f"  3. Folder praktikum langsung")
+        return
     
-    # 2. Demo transformasi dasar
-    hasil, M, pts_src, pts_dst = transformasi_perspektif(gambar, pts, OUTPUT_WIDTH, OUTPUT_HEIGHT)
+    # Baca gambar
+    gambar = cv2.imread(path_gambar)
     
-    fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+    # Cek kondisi logis
+    if gambar is None:
+        # Cetak informasi ke console
+        print(f"\n❌ Error: Gagal membaca gambar dari {path_gambar}")
+        return
     
-    # Gambar asli dengan titik ditandai
-    gambar_marked = gambar.copy()
-    for i, pt in enumerate(pts):
-        cv2.circle(gambar_marked, tuple(pt), 8, (0, 255, 0), -1)
-        cv2.putText(gambar_marked, str(i+1), (pt[0]+10, pt[1]), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+    # Cetak informasi ke console
+    print(f"\n✓ Gambar berhasil dimuat: {path_gambar}")
+    # Cetak informasi ke console
+    print(f"  Ukuran: {gambar.shape[1]} x {gambar.shape[0]}")
     
-    axes[0].imshow(cv2.cvtColor(gambar_marked, cv2.COLOR_BGR2RGB))
-    axes[0].set_title("Gambar Asli (Perspective View)")
-    axes[0].axis('off')
+    # Tampilkan ukuran output
+    # Cetak informasi ke console
+    print(f"\nUkuran output: {OUTPUT_WIDTH} x {OUTPUT_HEIGHT}")
     
-    axes[1].imshow(cv2.cvtColor(hasil, cv2.COLOR_BGR2RGB))
-    axes[1].set_title(f"Bird's Eye View\n({OUTPUT_WIDTH}x{OUTPUT_HEIGHT})")
-    axes[1].axis('off')
+    # Buat selector untuk pilih 4 titik
+    selector = PointSelector(gambar)
     
-    plt.suptitle("Koreksi Perspektif Dokumen", fontsize=14)
-    plt.tight_layout()
-    output_path = os.path.join(DIR_OUTPUT, "output.png")
-
-    plt.savefig(output_path, dpi=100, bbox_inches="tight")
-
-    print(f"[SAVED] {output_path}")
-
-    plt.close()
+    # Biarkan user klik 4 titik
+    pts_src = selector.select()
     
-    # 3. Perbandingan affine vs perspective
-    demo_perbedaan_affine_perspective(gambar, pts)
+    # Cek kondisi logis
+    if pts_src is None:
+        return
     
-    # 4. Demo berbagai perspektif
-    demo_berbagai_perspektif()
+    # Apply perspective transform
+    # Cetak informasi ke console
+    print("\nMenghitung matriks transformasi perspektif...")
+    hasil, M, pts_src_ordered, pts_dst = apply_perspective_transform(gambar, pts_src)
     
-    # 5. Demo inverse perspective
-    demo_inverse_perspective()
+    # Tampilkan info matriks
+    tampilkan_info_homography(M, pts_src_ordered, pts_dst)
     
-    # 6. Demo find homography
-    demo_find_homography()
+    # Tampilkan perbandingan dan simpan
+    tampilkan_perbandingan(gambar, pts_src, hasil)
+    
+    # Simpan gambar hasil transform
+    output_image_path = os.path.join(DIR_OUTPUT, "transform_hasil.jpg")
+    # Simpan gambar dengan format JPG
+    cv2.imwrite(output_image_path, hasil)
+    # Cetak informasi ke console
+    print(f"[SAVED] {output_image_path}")
     
     # Ringkasan
+    # Cetak informasi ke console
     print("\n" + "=" * 60)
-    print("RINGKASAN TRANSFORMASI PERSPEKTIF")
+    # Cetak informasi ke console
+    print("RINGKASAN")
+    # Cetak informasi ke console
     print("=" * 60)
-    print("""
-FUNGSI UTAMA:
-    M = cv2.getPerspectiveTransform(src_pts, dst_pts)  # Tepat 4 titik
-    M = cv2.findHomography(src_pts, dst_pts, method)   # ≥4 titik + outlier handling
-    hasil = cv2.warpPerspective(src, M, (width, height))
+    # Cetak informasi ke console
+    print(f"""
+✓ Program selesai!
 
-PARAMETER findHomography:
-├── method = 0        : Least squares (semua titik)
-├── method = RANSAC   : Random sample consensus
-└── method = LMEDS    : Least median of squares
+PENJELASAN:
+- cv2.getPerspectiveTransform() menghitung matriks 3×3 dari 4 titik
+- Matriks ini menyimpan "peta jalan" transformasi
+- cv2.warpPerspective() menggerakkan setiap pixel sesuai peta jalan
+- Hasilnya: Dokumen terlihat dari atas (bird's eye view)
 
-PERBEDAAN DENGAN AFFINE:
-├── Affine: 3 titik, DOF=6, paralel tetap paralel
-└── Perspective: 4 titik, DOF=8, paralel bisa konvergen
+OUTPUT:
+- {os.path.join(DIR_OUTPUT, 'hasil_transform.png')} → Perbandingan before-after
+- {os.path.join(DIR_OUTPUT, 'transform_hasil.jpg')} → Gambar hasil transform
 
-APLIKASI:
-├── Document scanner
-├── Augmented reality
-├── Panorama stitching
-├── Camera calibration
-└── 3D reconstruction
-
-TIPS:
-- Urutan titik: top-left, top-right, bottom-right, bottom-left
-- Gunakan RANSAC jika ada outlier pada feature matching
-- Inverse transform dengan np.linalg.inv(M)
-""")
+NEXT STEP:
+- Coba dengan 4 titik berbeda untuk hasil berbeda
+- Bandingkan dengan affine transform (3 titik) untuk lihat perbedaannya
+    """)
 
 
 # Jalankan program utama

@@ -10,15 +10,15 @@ Mahasiswa mampu memahami dan mengimplementasikan teknik estimasi kedalaman mengg
 
 ### Tujuan Khusus per Percobaan
 
-| No | Percobaan | Tujuan |
-|----|-----------|--------|
-| 1 | Stereo Camera Calibration | Memahami cara mengkalibrasi stereo camera |
-| 2 | Stereo Rectification | Memahami proses rectification untuk stereo matching |
-| 3 | Block Matching | Mengimplementasikan algoritma stereo matching dasar |
-| 4 | Semi-Global Matching (SGM) | Menggunakan SGM untuk hasil lebih baik |
-| 5 | Disparity to Depth Conversion | Mengkonversi disparity map ke depth map |
-| 6 | Monocular Depth Estimation | Menggunakan deep learning untuk depth estimation |
-| 7 | Depth Map Applications | Menerapkan depth map untuk segmentasi dan 3D |
+| No | Percobaan | Tujuan | Penerapan Nyata |
+|----|-----------|--------|----------------|
+| 1 | Stereo Camera Calibration | Memahami cara mengkalibrasi stereo camera | Kalibrasi rig kamera robot, scanner 3D |
+| 2 | Stereo Rectification | Memahami proses rectification untuk stereo matching | Optimasi pipeline stereo pada kendaraan otonom |
+| 3 | Block Matching | Mengimplementasikan algoritma stereo matching dasar | Depth real-time sederhana (robotik edukasi) |
+| 4 | Semi-Global Matching (SGM) | Menggunakan SGM untuk hasil lebih baik | ADAS/robot navigasi dengan noise rendah |
+| 5 | Disparity to Depth Conversion | Mengkonversi disparity map ke depth map | Estimasi jarak & ukur volume objek |
+| 6 | Monocular Depth Estimation | Menggunakan deep learning untuk depth estimation | AR, portrait mode, scene understanding |
+| 7 | Depth Map Applications | Menerapkan depth map untuk segmentasi dan 3D | Bokeh, obstacle detection, point cloud |
 
 ---
 
@@ -70,6 +70,10 @@ pip install opencv-python opencv-contrib-python numpy torch torchvision timm ope
    ```bash
    python -c "import cv2; import torch; print('Libraries ready!')"
    ```
+
+> **Catatan Otomasi Tampilan:**
+> Semua program praktikum akan menutup window visualisasi secara otomatis setelah ~2 detik.
+> Jika ingin menutup lebih cepat, tekan tombol **q**.
 
 ### Percobaan 1: Stereo Camera Calibration
 

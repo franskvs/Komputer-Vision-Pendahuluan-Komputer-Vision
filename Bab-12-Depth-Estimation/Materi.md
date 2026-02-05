@@ -31,7 +31,6 @@ Setelah mempelajari materi ini, mahasiswa diharapkan mampu:
 Depth (Z) = (Baseline × Focal Length) / Disparity
 
 Z = (B × f) / d
-
 dimana:
 - Z = kedalaman (meter)
 - B = baseline (jarak antar kamera)
@@ -40,10 +39,6 @@ dimana:
 ```
 
 ### 1.3 Disparity Map
-
-**Disparity Map** adalah gambar yang menyimpan nilai disparity untuk setiap piksel. Piksel dengan disparity besar berarti dekat, disparity kecil berarti jauh.
-
-```
 ┌────────────────────────────────────────────────────────────────┐
 │                     DISPARITY VS DEPTH                          │
 │                                                                  │
@@ -52,53 +47,30 @@ dimana:
 │                                                                  │
 │       GAMBAR ASLI              DISPARITY MAP                    │
 │      ┌──────────┐              ┌──────────┐                     │
-│      │   🚗    │              │ ██████   │  ← Object dekat     │
-│      │         │              │ ████     │                      │
 │      │ 🏔️      │              │ ░░       │  ← Object jauh      │
 │      └──────────┘              └──────────┘                     │
-└────────────────────────────────────────────────────────────────┘
-```
 
 ---
 
 ## 2. Konsep Utama
 
 ### 2.1 Pipeline Stereo Matching
-
-```
 ┌─────────────────────────────────────────────────────────────────┐
 │                  PIPELINE STEREO MATCHING                        │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐  │
-│  │ Stereo   │───▶│ Image    │───▶│ Matching │───▶│ Disparity│  │
-│  │ Rectify  │    │ Preproc  │    │ Cost     │    │ Compute  │  │
 │  └──────────┘    └──────────┘    └──────────┘    └──────────┘  │
 │                                                                  │
 │       │               │               │               │          │
-│       ▼               ▼               ▼               ▼          │
-│   Epipolar        Grayscale/     SAD/SSD/NCC      Winner-Take  │
-│   Lines Align     Normalize      Census/BT       -All/SGM      │
-│                                                                  │
 │                              │                                   │
 │                              ▼                                   │
 │                    ┌──────────────────┐                         │
-│                    │  Post-Processing  │                         │
-│                    │  (Filtering, etc) │                         │
-│                    └──────────────────┘                         │
-│                              │                                   │
 │                              ▼                                   │
-│                    ┌──────────────────┐                         │
 │                    │   Depth Map      │                         │
 │                    └──────────────────┘                         │
 └─────────────────────────────────────────────────────────────────┘
 ```
-
-### 2.2 Stereo Rectification
-
-**Rectification** adalah proses transformasi gambar stereo sehingga:
 - Epipolar lines menjadi horizontal
-- Baris yang sama di kedua gambar mencari korespondensi yang sama
 - Mempercepat pencarian matching (dari 2D ke 1D)
 
 ```

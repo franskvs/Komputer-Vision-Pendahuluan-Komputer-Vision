@@ -41,6 +41,8 @@ import cv2
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 # ============================================================
 # PARAMETER YANG DAPAT DIMODIFIKASI
@@ -238,73 +240,99 @@ def main():
     """
     Fungsi utama untuk HDR imaging demo.
     """
+    # Cetak header awal program
     print("=" * 60)
+    # Cetak judul praktikum
     print("HDR IMAGING")
+    # Cetak garis pemisah
     print("=" * 60)
     
+    # Pastikan folder output tersedia
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
-    # Load exposure bracket
+    # Tentukan folder exposure bracket
     hdr_dir = os.path.join(DATA_DIR, "hdr_bracket")
     
+    # Informasi proses loading
     print("\nLoading exposure bracket...")
+    # Muat images dan exposure times
     images, times = load_exposure_bracket(hdr_dir)
     
+    # Validasi ketersediaan exposure
     if images is None or len(images) < 2:
+        # Informasi error jika data kurang
         print("\nTidak cukup exposure bracket images!")
+        # Instruksi untuk download data
         print("Jalankan download_sample_data.py terlebih dahulu.")
+        # Hentikan program
         return
     
+    # Tampilkan jumlah exposure
     print(f"\nLoaded {len(images)} exposures")
+    # Tampilkan exposure times
     print(f"Exposure times: {times}")
     
-    # Align images
+    # Lakukan alignment antar exposure
     aligned = align_images(images)
     
-    # Create HDR
+    # Cetak garis pemisah proses HDR
     print("\n" + "-" * 40)
+    # Buat HDR dengan metode Debevec
     hdr_debevec, response = create_hdr_debevec(aligned, times)
     
-    # Plot response curve
+    # Plot kurva response camera
     plot_response_curve(response, os.path.join(OUTPUT_DIR, "01_response_curve.png"))
     
-    # Save HDR
+    # Bentuk path file HDR
     hdr_path = os.path.join(OUTPUT_DIR, "01_hdr_image.hdr")
+    # Simpan HDR ke disk
     cv2.imwrite(hdr_path, hdr_debevec)
+    # Konfirmasi lokasi HDR
     print(f"  HDR saved to: {hdr_path}")
     
-    # Tone mapping comparison
+    # Cetak garis pemisah tone mapping
     print("\n" + "-" * 40)
+    # Informasi proses tone mapping
     print("Applying tone mapping operators...")
     
+    # Siapkan container hasil
     results = {}
     
-    # Simple
+    # Terapkan tone mapping sederhana
     results['Simple Gamma'] = tonemap_simple(hdr_debevec)
+    # Simpan hasil tone mapping sederhana
     cv2.imwrite(os.path.join(OUTPUT_DIR, "01_tonemap_simple.jpg"), results['Simple Gamma'])
     
-    # Drago
+    # Terapkan tone mapping Drago
     results['Drago'] = tonemap_drago(hdr_debevec)
+    # Simpan hasil Drago
     cv2.imwrite(os.path.join(OUTPUT_DIR, "01_tonemap_drago.jpg"), results['Drago'])
     
-    # Reinhard
+    # Terapkan tone mapping Reinhard
     results['Reinhard'] = tonemap_reinhard(hdr_debevec)
+    # Simpan hasil Reinhard
     cv2.imwrite(os.path.join(OUTPUT_DIR, "01_tonemap_reinhard.jpg"), results['Reinhard'])
     
-    # Mantiuk
+    # Terapkan tone mapping Mantiuk
     results['Mantiuk'] = tonemap_mantiuk(hdr_debevec)
+    # Simpan hasil Mantiuk
     cv2.imwrite(os.path.join(OUTPUT_DIR, "01_tonemap_mantiuk.jpg"), results['Mantiuk'])
     
-    # Add original exposures to comparison
+    # Tambahkan exposure awal untuk perbandingan
     results['Under-exposed'] = aligned[0]
+    # Tambahkan exposure akhir untuk perbandingan
     results['Over-exposed'] = aligned[-1]
     
-    # Create comparison figure
+    # Buat figure perbandingan
     create_comparison_figure(results, os.path.join(OUTPUT_DIR, "01_hdr_comparison.png"))
     
+    # Cetak ringkasan
     print("\n" + "=" * 60)
+    # Judul ringkasan
     print("SUMMARY")
+    # Garis pemisah ringkasan
     print("=" * 60)
+    # Tampilkan daftar file output
     print(f"""
 HDR processing complete!
 
@@ -323,11 +351,15 @@ Tips:
   - Mantiuk: Best for details
 """)
     
-    # Display results
+    # Tampilkan hasil Drago
     cv2.imshow("HDR - Drago", results['Drago'])
+    # Tampilkan hasil Reinhard
     cv2.imshow("HDR - Reinhard", results['Reinhard'])
-    print("\nTekan sembarang tombol untuk menutup...")
-    cv2.waitKey(0)
+    # Informasi auto-close
+    print("\nMenampilkan hasil (akan otomatis tertutup dalam 2 detik)...")
+    # Tunggu 2 detik
+    cv2.waitKey(2000)
+    # Tutup semua window
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":

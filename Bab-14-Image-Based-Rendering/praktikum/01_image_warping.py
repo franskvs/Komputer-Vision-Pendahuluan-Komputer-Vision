@@ -25,6 +25,8 @@ Author: Praktikum Computer Vision
 import numpy as np
 from pathlib import Path
 import time
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 # ============================================================
 # KONFIGURASI - Sesuaikan parameter sesuai kebutuhan

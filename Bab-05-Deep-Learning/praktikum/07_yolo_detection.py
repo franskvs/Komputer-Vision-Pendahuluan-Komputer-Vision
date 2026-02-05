@@ -311,7 +311,11 @@ def demo_yolo_inference():
                 draw_detection(image, xyxy, cls, conf, list(model.names.values()))
         
         cv2.imshow("YOLO Detection Results", image)
-        cv2.waitKey(0)
+        print("\n[INFO] Tekan 'q' untuk menutup gambar...")
+        while True:
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q') or key == 27:  # 'q' atau ESC
+                break
         cv2.destroyAllWindows()
         
     else:
@@ -338,7 +342,11 @@ def demo_yolo_inference():
             draw_detection(image, det['box'], det['class_id'], det['confidence'])
         
         cv2.imshow("YOLO Detection Results (Simulated)", image)
-        cv2.waitKey(0)
+        print("\n[INFO] Tekan 'q' untuk menutup gambar...")
+        while True:
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q') or key == 27:
+                break
         cv2.destroyAllWindows()
 
 
@@ -390,6 +398,8 @@ def demo_yolo_video():
             fps_list.append(fps)
             
             # Display FPS
+            # cv2.putText(a, b, c, d, e, f, g): a=frame, b=teks, c=posisi(x,y),
+            # d=font, e=skala, f=warna(B,G,R), g=ketebalan
             cv2.putText(frame, f"FPS: {fps:.1f}", (10, 30),
                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             
@@ -429,8 +439,12 @@ def demo_yolo_video():
                 draw_detection(frame, det['box'], det['class_id'], det['conf'])
             
             # Display FPS (simulated)
+            # cv2.putText(a, b, c, d, e, f, g): a=frame, b=teks, c=posisi(x,y),
+            # d=font, e=skala, f=warna(B,G,R), g=ketebalan
             cv2.putText(frame, f"FPS: 30.0 (simulated)", (10, 30),
                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            # cv2.putText(a, b, c, d, e, f, g): a=frame, b=teks, c=posisi(x,y),
+            # d=font, e=skala, f=warna(B,G,R), g=ketebalan
             cv2.putText(frame, f"Frame: {i+1}/{frame_count}", (10, 60),
                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
             
@@ -472,6 +486,8 @@ def demo_nms():
     
     # Draw object
     cv2.rectangle(image, (200, 100), (400, 300), (100, 100, 100), -1)
+    # cv2.putText(a, b, c, d, e, f, g): a=image, b=teks, c=posisi(x,y),
+    # d=font, e=skala, f=warna(B,G,R), g=ketebalan
     cv2.putText(image, "Object", (260, 210), cv2.FONT_HERSHEY_SIMPLEX, 
                 0.8, (255, 255, 255), 2)
     
@@ -488,11 +504,17 @@ def demo_nms():
     for box, conf in detections:
         color = (0, int(255 * conf), 0)
         cv2.rectangle(before_image, (box[0], box[1]), (box[2], box[3]), color, 2)
+        # cv2.putText(a, b, c, d, e, f, g): a=before_image, b=teks, c=posisi(x,y),
+        # d=font, e=skala, f=warna(B,G,R), g=ketebalan
         cv2.putText(before_image, f"{conf:.2f}", (box[0], box[1]-5),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
     
+    # cv2.putText(a, b, c, d, e, f, g): a=before_image, b=teks, c=posisi(x,y),
+    # d=font, e=skala, f=warna(B,G,R), g=ketebalan
     cv2.putText(before_image, "Before NMS", (10, 30),
                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+    # cv2.putText(a, b, c, d, e, f, g): a=before_image, b=teks, c=posisi(x,y),
+    # d=font, e=skala, f=warna(B,G,R), g=ketebalan
     cv2.putText(before_image, f"Detections: {len(detections)}", (10, 60),
                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 1)
     
@@ -507,11 +529,17 @@ def demo_nms():
         box, conf = detections[idx]
         color = (0, int(255 * conf), 0)
         cv2.rectangle(after_image, (box[0], box[1]), (box[2], box[3]), color, 2)
+        # cv2.putText(a, b, c, d, e, f, g): a=after_image, b=teks, c=posisi(x,y),
+        # d=font, e=skala, f=warna(B,G,R), g=ketebalan
         cv2.putText(after_image, f"{conf:.2f}", (box[0], box[1]-5),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
     
+    # cv2.putText(a, b, c, d, e, f, g): a=after_image, b=teks, c=posisi(x,y),
+    # d=font, e=skala, f=warna(B,G,R), g=ketebalan
     cv2.putText(after_image, "After NMS", (10, 30),
                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+    # cv2.putText(a, b, c, d, e, f, g): a=after_image, b=teks, c=posisi(x,y),
+    # d=font, e=skala, f=warna(B,G,R), g=ketebalan
     cv2.putText(after_image, f"Detections: {len(keep_indices)}", (10, 60),
                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 1)
     
@@ -523,9 +551,11 @@ def demo_nms():
     print(f"\n[INFO] Detections before NMS: {len(detections)}")
     print(f"[INFO] Detections after NMS: {len(keep_indices)}")
     print(f"[INFO] IoU threshold: 0.5")
-    print("\n[INFO] Tekan tombol apa saja untuk lanjut...")
-    
-    cv2.waitKey(0)
+    print("\n[INFO] Tekan 'q' untuk menutup gambar...")
+    while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q') or key == 27:
+            break
     cv2.destroyAllWindows()
 
 
@@ -559,8 +589,12 @@ def demo_confidence_threshold():
         for det in filtered:
             draw_detection(img, det['box'], det['class_id'], det['conf'])
         
+        # cv2.putText(a, b, c, d, e, f, g): a=img, b=teks, c=posisi(x,y),
+        # d=font, e=skala, f=warna(B,G,R), g=ketebalan
         cv2.putText(img, f"Threshold: {thresh}", (10, 30),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+        # cv2.putText(a, b, c, d, e, f, g): a=img, b=teks, c=posisi(x,y),
+        # d=font, e=skala, f=warna(B,G,R), g=ketebalan
         cv2.putText(img, f"Detections: {len(filtered)}", (10, 60),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 1)
         
@@ -579,8 +613,11 @@ def demo_confidence_threshold():
         filtered = [d for d in all_detections if d['conf'] >= thresh]
         print(f"  - Threshold {thresh}: {len(filtered)} detections")
     
-    print("\n[INFO] Tekan tombol apa saja untuk keluar...")
-    cv2.waitKey(0)
+    print("\n[INFO] Tekan 'q' untuk menutup gambar...")
+    while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q') or key == 27:
+            break
     cv2.destroyAllWindows()
 
 

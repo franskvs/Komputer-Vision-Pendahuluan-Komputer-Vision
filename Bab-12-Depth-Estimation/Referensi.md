@@ -166,3 +166,12 @@
 - CS231A: Computer Vision (Stanford): http://web.stanford.edu/class/cs231a/
 - Computer Vision (ETH Zurich): https://www.cvg.ethz.ch/teaching/
 - First Principles of Computer Vision (YouTube): https://www.youtube.com/c/FirstPrinciplesofComputerVision
+
+---
+
+## 🖼️ Sumber Gambar (Lisensi Terbuka)
+
+- Disparity map example: https://upload.wikimedia.org/wikipedia/commons/6/60/Disparity_map.png
+- Epipolar geometry diagram: https://upload.wikimedia.org/wikipedia/commons/2/2a/Epipolar_geometry.svg
+- Stereo vision concept: https://upload.wikimedia.org/wikipedia/commons/3/3f/Stereo_vision_principle.svg
+- Point cloud visualization: https://upload.wikimedia.org/wikipedia/commons/3/3a/Point_cloud_torus.png

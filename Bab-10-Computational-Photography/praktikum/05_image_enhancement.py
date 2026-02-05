@@ -355,8 +355,8 @@ Parameters used:
     # Display
     cv2.imshow("Original", original)
     cv2.imshow("Enhanced (Pipeline)", results['Pipeline'])
-    print("\nTekan sembarang tombol untuk menutup...")
-    cv2.waitKey(0)
+    print("\nMenampilkan hasil (akan otomatis tertutup dalam 2 detik)...")
+    cv2.waitKey(2000)
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":

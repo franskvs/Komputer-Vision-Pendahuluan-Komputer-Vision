@@ -82,6 +82,9 @@ MAX_DEPTH = 20.0  # 20 meter
 # Colormap untuk visualisasi depth
 DEPTH_COLORMAP = cv2.COLORMAP_PLASMA
 
+# Auto-close settings
+AUTO_CLOSE_SECONDS = 2
+
 # Flag untuk point cloud
 GENERATE_POINT_CLOUD = True
 
@@ -257,6 +260,13 @@ def create_depth_visualization(depth, min_depth, max_depth, colormap=cv2.COLORMA
     depth_colored[depth == 0] = [0, 0, 0]
     
     return depth_colored
+
+
+def show_matplotlib_auto_close(seconds=AUTO_CLOSE_SECONDS):
+    """Tampilkan matplotlib sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(seconds)
+    plt.close('all')
 
 
 def analyze_depth(depth, unit="m"):
@@ -579,10 +589,10 @@ def main():
     
     cv2.imshow("Depth Estimation", combined)
     
-    plt.show()
+    show_matplotlib_auto_close()
     
-    print("\nTekan sembarang tombol untuk keluar...")
-    cv2.waitKey(0)
+    print(f"\nAuto close dalam {AUTO_CLOSE_SECONDS} detik (tekan 'q' untuk keluar)...")
+    cv2.waitKey(int(AUTO_CLOSE_SECONDS * 1000))
     cv2.destroyAllWindows()
     
     print("\n[SUCCESS] Konversi depth selesai!")

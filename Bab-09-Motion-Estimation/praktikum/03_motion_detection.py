@@ -36,6 +36,7 @@ Tanggal: [Tanggal Praktikum]
 import cv2
 import numpy as np
 import os
+import time
 from collections import deque
 
 # ============================================================
@@ -56,6 +57,9 @@ DIFF_THRESHOLD = 30
 
 # Morphological kernel size
 KERNEL_SIZE = 5
+
+# Auto close window (detik) untuk testing cepat
+AUTO_CLOSE_SECONDS = 2.0
 
 # Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -228,6 +232,7 @@ def main():
     motion_history = deque(maxlen=100)
     frame_count = 0
     total_detections = 0
+    start_time = time.time()
     
     print("\nProcessing...")
     print("Tekan 'q' untuk keluar, 's' untuk save")
@@ -317,6 +322,11 @@ def main():
             print("Switched to Frame Differencing")
         
         frame_count += 1
+
+        if AUTO_CLOSE_SECONDS > 0 and not using_webcam:
+            if (time.time() - start_time) >= AUTO_CLOSE_SECONDS:
+                print("Auto-close: waktu uji selesai.")
+                break
     
     cap.release()
     out.release()

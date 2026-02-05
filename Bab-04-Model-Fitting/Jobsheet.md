@@ -3,7 +3,7 @@
 ## Informasi Umum
 - **Mata Kuliah:** Praktikum Computer Vision
 - **Bab:** 4 - Model Fitting dan Feature Matching
-- **Referensi:** Computer Vision: Algorithms and Applications, 2nd Edition - Chapter 7 & 8
+- **Referensi:** Computer Vision: Algorithms and Applications, 2nd Edition - Chapter 4 (Model Fitting and Optimization)
 - **Durasi:** 3 × pertemuan (@ 100 menit)
 
 ---
@@ -25,6 +25,9 @@ Mahasiswa mampu mengimplementasikan teknik model fitting dan feature matching un
 | 6 | Homography | Menghitung dan menerapkan transformasi homography |
 | 7 | Perspective Correction | Menerapkan homography untuk koreksi perspektif |
 | 8 | Optical Flow | Mengimplementasikan optical flow untuk tracking |
+| 9 | Scattered Data Interpolation (RBF) | Menerapkan RBF dan regularisasi untuk fitting data tak beraturan |
+| 10 | Variational Regularization | Menerapkan regularisasi L2 dan Total Variation untuk denoising |
+| 11 | Markov Random Field (MRF) | Menerapkan MRF + ICM untuk denoising citra biner |
 
 ---
 
@@ -406,6 +409,52 @@ KESIMPULAN
 5. Tantangan utama dalam implementasi adalah [TANTANGAN],
    yang dapat diatasi dengan [SOLUSI].
 ```
+
+---
+
+### Percobaan 9: Scattered Data Interpolation (RBF)
+
+#### Langkah Percobaan
+1. Jalankan program:
+   ```bash
+   python 09_scattered_interpolation_rbf.py
+   ```
+2. Amati kurva hasil fitting untuk variasi λ (regularisasi).
+3. Bandingkan hasil L2 vs Huber (robust) pada data dengan outlier.
+
+#### Output yang Diharapkan
+- Kurva RBF untuk berbagai nilai λ.
+- Perbandingan L2 vs Huber pada data noisy + outlier.
+
+---
+
+### Percobaan 10: Variational Regularization (L2 vs TV)
+
+#### Langkah Percobaan
+1. Jalankan program:
+   ```bash
+   python 10_variational_regularization_denoise.py
+   ```
+2. Bandingkan hasil L2 (lebih smooth) vs TV (lebih menjaga tepi).
+3. Ubah parameter `LAMBDA_L2` dan `LAMBDA_TV` untuk melihat efek under/over-smoothing.
+
+#### Output yang Diharapkan
+- Citra clean, noisy, hasil L2, dan hasil TV.
+
+---
+
+### Percobaan 11: Markov Random Field (MRF) Denoising
+
+#### Langkah Percobaan
+1. Jalankan program:
+   ```bash
+   python 11_mrf_denoising_icm.py
+   ```
+2. Amati perubahan citra dari noisy ke hasil MRF + ICM.
+3. Ubah `DATA_WEIGHT` dan `SMOOTH_WEIGHT` untuk melihat efek prior.
+
+#### Output yang Diharapkan
+- Citra clean, noisy, dan hasil denoising MRF.
 
 ---
 

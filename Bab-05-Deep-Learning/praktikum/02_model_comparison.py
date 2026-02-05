@@ -32,6 +32,8 @@ import cv2
 import numpy as np
 import time
 import os
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 
 def get_model_info():

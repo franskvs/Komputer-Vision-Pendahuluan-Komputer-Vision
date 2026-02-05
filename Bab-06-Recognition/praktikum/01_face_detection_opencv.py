@@ -31,6 +31,8 @@ import os
 import urllib.request
 from pathlib import Path
 import time
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 # =====================================================================
 # BAGIAN 1: SETUP DAN UTILITIES

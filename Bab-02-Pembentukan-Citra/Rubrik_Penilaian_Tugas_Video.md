@@ -23,6 +23,8 @@ Buat video tutorial/demonstrasi dengan durasi **8-12 menit** yang menjelaskan da
 - [ ] Penjelasan affine vs perspective transform
 - [ ] Visualisasi/animasi transformation matrix
 - [ ] Penjelasan camera model (pinhole, lens distortion)
+- [ ] Sampling & aliasing (ringkas)
+- [ ] Color space & gamma correction (ringkas)
 
 ### Bagian 3: Demonstrasi Kode (3-4 menit)
 - [ ] Setup environment dan import library
@@ -31,11 +33,13 @@ Buat video tutorial/demonstrasi dengan durasi **8-12 menit** yang menjelaskan da
 - [ ] Demo transformasi perspektif
 - [ ] Penjelasan fungsi OpenCV yang digunakan
 - [ ] Menunjukkan efek perubahan parameter
+- [ ] (Opsional) Demo color space / gamma / aliasing
 
 ### Bagian 4: Aplikasi Nyata (1-2 menit)
 - [ ] Demo document scanner sederhana
 - [ ] Contoh aplikasi di industri (CamScanner, AR, dll)
 - [ ] Hubungan dengan kalibrasi kamera
+- [ ] Contoh dampak kompresi/gamma pada kualitas citra
 
 ### Bagian 5: Penutup (1 menit)
 - [ ] Ringkasan poin-poin utama

@@ -51,6 +51,9 @@ MANUAL_CORNERS = [
     [80, 320]     # Bottom-left
 ]
 
+# 7. Auto-close plot (detik)
+AUTO_CLOSE_SECONDS = 2.0
+
 # ============================================================
 # FUNGSI HELPER
 # ============================================================
@@ -107,6 +110,13 @@ def buat_gambar_sample():
         cv2.circle(gambar, tuple(pt), 5, (0, 255, 0), -1)
     
     return gambar, doc_pts
+
+
+def tampilkan_plot():
+    """Tampilkan plot sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(AUTO_CLOSE_SECONDS)
+    plt.close()
 
 
 # ============================================================
@@ -346,7 +356,7 @@ PIPELINE:
     
     plt.suptitle("Document Detection Pipeline", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_enhancement():
@@ -404,7 +414,7 @@ ENHANCEMENT OPTIONS:
     
     plt.suptitle("Document Enhancement Options", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_aspect_ratio():
@@ -454,7 +464,7 @@ ID Card: 85.6 × 54 mm (aspect ratio 1.585:1)
     
     plt.suptitle("Different Output Aspect Ratios", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 # ============================================================
@@ -585,7 +595,7 @@ USE CASES:
     
     plt.suptitle("Perspective Correction (Document Scanner)", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
     
     # Demo tambahan
     demo_detection_stages()

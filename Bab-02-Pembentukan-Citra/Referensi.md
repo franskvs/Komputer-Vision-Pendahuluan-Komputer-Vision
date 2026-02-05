@@ -51,9 +51,17 @@
    - [cv2.getPerspectiveTransform](https://docs.opencv.org/4.x/da/d54/group__imgproc__transform.html#ga20f62aa3235d869c9956436c870893ae)
    - [cv2.findHomography](https://docs.opencv.org/4.x/d9/d0c/group__calib3d.html#ga4abc2ece9fab9398f2e560d53c8c9780)
 
+4. **Color Spaces & Gamma**
+   - [Color Space Conversions](https://docs.opencv.org/4.x/d8/d01/group__imgproc__color__conversions.html)
+   - [Gamma Correction (OpenCV FAQ)](https://docs.opencv.org/4.x/d4/d13/tutorial_py_filtering.html)
+
+5. **Image Compression (JPEG)**
+   - [Image Codecs and IO](https://docs.opencv.org/4.x/d4/da8/group__imgcodecs.html)
+
 ### NumPy Documentation
 - [Linear Algebra](https://numpy.org/doc/stable/reference/routines.linalg.html)
 - [Matrix Operations](https://numpy.org/doc/stable/reference/generated/numpy.matmul.html)
+- [Random Sampling](https://numpy.org/doc/stable/reference/random/index.html)
 
 ---
 
@@ -76,6 +84,9 @@
    - [OpenCV Document Scanner](https://pyimagesearch.com/2014/09/01/build-kick-ass-mobile-document-scanner-just-5-minutes/)
    - Topik: Practical document scanner implementation
 
+4. **Sampling & Aliasing (Signal Processing)**
+   - [Sampling Theorem (MIT OCW)](https://ocw.mit.edu/courses/6-003-signals-and-systems-fall-2011/)
+
 ### Online Courses
 
 1. **Coursera - Robotics: Perception (UPenn)**
@@ -85,6 +96,10 @@
 2. **Udacity - Introduction to Computer Vision**
    - [Course Link](https://www.udacity.com/course/introduction-to-computer-vision--ud810)
    - Topik: Image formation, camera projections
+
+3. **Stanford - Digital Photography (Levoy)**
+   - [Course Link](https://graphics.stanford.edu/courses/cs178/)
+   - Topik: Sampling, color, gamma, compression
 
 ---
 

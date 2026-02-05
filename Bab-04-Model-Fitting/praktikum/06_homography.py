@@ -45,6 +45,9 @@ MIN_MATCH_COUNT = 10           # Minimum matches required
 DRAW_MATCHES = True
 SHOW_WARPED = True
 
+# 7. Auto-close plot (detik)
+AUTO_CLOSE_SECONDS = 2.0
+
 # ============================================================
 # FUNGSI HELPER
 # ============================================================
@@ -108,6 +111,13 @@ def buat_gambar_sample_pair():
     gambar2 = cv2.add(gambar2, noise)
     
     return gambar1, gambar2
+
+
+def tampilkan_plot():
+    """Tampilkan plot sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(AUTO_CLOSE_SECONDS)
+    plt.close()
 
 
 # ============================================================
@@ -329,7 +339,7 @@ Threshold besar (8+):
     
     plt.suptitle("Pengaruh RANSAC Threshold pada Homography Estimation", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_manual_homography():
@@ -395,7 +405,7 @@ Contoh:
     
     plt.suptitle("Manual Homography with 4 Point Correspondences", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_homography_decomposition():
@@ -572,7 +582,7 @@ APLIKASI:
     
     plt.suptitle("Homography Estimation", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
     
     # Demo tambahan
     demo_ransac_effect()

@@ -77,6 +77,9 @@ MIN_OBSTACLE_SIZE = 500  # Minimum pixel untuk dianggap obstacle
 FOCAL_LENGTH = 500.0  # pixel
 BASELINE = 120.0  # mm
 
+# Auto-close settings
+AUTO_CLOSE_SECONDS = 2
+
 # =============================================================================
 # FUNGSI APLIKASI
 # =============================================================================
@@ -235,6 +238,13 @@ def create_bokeh_effect_fast(rgb, depth, focus_depth, dof, max_blur=31, use_norm
               blur2 * w2 + blur3 * w3).astype(np.uint8)
     
     return result
+
+
+def show_matplotlib_auto_close(seconds=AUTO_CLOSE_SECONDS):
+    """Tampilkan matplotlib sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(seconds)
+    plt.close('all')
 
 
 def detect_obstacles(depth, max_depth, min_size=500):
@@ -633,10 +643,10 @@ def main():
     
     cv2.imshow("Depth Map Applications", combined)
     
-    plt.show()
+    show_matplotlib_auto_close()
     
-    print("\nTekan sembarang tombol untuk keluar...")
-    cv2.waitKey(0)
+    print(f"\nAuto close dalam {AUTO_CLOSE_SECONDS} detik (tekan 'q' untuk keluar)...")
+    cv2.waitKey(int(AUTO_CLOSE_SECONDS * 1000))
     cv2.destroyAllWindows()
     
     print("\n[SUCCESS] Depth applications selesai!")

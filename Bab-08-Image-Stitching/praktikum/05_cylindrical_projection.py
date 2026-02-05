@@ -351,7 +351,13 @@ def main():
             plt.tight_layout()
             plt.savefig(os.path.join(OUTPUT_DIR, "05_cylindrical_pano_full.png"), 
                        dpi=150, bbox_inches='tight')
-            plt.show()
+            
+            # Auto-close setelah 2 detik
+            print("\n[INFO] Menampilkan hasil... (akan auto-close dalam 2 detik)")
+            plt.show(block=False)
+            plt.pause(2)
+            plt.close('all')
+            print("[INFO] Selesai!")
     else:
         print("Tidak cukup gambar untuk cylindrical stitching")
     

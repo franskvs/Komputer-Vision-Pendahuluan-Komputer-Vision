@@ -18,6 +18,8 @@ import cv2          # Library utama untuk computer vision
 import numpy as np  # Library untuk operasi array/matriks
 import os           # Library untuk operasi file dan folder
 import sys          # Library untuk system operations
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 # ============================================================
 # VARIABEL YANG BISA DIUBAH-UBAH (EKSPERIMEN)

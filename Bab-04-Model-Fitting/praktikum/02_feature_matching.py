@@ -18,6 +18,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import time
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 # ============================================================
 # VARIABEL YANG BISA DIUBAH-UBAH (EKSPERIMEN)
@@ -53,6 +55,9 @@ FLANN_INDEX_KDTREE = 1
 FLANN_INDEX_LSH = 6
 FLANN_TREES = 5
 FLANN_CHECKS = 50
+
+# 9. Auto-close plot (detik)
+AUTO_CLOSE_SECONDS = 2.0
 
 # ============================================================
 # FUNGSI HELPER
@@ -115,6 +120,13 @@ def buat_gambar_sample_pair():
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
     
     return gambar1, gambar2
+
+
+def tampilkan_plot():
+    """Tampilkan plot sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(AUTO_CLOSE_SECONDS)
+    plt.close()
 
 
 # ============================================================
@@ -340,7 +352,7 @@ Threshold tinggi (0.8-0.9):
     
     plt.suptitle("Pengaruh Ratio Threshold pada Matching", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_bf_vs_flann():
@@ -428,7 +440,7 @@ COMPARISON:
     
     plt.suptitle("Brute-Force vs FLANN Matching Comparison", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_cross_check():
@@ -505,7 +517,7 @@ Kekurangan:
     
     plt.suptitle("Ratio Test vs Cross-Check Comparison", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 # ============================================================
@@ -610,7 +622,7 @@ APLIKASI:
               f"{len(good_matches)} matches (ratio={RATIO_THRESHOLD})")
     plt.axis('off')
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
     
     # Demo tambahan
     demo_ratio_test_effect()

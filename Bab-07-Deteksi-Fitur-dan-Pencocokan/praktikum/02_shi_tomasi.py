@@ -60,6 +60,8 @@ import cv2
 import numpy as np
 import os
 import time
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 def get_script_dir():
     """Mendapatkan direktori script ini berada"""
@@ -186,7 +188,7 @@ def main():
     
     # Path setup
     script_dir = get_script_dir()
-    data_dir = os.path.join(os.path.dirname(script_dir), "data", "images")
+    data_dir = os.path.join(script_dir, "data", "images")
     output_dir = os.path.join(script_dir, "output")
     os.makedirs(output_dir, exist_ok=True)
     

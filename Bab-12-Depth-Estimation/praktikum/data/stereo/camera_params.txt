@@ -1,0 +1,8 @@
+# Camera Parameters for Synthetic Stereo
+# Format: YAML-like
+focal_length: 500
+baseline: 0.1
+image_width: 640
+image_height: 480
+cx: 320.0
+cy: 240.0

@@ -54,10 +54,20 @@ Image Processing Operations
 │   ├── Closing
 │   └── Gradient
 │
-└── Global Operations
-    ├── Histogram equalization
-    ├── Fourier transform
-    └── Image pyramids
+├── Global Operations
+│   ├── Histogram equalization
+│   ├── Fourier transform
+│   └── Image pyramids
+│
+├── Compositing & Matting
+│   ├── Alpha compositing
+│   ├── Green screen matting
+│   └── Image blending
+│
+└── Geometric Transformations
+    ├── Affine transforms
+    ├── Perspective transforms
+    └── Image warping
 ```
 
 ---
@@ -279,6 +289,286 @@ Rectangle:    Cross:        Ellipse:
 
 ---
 
+### 6. Compositing & Matting
+
+#### A. Alpha Compositing
+
+Alpha compositing menggabungkan dua gambar menggunakan alpha channel (transparansi).
+
+**Formula Over Operator:**
+```
+C = (1 - α)B + αF
+
+Di mana:
+- F = Foreground image
+- B = Background image
+- α = Alpha matte (0 = transparan, 1 = opak)
+- C = Composited result
+```
+
+**Pre-multiplied Alpha:**
+```
+F' = αF (pre-multiply foreground)
+C = B + F' - αB
+C = B(1 - α) + F'
+
+Keuntungan:
+- Lebih efisien untuk multiple compositing
+- Mencegah fringe artifacts
+```
+
+#### B. Matting Techniques
+
+**Green Screen Matting:**
+1. Isolasi warna hijau menggunakan HSV color space
+2. Create alpha matte dari color distance
+3. Refine matte edges dengan morphology
+4. Composite foreground dengan background baru
+
+**Applications:**
+- Film VFX (Marvel, Star Wars)
+- Virtual backgrounds (Zoom, Teams)
+- Portrait mode (smartphone cameras)
+
+#### C. Image Blending
+
+**Linear Blending:**
+```
+Result = α × Image1 + (1-α) × Image2
+```
+
+**Multi-band Blending:**
+- Menggunakan pyramid untuk seamless transitions
+- Blend different frequencies di different scales
+
+---
+
+### 7. Fourier Transform
+
+#### A. Discrete Fourier Transform (DFT)
+
+Mengubah image dari spatial domain ke frequency domain.
+
+**Formula 2D DFT:**
+```
+F(u,v) = ∑∑ f(x,y) e^(-2πi(ux/M + vy/N))
+        x y
+
+Di mana:
+- f(x,y) = spatial domain image
+- F(u,v) = frequency domain representation
+- u,v = frequency coordinates
+```
+
+**Magnitude & Phase:**
+```
+Magnitude: |F(u,v)| = √(Re² + Im²)
+Phase:     φ(u,v) = arctan(Im/Re)
+```
+
+#### B. Filtering di Frequency Domain
+
+**Low-pass Filter:**
+- Hapus high frequencies
+- Hasil: smoothing/blurring
+- Ideal: rectangle cutoff
+- Gaussian: smooth cutoff
+
+**High-pass Filter:**
+- Hapus low frequencies
+- Hasil: edge enhancement
+- H_high(u,v) = 1 - H_low(u,v)
+
+**Band-pass Filter:**
+- Keep specific frequency range
+- Hapus very low dan very high frequencies
+
+**Konvolusi Theorem:**
+```
+f ⊗ g ↔ F · G
+
+Spatial convolution = Frequency multiplication
+```
+
+#### C. Applications
+
+- **Image compression** (JPEG = DCT, wavelet compression)
+- **Periodic noise removal** (notch filtering)
+- **Image analysis** (texture, patterns)
+
+---
+
+### 8. Image Pyramids & Multi-Resolution
+
+#### A. Gaussian Pyramid
+
+Hierarchical representation dengan progressive blur + downsampling.
+
+**Construction:**
+```
+G₀ = Original image
+G₁ = Downsample(GaussianBlur(G₀))
+G₂ = Downsample(GaussianBlur(G₁))
+...
+
+Each level: ½ width, ½ height
+Total size: ~1.33× original (overhead ~33%)
+```
+
+**Applications:**
+- Fast template matching (coarse-to-fine)
+- Multi-scale feature detection
+- Image blending
+
+#### B. Laplacian Pyramid
+
+Band-pass representation dengan perfect reconstruction.
+
+**Construction:**
+```
+L_i = G_i - Upsample(G_{i+1})
+
+Di mana:
+- G_i = Gaussian pyramid level i
+- L_i = Laplacian (band-pass) level i
+```
+
+**Reconstruction:**
+```
+G_i = L_i + Upsample(G_{i+1})
+
+Perfect reconstruction (no information loss)
+```
+
+**Applications:**
+- Seamless image blending (Burt & Adelson, 1983)
+- Image compression
+- Detail enhancement
+
+#### C. Wavelets
+
+Oriented multi-scale decomposition.
+
+**2D Wavelet Decomposition:**
+```
+[cA | cH]
+[cV | cD]
+
+Di mana:
+- cA = Approximation (low-pass)
+- cH = Horizontal details (vertical edges)
+- cV = Vertical details (horizontal edges)  
+- cD = Diagonal details (corners)
+```
+
+**Wavelet Types:**
+- **Haar**: simplest, blocky
+- **Daubechies (db4)**: smooth, good for compression
+- **Symlets**: symmetrical, image processing
+- **Coiflets**: better reconstruction
+
+**Applications:**
+- JPEG 2000 compression
+- Image denoising (threshold small coefficients)
+- Texture analysis
+
+---
+
+### 9. Geometric Transformations
+
+#### A. Transformation Hierarchy
+
+```
+Translation (2 DoF)
+  ↓ add rotation
+Euclidean/Rigid (3 DoF)
+  ↓ add scale
+Similarity (4 DoF)
+  ↓ add shear
+Affine (6 DoF)
+  ↓ add perspective
+Projective/Homography (8 DoF)
+```
+
+#### B. Parametric Transforms
+
+**Translation:**
+```
+x' = x + t_x
+y' = y + t_y
+```
+
+**Rotation:**
+```
+[x']   [cos(θ)  -sin(θ)] [x]
+[y'] = [sin(θ)   cos(θ)] [y]
+```
+
+**Affine (matrix form):**
+```
+[x']   [a11  a12  t_x] [x]
+[y'] = [a21  a22  t_y] [y]
+[1 ]   [0    0    1  ] [1]
+
+Properties:
+- Preserves parallel lines
+- Preserves ratios on lines
+- Needs 3 point correspondences
+```
+
+**Perspective (Homography):**
+```
+    [h11  h12  h13] [x]
+w · [y'] = [h21  h22  h23] [y]
+    [1 ]   [h31  h32  h33] [1]
+
+Then: x' = x'/w, y' = y'/w
+
+Properties:
+- Preserves straight lines
+- Does NOT preserve parallel lines
+- Needs 4 point correspondences
+- 8 DoF (h33 = 1 by convention)
+```
+
+#### C. Interpolation Methods
+
+**Inverse Warping:**
+```
+For each pixel (x', y') in output:
+  1. Compute source location (x, y) using inverse transform
+  2. Interpolate value at non-integer (x, y)
+```
+
+**Interpolation Types:**
+- **Nearest neighbor**: Fast, blocky (INTER_NEAREST)
+- **Bilinear**: Fast, smooth (INTER_LINEAR)
+- **Bicubic**: Slower, smoother (INTER_CUBIC)
+- **Lanczos**: Slowest, sharpest (INTER_LANCZOS4)
+
+#### D. Mesh-Based Warping
+
+Non-parametric warping menggunakan displacement field.
+
+**Radial Distortion (lens correction):**
+```
+r' = r(1 + k₁r² + k₂r⁴ + k₃r⁶)
+
+Di mana:
+- r = radius dari center
+- k₁, k₂, k₃ = distortion coefficients
+- Barrel: k₁ > 0
+- Pincushion: k₁ < 0
+```
+
+**Applications:**
+- Document rectification (scanner apps)
+- Lens distortion correction (camera calibration)
+- Image morphing (visual effects)
+- Augmented reality (planar tracking)
+
+---
+
 ## 🏢 Contoh Aplikasi di Industri
 
 ### 1. Instagram Filters (Social Media)
@@ -339,6 +629,59 @@ X-Ray Original → Histogram Equalization → Edge Enhancement → Diagnosis
 - Sharpen/Blur → Spatial filtering
 - Shadow/Highlight → Adaptive processing
 - Noise Reduction → Bilateral/Non-local means filter
+
+### 6. Film & VFX Industry
+**Studios**: Industrial Light & Magic, Weta Digital, Framestore
+
+**Penggunaan:**
+- **Green screen compositing** → Alpha matting
+- **Background replacement** → Over operator
+- **Seamless blending** → Pyramid blending
+- **Lens distortion correction** → Geometric warping
+
+**Contoh Film:**
+- Marvel movies (green screen VFX)
+- Avatar (performance capture + compositing)
+
+### 7. Document Scanner Apps
+**Apps**: CamScanner, Adobe Scan, Microsoft Lens
+
+**Pipeline:**
+1. **Corner detection** → Edge detection
+2. **Perspective correction** → Homography transform
+3. **Enhancement** → Adaptive thresholding, sharpening
+4. **OCR preparation** → Binarization
+
+**Teknologi:**
+```
+Tilted photo → Detect corners → Perspective warp → Enhancement → OCR-ready
+```
+
+### 8. Smartphone Computational Photography
+**Perusahaan**: Apple, Google (Pixel), Samsung
+
+**Features:**
+- **Portrait mode** → Depth estimation + bilateral filter
+- **Night mode** → Multi-frame alignment + pyramid blending
+- **HDR+** → Exposure fusion dengan Laplacian pyramid
+- **Panorama** → Perspective warping + multi-band blending
+
+### 9. Compression Standards
+**Standards**: JPEG, JPEG 2000, WebP
+
+**Teknologi:**
+- **JPEG** → DCT (Discrete Cosine Transform)
+- **JPEG 2000** → Wavelet compression (better quality)
+- **Thumbnail generation** → Gaussian pyramid
+
+### 10. Augmented Reality (AR)
+**Apps**: Snapchat, Instagram AR, Pokémon GO
+
+**Penggunaan:**
+- **Planar tracking** → Homography estimation
+- **Real-time warping** → Affine/perspective transforms
+- **Face filters** → Mesh-based warping
+- **Background blur** → Matting + bilateral filter
 
 ---
 
@@ -414,6 +757,18 @@ Opening (remove small objects):    Closing (fill small holes):
 | Morph | Dilation | cv2.dilate() | Expand objects |
 | Morph | Opening | cv2.morphologyEx() | Remove noise |
 | Morph | Closing | cv2.morphologyEx() | Fill holes |
+| Compositing | Alpha blend | cv2.addWeighted() | Image compositing |
+| Compositing | Green screen | HSV masking | Chroma keying |
+| Frequency | FFT | cv2.dft() | Frequency analysis |
+| Frequency | DCT | cv2.dct() | JPEG compression |
+| Frequency | Filtering | Frequency masks | Noise removal |
+| Pyramid | Gaussian | cv2.pyrDown() | Multi-scale |
+| Pyramid | Laplacian | Manual construction | Blending |
+| Wavelet | Decomposition | pywt.wavedec2() | Compression, denoising |
+| Transform | Rotation | cv2.getRotationMatrix2D() | Image rotation |
+| Transform | Affine | cv2.getAffineTransform() | 6-DoF warp |
+| Transform | Perspective | cv2.getPerspectiveTransform() | 8-DoF warp |
+| Transform | Remap | cv2.remap() | Custom warping |
 
 ---
 
@@ -455,12 +810,326 @@ Buat video tutorial dengan durasi **10-15 menit** yang mendemonstrasikan teknik-
 
 ---
 
+### 10. Steerable Filters dan Band-Pass Filtering
+
+#### A. Konsep Steerable Filters
+
+Steerable filters adalah keluarga filter yang dapat dirotasi ke orientasi apapun melalui kombinasi linear dari basis filters.
+
+**Freeman & Adelson Steerable Filters:**
+```
+G(θ) = cos(θ)·G₀(x,y) + sin(θ)·G₉₀(x,y)
+
+Di mana:
+- G₀ = first-order directional derivative pada 0°
+- G₉₀ = first-order directional derivative pada 90°
+- θ = desired orientation
+
+Keuntungan:
+- Efficient: compute 2 basis filters, interpolate untuk any angle
+- Smooth orientation detection
+- Edge detection di arbitrary directions
+```
+
+**Second-Order Steerable Filters:**
+```
+G(θ) = cos²(θ)·G₀ + 2cos(θ)sin(θ)·G₄₅ + sin²(θ)·G₉₀
+
+Untuk corner/junction detection dengan oriented response.
+```
+
+#### B. Laplacian of Gaussian (LoG)
+
+Scale-space blob detector yang mendeteksi circular features di berbagai skala.
+
+**Formula:**
+```
+LoG(x,y,σ) = ∇²(G(x,y,σ))
+            = σ²·(∂²G/∂x² + ∂²G/∂y²)
+
+Respons maksimal pada σ ≈ r/√2 (blob radius r)
+```
+
+**Aplikasi:**
+- SIFT scale-space detection
+- Blob detection untuk feature points
+- Multi-scale edge detection
+
+#### C. Band-Pass Filtering
+
+Filtering yang keep specific frequency range, hapus very low dan very high.
+
+**Band-Pass Filter Design:**
+```
+H(u,v) = H_high(u,v) × H_low(u,v)
+
+Di mana:
+- H_high = 1 - Low-pass (removes DC)
+- H_low = Low-pass (removes high frequencies)
+
+Result: Only middle frequencies pass
+```
+
+**Steerable Band-Pass:**
+- Combine orientation selectivity dengan frequency selectivity
+- Detect textures dengan specific orientation AND frequency
+
+**Aplikasi:**
+- Texture analysis
+- Oriented edge detection
+- Medical imaging enhancement
+
+---
+
+### 11. Advanced Interpolation, Decimation, dan Multi-Resolution Pyramids
+
+#### A. Interpolation Methods (Review & Advanced)
+
+**Bilinear Interpolation:**
+```
+f(x,y) = f(0,0)(1-u)(1-v) + f(1,0)u(1-v) +
+         f(0,1)(1-u)v + f(1,1)uv
+
+Di mana: u = frac(x), v = frac(y)
+Smoothness: C⁰ (continuous but not smooth at integer points)
+```
+
+**Bicubic Interpolation:**
+```
+f(x,y) = ∑∑ a[i][j]·x^i·y^j   (i,j = 0 to 3)
+
+Cubic kernel: k(t) = {
+  1 - 2|t|² + |t|³     jika |t| < 1
+  4 - 8|t| + 5|t|² - |t|³  jika 1 ≤ |t| < 2
+  0                    otherwise
+}
+
+Smoothness: C¹ (smooth transitions)
+Parameter a mengontrol sharpness:
+- a = -1: sharp (Catmull-Rom)
+- a = -0.5: balanced
+- a = -0.75: intermediate
+```
+
+**Windowed Sinc Interpolation:**
+```
+f(x) = ∑ f[n]·sinc(x-n)·w(x-n)
+
+Di mana:
+- sinc(x) = sin(πx)/(πx)
+- w(x) = window function (Hann, Lanczos)
+
+Kualitas: Tertinggi, untuk professional applications
+```
+
+**Lanczos Interpolation:**
+```
+Lanczos kernel: L(t) = {
+  sinc(t)·sinc(t/a)     jika |t| < a
+  0                     otherwise
+}
+
+Parameter a = 3 biasanya (balance quality vs speed)
+Used by: ImageMagick, GIMP, FFmpeg
+```
+
+#### B. Anti-Aliasing Prefiltering
+
+Sebelum downsampling, apply low-pass filter untuk avoid aliasing.
+
+**Binomial Filter (Burt & Adelson):**
+```
+[1 4 6 4 1]/16 kernel  (1D)
+atau 2D: outer product
+
+Properties:
+- Smooth, natural-looking
+- Commonly used dalam pyramid construction
+```
+
+**Gaussian Prefilter:**
+```
+σ = 1/(2π·f_c)  untuk cutoff frequency f_c
+```
+
+#### C. MIP-Mapping (Multum In Parvo)
+
+Multi-level Pyramid Image untuk efficient texture mapping.
+
+**Construction:**
+```
+Level 0: Original resolution (w × h)
+Level 1: Downsample (w/2 × h/2)
+Level 2: Downsample (w/4 × h/4)
+...
+Level k: (w/2^k × h/2^k)
+
+Total storage: ~1.33× original
+```
+
+**Trilinear Mipmap Sampling:**
+```
+For texture coordinate (x, y, lod):
+1. Find 2 closest MIP levels: L_lo, L_hi
+2. Bilinear interpolation pada both levels
+3. Linear interpolation antara levels
+
+Result: Smooth transitions across detail levels
+```
+
+**Aplikasi:**
+- Real-time 3D graphics (GPU texture mapping)
+- Image zooming dengan lossless quality
+- Memory cache efficiency
+
+---
+
+### 12. Advanced Image Blending dan Feature-Based Morphing
+
+#### A. Poisson Image Editing
+
+Gradient-domain compositing untuk seamless blending.
+
+**Konsep:**
+```
+Minimize: ∫∫ |∇I|² subject to: I|boundary = boundary_condition
+
+Ini menyelesaikan Laplace equation:
+∇²I = 0
+
+Seamless karena gradient transitions smooth.
+```
+
+**Applications:**
+- Seamless cloning (copy-paste)
+- Object removal (inpainting)
+- Exposure blending
+
+#### B. Multi-Band Blending (Burt & Adelson)
+
+Blend different frequency bands independently, then reconstruct.
+
+**Algorithm:**
+```
+1. Decompose: img1 & img2 ke Laplacian pyramid
+2. Blend each band dengan mask
+3. Reconstruct: sum blended bands
+
+L_blended[level] = (1-α)·L1[level] + α·L2[level]
+Result = sum(L_blended[level] + G[last_level])
+```
+
+**Keuntungan:**
+- Seamless transitions di multiple scales
+- Detail preservation
+- Better untuk complex boundaries
+
+#### C. Thin-Plate Spline (TPS) Warping
+
+Non-parametric smooth interpolator untuk image warping.
+
+**Properties:**
+```
+- Passes through control points exactly
+- Minimizes bending energy (∫∫ (∂²z/∂x² + ∂²z/∂y²)² dxdy)
+- Smooth everywhere, especially far dari points
+
+RBF Kernel: φ(r) = r² log(r)
+```
+
+**Interpolation:**
+```
+z(x,y) = a₀ + a₁x + a₂y + ∑ wᵢ·φ(||p - pᵢ||)
+
+Solve linear system untuk weights wᵢ dan coefficients aⱼ
+```
+
+**Aplikasi:**
+- Face morphing (smooth facial transitions)
+- Shape transformation
+- Free-form image deformation
+
+#### D. Line-Based Warping (Beier-Neely Algorithm)
+
+Warp image by specifying corresponding line segments.
+
+**Displacement dari line j pada titik p:**
+```
+d_j(p) = (displacements dari line correspondences)
+
+Distance weighting:
+w_j = (||line_j|| / (a + distance(p, line_j)))^b
+
+Final displacement: d(p) = ∑(w_j · d_j(p)) / ∑w_j
+```
+
+**Keuntungan:**
+- More intuitive: user specify lines not points
+- Preserve line structures
+- Better untuk structural warping
+
+#### E. Feature-Based Morphing
+
+Combine warping + blending untuk smooth transition antara images.
+
+**Morphing Pipeline:**
+```
+Image 1 ──Warp→ Intermediate──Warp← Image 2
+    ∧                ∨               ∧
+    |─────────Blend────────────────|
+
+Frame t:
+1. Interpolate control points: P(t) = (1-t)·P₁ + t·P₂
+2. Warp img1 → intermediate: W₁
+3. Warp img2 → intermediate: W₂
+4. Cross-dissolve: Result = (1-t)·W₁ + t·W₂
+```
+
+**Quality Parameters:**
+```
+- Control point density: lebih dense = lebih detail tapi lebih slow
+- Interpolation method: TPS (smooth) vs linear (fast)
+- Blend frames: lebih banyak = smoother animation
+- Morphing curves: linear vs easing functions
+```
+
+**Aplikasi:**
+- Movie title sequences
+- Face morphing videos
+- Shape transformation animations
+- Character blending dalam visual effects
+
+#### F. Mesh-Based Deformation
+
+Deform image menggunakan control mesh untuk local shape control.
+
+**Methods:**
+- **Affine-per-triangle**: Compute affine untuk each triangle
+- **Barycentric interpolation**: Smooth deformation across triangles
+- **RBF-based**: Global smooth deformation field
+
+**Deformation Effects:**
+```
+Bulge:  Push points away dari center
+Pinch:  Pull points toward center
+Twist:  Rotate points around center
+Bend:   Arc deformation
+```
+
+---
+
 ## 📚 Referensi
 
 1. Szeliski, R. (2022). *Computer Vision: Algorithms and Applications, 2nd Edition*. Chapter 3: Image Processing.
 2. Gonzalez, R.C. & Woods, R.E. (2018). *Digital Image Processing, 4th Edition*.
-3. OpenCV Documentation: [Image Processing](https://docs.opencv.org/4.x/d7/d1b/group__imgproc__misc.html)
-4. [Image Filtering - First Principles of Computer Vision (YouTube)](https://www.youtube.com/watch?v=example)
+3. Freeman, W.T. & Adelson, E.H. (1991). "The design and use of steerable filters". IEEE Transactions on Pattern Analysis and Machine Intelligence.
+4. Beier, T. & Neely, S. (1992). "Feature-Based Image Metamorphosis". SIGGRAPH Proceedings.
+5. Burt, P.J. & Adelson, E.H. (1983). "A multiresolution spline with application to image mosaics". ACM Transactions on Graphics.
+6. Bookstein, F.L. (1989). "Principal Warps: Thin-Plate Splines and the Decomposition of Deformations". IEEE TPAMI.
+7. Pérez, P., Gangnet, M. & Blake, A. (2003). "Poisson image editing". ACM SIGGRAPH.
+8. OpenCV Documentation: [Image Processing](https://docs.opencv.org/4.x/d7/d1b/group__imgproc__misc.html)
+9. SciPy Documentation: [Interpolation](https://docs.scipy.org/doc/scipy/reference/interpolate.html)
+10. [Digital Image Warping - George Wolberg](https://www.routledge.com/Digital-Image-Warping/Wolberg/p/book/9780849371639)
 
 ---
 

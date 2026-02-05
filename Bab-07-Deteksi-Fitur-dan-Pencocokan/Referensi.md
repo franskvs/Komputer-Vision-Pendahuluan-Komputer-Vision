@@ -145,11 +145,249 @@
 ### Dokumentasi Resmi
 - OpenCV Documentation: https://docs.opencv.org/
 - OpenCV Feature Detection Tutorial: https://docs.opencv.org/4.x/db/d27/tutorial_py_table_of_contents_feature2d.html
+- OpenCV SIFT Tutorial: https://docs.opencv.org/4.x/da/df5/tutorial_py_sift_intro.html
+- OpenCV ORB Tutorial: https://docs.opencv.org/4.x/d1/d89/tutorial_py_orb.html
+- OpenCV Feature Matching: https://docs.opencv.org/4.x/dc/dc3/tutorial_py_matcher.html
 
 ### Tutorial dan Course
 - CS231n Stanford Computer Vision: http://cs231n.stanford.edu/
 - Coursera Computer Vision Specialization: https://www.coursera.org/specializations/computer-vision
+- First Principles of Computer Vision (YouTube): https://www.youtube.com/@firstprinciplesofcomputerv3258
+- PyImageSearch Tutorials: https://pyimagesearch.com/
 
 ### Code Repository
 - OpenCV Python Samples: https://github.com/opencv/opencv/tree/master/samples/python
 - OpenCV Feature Matching Examples: https://github.com/opencv/opencv/blob/master/samples/python/feature_homography.py
+- Awesome Computer Vision: https://github.com/jbhuang0604/awesome-computer-vision
+
+---
+
+## 🖼️ DATASET DAN GAMBAR REFERENSI
+
+### Dataset Benchmark untuk Feature Matching
+1. **Oxford Affine Dataset**
+   - URL: https://www.robots.ox.ac.uk/~vgg/data/affine/
+   - Deskripsi: Dataset klasik untuk evaluasi feature detector dengan berbagai transformasi
+   - Gunakan untuk: Testing robustness terhadap viewpoint changes
+
+2. **HPatches Dataset**
+   - URL: https://github.com/hpatches/hpatches-dataset
+   - Deskripsi: 116 sequences dengan ground truth homography
+   - Gunakan untuk: Benchmark modern untuk local descriptors
+
+3. **KITTI Vision Benchmark**
+   - URL: http://www.cvlibs.net/datasets/kitti/
+   - Deskripsi: Dataset untuk autonomous driving dengan stereo matching
+   - Gunakan untuk: Real-world scenarios, visual odometry
+
+4. **ETH3D Benchmark**
+   - URL: https://www.eth3d.net/
+   - Deskripsi: High-resolution multi-view stereo benchmark
+   - Gunakan untuk: 3D reconstruction tasks
+
+5. **IMW Benchmark**
+   - URL: https://github.com/ubc-vision/image-matching-benchmark
+   - Deskripsi: Image Matching Workshop benchmark
+   - Gunakan untuk: State-of-the-art comparison
+
+### Sample Images untuk Praktikum
+1. **OpenCV Sample Data**
+   - URL: https://github.com/opencv/opencv/tree/master/samples/data
+   - File yang berguna:
+     - `chessboard.png` - untuk corner detection
+     - `box.png`, `box_in_scene.png` - untuk feature matching
+     - `left01.jpg`, `right01.jpg` - untuk stereo matching
+     - `graf1.png`, `graf3.png` - untuk rotation invariance
+
+2. **Computer Vision Group ETH Zurich**
+   - URL: https://www.eth3d.net/datasets
+   - Berbagai scene dengan ground truth
+
+3. **Middlebury Stereo Dataset**
+   - URL: https://vision.middlebury.edu/stereo/data/
+   - Dataset stereo matching yang populer
+
+### Free Stock Images untuk Testing
+1. **Unsplash**: https://unsplash.com/
+   - Tag: `architecture`, `building`, `pattern`, `texture`
+   
+2. **Pexels**: https://www.pexels.com/
+   - Cari: `geometric patterns`, `checkerboard`, `architectural details`
+
+3. **Pixabay**: https://pixabay.com/
+   - Free images dengan various perspectives
+
+---
+
+## 📊 TOOLS DAN VISUALISASI
+
+### Online Demos dan Interactive Tools
+1. **Feature Matching Demo**
+   - URL: https://kornia.github.io/tutorials/nbs/matching_loftr.html
+   - Interactive notebook untuk feature matching
+
+2. **SuperPoint + SuperGlue Demo**
+   - URL: https://github.com/magicleap/SuperGluePretrainedNetwork
+   - State-of-the-art matching demo
+
+3. **OpenCV.js Demos**
+   - URL: https://docs.opencv.org/4.x/d5/d10/tutorial_js_root.html
+   - Browser-based CV demos
+
+### Visualization Tools
+1. **Netron** (untuk visualisasi model): https://netron.app/
+2. **TensorBoard** (untuk training visualization): https://www.tensorflow.org/tensorboard
+3. **Matplotlib Gallery**: https://matplotlib.org/stable/gallery/index.html
+
+---
+
+## 🎓 VIDEO PEMBELAJARAN
+
+### YouTube Channels
+1. **First Principles of Computer Vision**
+   - URL: https://www.youtube.com/@firstprinciplesofcomputerv3258
+   - Penjelasan mendalam tentang CV fundamentals
+
+2. **Cyrill Stachniss**
+   - URL: https://www.youtube.com/c/CyrillStachniss
+   - Photogrammetry, SLAM lectures
+
+3. **Andreas Geiger**
+   - URL: https://www.youtube.com/channel/UCTxfHDNOZLc8fZs4szmkjaw
+   - Computer Vision for Autonomous Driving
+
+### Specific Tutorials
+1. **SIFT Explained** - Computerphile: https://www.youtube.com/watch?v=ram-jbLJjFg
+2. **Feature Detection in OpenCV** - PyImageSearch
+3. **Image Stitching with OpenCV** - LearnOpenCV
+
+---
+
+## 📱 APLIKASI MOBILE UNTUK INSPIRASI
+
+### Document Scanning
+- **Adobe Scan**: Contoh aplikasi feature detection untuk document scanning
+- **CamScanner**: Perspective correction real-time
+- **Microsoft Office Lens**: Integration dengan productivity tools
+
+### AR Applications
+- **Google ARCore**: Feature tracking untuk AR
+- **Apple ARKit**: Visual positioning
+- **Snapchat Filters**: Real-time feature tracking
+
+### Object Recognition
+- **Google Lens**: Visual search menggunakan feature matching
+- **Pinterest Lens**: Similar item search
+- **IKEA Place**: AR furniture placement
+
+---
+
+## 💡 PROYEK OPEN SOURCE UNTUK REFERENSI
+
+### SLAM Systems
+1. **ORB-SLAM3**: https://github.com/UZ-SLAMLab/ORB_SLAM3
+   - State-of-the-art visual SLAM
+
+2. **OpenVSLAM**: https://github.com/OpenVSLAM/openvslam
+   - Versatile visual SLAM framework
+
+3. **RTAB-Map**: https://github.com/introlab/rtabmap
+   - Real-time appearance-based mapping
+
+### Feature Matching Libraries
+1. **Kornia**: https://github.com/kornia/kornia
+   - Differentiable CV for PyTorch
+
+2. **OpenGV**: https://github.com/laurentkneip/opengv
+   - Geometric vision algorithms
+
+3. **Theia**: http://www.theia-sfm.org/
+   - Structure from Motion library
+
+### Image Stitching
+1. **AutoStitch**: Classic panorama stitching
+2. **Hugin**: Open source panorama software
+3. **OpenPano**: https://github.com/ppwwyyxx/OpenPano
+
+---
+
+## 🔬 ADVANCED TOPICS DAN PENELITIAN TERKINI
+
+### Recent Conferences (2020-2024)
+- **CVPR** (Computer Vision and Pattern Recognition)
+- **ICCV** (International Conference on Computer Vision)
+- **ECCV** (European Conference on Computer Vision)
+- **NeurIPS** (Conference on Neural Information Processing Systems)
+
+### Current Research Trends
+1. **Self-supervised Feature Learning**
+   - Learning features without manual labels
+   
+2. **Transformer-based Matching**
+   - LoFTR, SuperGlue approaches
+   
+3. **3D Feature Detection**
+   - Features for point clouds dan 3D reconstruction
+   
+4. **Efficient Mobile Implementation**
+   - Real-time features untuk edge devices
+   
+5. **Domain Adaptation**
+   - Features yang robust across different domains
+
+### ArXiv Papers (Latest)
+- Cari dengan keywords: "local features", "feature matching", "visual SLAM"
+- URL: https://arxiv.org/search/?query=local+features&searchtype=all
+
+---
+
+## 📖 GLOSSARY ISTILAH TEKNIS
+
+| Istilah | Definisi |
+|---------|----------|
+| **Keypoint** | Titik menarik pada gambar (corner, blob, dll) |
+| **Descriptor** | Representasi vektor dari area sekitar keypoint |
+| **Invariance** | Properti tidak berubah terhadap transformasi |
+| **RANSAC** | Random Sample Consensus untuk robust estimation |
+| **Homography** | Transformasi perspektif 3x3 matrix |
+| **Inlier** | Data point yang konsisten dengan model |
+| **Outlier** | Data point yang tidak fit dengan model |
+| **Reprojection Error** | Jarak antara proyeksi dengan observasi |
+| **Octave** | Level dalam piramida scale-space |
+| **DoG** | Difference of Gaussians |
+| **NMS** | Non-Maximum Suppression |
+| **Eigenvalue** | Nilai eigen dari matriks kovarian |
+
+---
+
+## 🎯 LATIHAN TAMBAHAN
+
+### Beginner Level
+1. Implement corner detection dari scratch tanpa OpenCV
+2. Visualisasi DoG pyramid untuk SIFT
+3. Buat simple feature matcher dengan brute-force
+
+### Intermediate Level
+1. Implement RANSAC dari scratch
+2. Buat image stitching pipeline lengkap
+3. Real-time feature tracking dengan webcam
+
+### Advanced Level
+1. Optimize feature matching untuk real-time performance
+2. Implement visual odometry sederhana
+3. Buat AR marker detection system
+
+---
+
+## 📧 KOMUNITAS DAN FORUM
+
+- **Stack Overflow**: Tag `opencv`, `computer-vision`, `feature-detection`
+- **Reddit**: r/computervision, r/opencv
+- **OpenCV Forum**: https://forum.opencv.org/
+- **Computer Vision Foundation**: https://www.thecvf.com/
+
+---
+
+## 📝 CATATAN AKHIR
+
+Referensi ini merupakan starting point untuk eksplorasi lebih dalam. Computer Vision adalah field yang berkembang sangat cepat, jadi selalu cek publikasi terbaru dan update dari komunitas.

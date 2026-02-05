@@ -38,6 +38,7 @@ tensorflow>=2.13.0            # TensorFlow (opsional, untuk beberapa model)
 # Library untuk Image Processing
 Pillow>=10.0.0                # Python Imaging Library
 scikit-image>=0.21.0          # Algoritma image processing
+PyWavelets>=1.4.1             # Wavelet transforms untuk pyramids dan compression
 imageio>=2.31.0               # Input/output gambar dan video
 imageio-ffmpeg>=0.4.8         # Dukungan video dengan ffmpeg
 

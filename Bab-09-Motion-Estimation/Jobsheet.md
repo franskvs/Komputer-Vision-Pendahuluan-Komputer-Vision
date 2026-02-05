@@ -28,6 +28,8 @@ Mahasiswa mampu memahami dan mengimplementasikan teknik motion estimation untuk 
 | 4 | Object Tracking | Melacak objek spesifik dalam video |
 | 5 | Motion History | Visualisasi history pergerakan |
 | 6 | Video Stabilization | Menstabilkan video yang goyang |
+| 7 | Translational Alignment | Estimasi pergeseran antar dua frame (SSD & phase correlation) |
+| 8 | Frame Interpolation | Membuat frame tengah dengan optical flow |
 
 ---
 
@@ -61,7 +63,7 @@ Mahasiswa mampu memahami dan mengimplementasikan teknik motion estimation untuk 
 
 ```bash
 cd "Praktikum Komputer Vision/Bab-09-Motion-Estimation"
-python download_sample_data.py
+python praktikum/download_sample_data.py
 ```
 
 ### 3.2 Struktur Folder
@@ -74,10 +76,13 @@ Bab-09-Motion-Estimation/
 │   ├── 04_object_tracking.py
 │   ├── 05_motion_history.py
 │   ├── 06_video_stabilization.py
+│   ├── 07_translational_alignment.py
+│   ├── 08_frame_interpolation.py
+│   ├── download_sample_data.py
 │   └── output/
-├── data/
-│   └── videos/
-└── download_sample_data.py
+└── data/
+   ├── videos/
+   └── images/
 ```
 
 ---
@@ -181,6 +186,36 @@ Bab-09-Motion-Estimation/
    - Ubah smoothing radius
    - Coba dengan video yang lebih goyang
 
+#### PERCOBAAN 7: Translational Alignment (SSD & Phase Correlation)
+
+**Tujuan:** Estimasi pergeseran translasi antar dua frame
+
+**Langkah-langkah:**
+1. Buka file `07_translational_alignment.py`
+2. Jalankan:
+   ```bash
+   python praktikum/07_translational_alignment.py
+   ```
+3. Perhatikan estimasi `dx, dy` dari SSD dan phase correlation
+4. **Variasi:**
+   - Ubah `SEARCH_RANGE`
+   - Coba pasangan gambar berbeda
+
+#### PERCOBAAN 8: Frame Interpolation
+
+**Tujuan:** Membuat frame tengah (t=0.5) dengan optical flow
+
+**Langkah-langkah:**
+1. Buka file `08_frame_interpolation.py`
+2. Jalankan:
+   ```bash
+   python praktikum/08_frame_interpolation.py
+   ```
+3. Amati hasil interpolasi di antara Frame 1 dan Frame 2
+4. **Variasi:**
+   - Ubah parameter Farneback
+   - Coba video/dua frame yang lebih kompleks
+
 ---
 
 ## 4. DATA PENGAMATAN
@@ -224,6 +259,20 @@ Bab-09-Motion-Estimation/
 | 5 frames | ... | ... | ... |
 | 15 frames | ... | ... | ... |
 | 30 frames | ... | ... | ... |
+
+### 4.6 Tabel Percobaan 7 (Translational Alignment)
+
+| Metode | dx, dy | Error/Response | Notes |
+|--------|--------|----------------|-------|
+| SSD | ... | ... | ... |
+| Phase Correlation | ... | ... | ... |
+
+### 4.7 Tabel Percobaan 8 (Frame Interpolation)
+
+| Parameter | Visual Quality | Artifacts | Notes |
+|-----------|----------------|----------|-------|
+| Default Farneback | ... | ... | ... |
+| Variasi 1 | ... | ... | ... |
 
 ---
 

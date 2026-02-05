@@ -88,7 +88,25 @@ ORB adalah alternatif gratis dan cepat untuk SIFT/SURF.
 - **BRIEF**: Binary descriptor yang efisien
 - Penambahan orientasi untuk rotasi invariance
 
-### 2.6 Feature Matching
+> **Catatan SURF:** SURF berada di modul opencv-contrib dan tidak selalu tersedia secara default. Pada praktikum ini, SURF dijelaskan secara teori, sementara implementasi fokus ke algoritma open-source (SIFT, ORB, AKAZE, FAST).
+
+### 2.6 AKAZE (Accelerated KAZE)
+AKAZE adalah versi lebih cepat dari KAZE dengan keseimbangan **kecepatan** dan **akurasi**.
+
+**Karakteristik:**
+- Bekerja di non-linear scale space
+- Lebih stabil dibanding ORB pada beberapa skenario
+- Descriptor biner (MLDB) → matching cepat
+
+### 2.7 FAST (Features from Accelerated Segment Test)
+FAST adalah detektor sudut yang sangat cepat, cocok untuk aplikasi real-time.
+
+**Karakteristik:**
+- Sangat cepat untuk deteksi keypoint
+- Tidak menghasilkan descriptor (perlu dipasangkan dengan BRIEF/ORB)
+- Cocok untuk tracking dan AR
+
+### 2.8 Feature Matching
 Proses mencocokkan fitur antara dua gambar.
 
 **Metode Matching:**
@@ -273,7 +291,28 @@ Algoritma untuk memisahkan inlier (match benar) dari outlier (match salah).
 
 ---
 
-## 6. DESKRIPSI TUGAS VIDEO
+## 6. KETERKAITAN MATERI PDF ↔ PRAKTIKUM
+
+Berikut pemetaan materi teori (PDF) ke program praktikum agar semua konsep **terimplementasi**:
+
+| Materi PDF | Praktikum | File |
+|------------|-----------|------|
+| Harris Corner | Percobaan 1 | `01_harris_corner.py` |
+| Shi-Tomasi / GFTT | Percobaan 2 | `02_shi_tomasi.py` |
+| SIFT | Percobaan 3 | `03_sift_detection.py` |
+| ORB (FAST+BRIEF) | Percobaan 4 | `04_orb_detection.py` |
+| Brute-Force Matching | Percobaan 5 | `05_bf_matching.py` |
+| FLANN Matching | Percobaan 6 | `06_flann_matching.py` |
+| Homography + RANSAC | Percobaan 7 | `07_homography_ransac.py` |
+| Aplikasi nyata (Document Scanner) | Percobaan 8 | `08_real_world_example.py` |
+| AKAZE | Percobaan 9 | `09_akaze_detection.py` |
+| FAST Detector | Percobaan 10 | `10_fast_detection.py` |
+
+**Catatan:** SURF dibahas secara teori (karena berada di opencv-contrib). Jika ingin mencoba, instal `opencv-contrib-python` dan gunakan modul `xfeatures2d`.
+
+---
+
+## 7. DESKRIPSI TUGAS VIDEO
 
 ### 📹 Tugas: Membuat Video Pembelajaran Feature Detection
 

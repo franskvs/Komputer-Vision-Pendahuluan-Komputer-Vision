@@ -474,7 +474,12 @@ def main():
     cv2.imwrite(best_path, results['pyramid'])
     print(f"Best blend disimpan ke: {best_path}")
     
-    plt.show()
+    # Auto-close setelah 2 detik
+    print("\n[INFO] Menampilkan hasil... (akan auto-close dalam 2 detik)")
+    plt.show(block=False)
+    plt.pause(2)
+    plt.close('all')
+    print("[INFO] Selesai!")
     
     # Summary
     print("\n" + "=" * 60)

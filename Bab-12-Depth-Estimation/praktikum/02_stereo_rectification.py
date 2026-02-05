@@ -33,6 +33,8 @@ Dependensi: opencv-python, numpy
 import cv2
 import numpy as np
 from pathlib import Path
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 # =============================================================================
 # KONFIGURASI - UBAH SESUAI KEBUTUHAN
@@ -61,6 +63,9 @@ EPIPOLAR_COLORS = [
 
 # Jumlah epipolar lines untuk visualisasi
 NUM_EPIPOLAR_LINES = 10
+
+# Auto-close settings
+AUTO_CLOSE_SECONDS = 2
 
 # =============================================================================
 # FUNGSI-FUNGSI
@@ -441,8 +446,8 @@ def main():
     epipolar_vis = draw_epipolar_lines(rect_left, rect_right, NUM_EPIPOLAR_LINES)
     cv2.imshow("Epipolar Lines (Rectified)", epipolar_vis)
     
-    print("\nTekan sembarang tombol untuk keluar...")
-    cv2.waitKey(0)
+    print(f"\nAuto close dalam {AUTO_CLOSE_SECONDS} detik (tekan 'q' untuk keluar)...")
+    cv2.waitKey(int(AUTO_CLOSE_SECONDS * 1000))
     cv2.destroyAllWindows()
     
     print("\n[SUCCESS] Stereo rectification selesai!")

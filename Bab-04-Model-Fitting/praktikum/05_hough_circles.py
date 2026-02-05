@@ -42,6 +42,9 @@ CIRCLE_COLOR = (0, 255, 0)   # Hijau untuk lingkaran
 CENTER_COLOR = (255, 0, 0)   # Biru untuk center
 CIRCLE_THICKNESS = 2
 
+# 5. Auto-close plot (detik)
+AUTO_CLOSE_SECONDS = 2.0
+
 # ============================================================
 # FUNGSI HELPER
 # ============================================================
@@ -88,6 +91,13 @@ def buat_gambar_sample():
     gambar = cv2.add(gambar, noise)
     
     return gambar
+
+
+def tampilkan_plot():
+    """Tampilkan plot sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(AUTO_CLOSE_SECONDS)
+    plt.close()
 
 
 # ============================================================
@@ -232,7 +242,7 @@ Nilai terlalu tinggi: miss beberapa lingkaran
     
     plt.suptitle("Pengaruh param2 pada Hough Circle Detection", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_min_dist_effect():
@@ -277,7 +287,7 @@ minDist besar:
     
     plt.suptitle("Pengaruh minDist pada Hough Circle Detection", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_radius_constraints():
@@ -325,7 +335,7 @@ Contoh aplikasi:
     
     plt.suptitle("Pengaruh Radius Constraints", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_preprocessing_effect():
@@ -380,7 +390,7 @@ Kernel size:
     
     plt.suptitle("Pengaruh Blur Preprocessing pada Circle Detection", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 # ============================================================
@@ -514,7 +524,7 @@ APLIKASI:
     
     plt.suptitle("Hough Circle Transform", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
     
     # Demo tambahan
     demo_param2_effect()

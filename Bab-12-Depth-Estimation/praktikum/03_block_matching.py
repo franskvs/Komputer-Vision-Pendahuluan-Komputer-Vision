@@ -94,6 +94,10 @@ SPECKLE_RANGE = 32  # Max perbedaan disparity dalam blob
 # Colormap untuk visualisasi
 COLORMAP = cv2.COLORMAP_JET  # Pilihan: JET, TURBO, INFERNO, PLASMA
 
+# Auto-close settings (untuk otomatis menutup window)
+AUTO_CLOSE_SECONDS = 2
+
+
 # =============================================================================
 # FUNGSI-FUNGSI
 # =============================================================================
@@ -226,6 +230,20 @@ def visualize_disparity(disparity, colormap=cv2.COLORMAP_JET):
         Colored disparity image
     """
     return cv2.applyColorMap(disparity, colormap)
+
+
+def show_matplotlib_auto_close(seconds=AUTO_CLOSE_SECONDS):
+    """Tampilkan matplotlib sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(seconds)
+    plt.close('all')
+
+
+def wait_with_timeout(seconds=AUTO_CLOSE_SECONDS):
+    """Menunggu input atau timeout; tekan 'q' untuk keluar lebih cepat."""
+    timeout_ms = int(seconds * 1000)
+    key = cv2.waitKey(timeout_ms)
+    return key
 
 
 def analyze_disparity(disparity_float, img_left):
@@ -464,10 +482,10 @@ def main():
     cv2.imshow("Block Matching Stereo", combined)
     
     # Show matplotlib comparison
-    plt.show()
+    show_matplotlib_auto_close()
     
-    print("\nTekan sembarang tombol untuk keluar...")
-    cv2.waitKey(0)
+    print(f"\nAuto close dalam {AUTO_CLOSE_SECONDS} detik (tekan 'q' untuk keluar)...")
+    cv2.waitKey(int(AUTO_CLOSE_SECONDS * 1000))
     cv2.destroyAllWindows()
     
     print("\n[SUCCESS] Block Matching selesai!")

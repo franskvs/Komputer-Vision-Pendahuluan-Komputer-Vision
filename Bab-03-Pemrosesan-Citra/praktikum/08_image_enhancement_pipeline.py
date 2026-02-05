@@ -14,10 +14,15 @@
 # ====================
 # IMPORT LIBRARY
 # ====================
+# Keterangan: Impor modul cv2.
 import cv2
+# Keterangan: Impor modul numpy as np.
 import numpy as np
+# Keterangan: Impor modul matplotlib.pyplot as plt.
 import matplotlib.pyplot as plt
+# Keterangan: Impor modul os.
 import os
+# Keterangan: Impor modul time.
 import time
 
 # ============================================================
@@ -25,31 +30,41 @@ import time
 # ============================================================
 
 # 1. File gambar yang akan diproses
+# Keterangan: Inisialisasi atau perbarui variabel NAMA_FILE_GAMBAR.
 NAMA_FILE_GAMBAR = "portrait.jpg"
 
 # 2. Mode enhancement
 # Opsi: 'auto', 'manual'
+# Keterangan: Inisialisasi atau perbarui variabel ENHANCEMENT_MODE.
 ENHANCEMENT_MODE = 'auto'
 
 # 3. Parameter manual (digunakan jika mode='manual')
+# Keterangan: Inisialisasi atau perbarui variabel MANUAL_BRIGHTNESS.
 MANUAL_BRIGHTNESS = 0      # Range: -100 sampai 100
+# Keterangan: Inisialisasi atau perbarui variabel MANUAL_CONTRAST.
 MANUAL_CONTRAST = 1.0      # Range: 0.5 sampai 2.0
+# Keterangan: Inisialisasi atau perbarui variabel MANUAL_GAMMA.
 MANUAL_GAMMA = 1.0         # Range: 0.5 sampai 2.5
+# Keterangan: Inisialisasi atau perbarui variabel MANUAL_SATURATION.
 MANUAL_SATURATION = 1.0    # Range: 0.5 sampai 2.0
+# Keterangan: Inisialisasi atau perbarui variabel MANUAL_SHARPNESS.
 MANUAL_SHARPNESS = 0.0     # Range: 0.0 sampai 2.0
 
 # 4. Enhancement presets
 # Opsi: 'natural', 'vivid', 'dramatic', 'vintage', 'cinematic'
+# Keterangan: Inisialisasi atau perbarui variabel PRESET.
 PRESET = 'natural'
 
 # 5. Noise reduction strength
 # Range: 0 (no reduction) sampai 1.0 (strong)
+# Keterangan: Inisialisasi atau perbarui variabel NOISE_REDUCTION.
 NOISE_REDUCTION = 0.5
 
 # ============================================================
 # FUNGSI HELPER
 # ============================================================
 
+# Keterangan: Definisikan fungsi dapatkan_path_gambar.
 def dapatkan_path_gambar(nama_file):
     """Mendapatkan path lengkap file gambar"""
     direktori_script = os.path.dirname(os.path.abspath(__file__))
@@ -71,21 +86,30 @@ def dapatkan_path_gambar(nama_file):
 def buat_gambar_sample():
     """Membuat gambar sample untuk testing pipeline"""
     # Gambar dengan berbagai masalah
+    # Keterangan: Inisialisasi array bernilai nol.
     gambar = np.zeros((400, 600, 3), dtype=np.uint8)
     
     # Background gelap (under-exposed simulation)
+    # Keterangan: Inisialisasi atau perbarui variabel gambar[:].
     gambar[:] = [40, 50, 60]
     
     # Beberapa objek
+    # Keterangan: Jalankan perintah berikut.
     cv2.rectangle(gambar, (50, 50), (200, 150), (80, 100, 120), -1)
+    # Keterangan: Jalankan perintah berikut.
     cv2.circle(gambar, (400, 100), 60, (100, 80, 70), -1)
+    # Keterangan: Jalankan perintah berikut.
     cv2.fillPoly(gambar, [np.array([[250, 300], [350, 200], [450, 300]])], 
+                 # Keterangan: Jalankan perintah berikut.
                  (90, 110, 80))
     
     # Tambah noise
+    # Keterangan: Inisialisasi atau perbarui variabel noise.
     noise = np.random.normal(0, 10, gambar.shape).astype(np.float64)
+    # Keterangan: Inisialisasi atau perbarui variabel gambar.
     gambar = np.clip(gambar.astype(np.float64) + noise, 0, 255).astype(np.uint8)
     
+    # Keterangan: Kembalikan hasil dari fungsi.
     return gambar
 
 
@@ -93,6 +117,7 @@ def buat_gambar_sample():
 # FUNGSI ANALISIS GAMBAR
 # ============================================================
 
+# Keterangan: Definisikan fungsi analisis_brightness.
 def analisis_brightness(gambar):
     """
     Analisis tingkat brightness gambar
@@ -102,26 +127,42 @@ def analisis_brightness(gambar):
     - assessment: 'dark', 'normal', atau 'bright'
     - suggested_adjustment: nilai adjustment yang disarankan
     """
+    # Keterangan: Cek kondisi len(gambar.shape) == 3.
     if len(gambar.shape) == 3:
+        # Keterangan: Konversi ruang warna gambar.
         gray = cv2.cvtColor(gambar, cv2.COLOR_BGR2GRAY)
+    # Keterangan: Jalankan blok else jika kondisi sebelumnya tidak terpenuhi.
     else:
+        # Keterangan: Inisialisasi atau perbarui variabel gray.
         gray = gambar
     
+    # Keterangan: Inisialisasi atau perbarui variabel mean_brightness.
     mean_brightness = np.mean(gray)
     
+    # Keterangan: Cek kondisi mean_brightness < 80.
     if mean_brightness < 80:
+        # Keterangan: Inisialisasi atau perbarui variabel assessment.
         assessment = 'dark'
+        # Keterangan: Inisialisasi atau perbarui variabel suggested_adjustment.
         suggested_adjustment = int((120 - mean_brightness) * 0.5)
+    # Keterangan: Cek kondisi alternatif mean_brightness > 180.
     elif mean_brightness > 180:
+        # Keterangan: Inisialisasi atau perbarui variabel assessment.
         assessment = 'bright'
+        # Keterangan: Inisialisasi atau perbarui variabel suggested_adjustment.
         suggested_adjustment = -int((mean_brightness - 130) * 0.5)
+    # Keterangan: Jalankan blok else jika kondisi sebelumnya tidak terpenuhi.
     else:
+        # Keterangan: Inisialisasi atau perbarui variabel assessment.
         assessment = 'normal'
+        # Keterangan: Inisialisasi atau perbarui variabel suggested_adjustment.
         suggested_adjustment = 0
     
+    # Keterangan: Kembalikan hasil dari fungsi.
     return mean_brightness, assessment, suggested_adjustment
 
 
+# Keterangan: Definisikan fungsi analisis_contrast.
 def analisis_contrast(gambar):
     """
     Analisis tingkat kontras gambar
@@ -131,57 +172,91 @@ def analisis_contrast(gambar):
     - assessment: 'low', 'normal', atau 'high'
     - suggested_factor: faktor kontras yang disarankan
     """
+    # Keterangan: Cek kondisi len(gambar.shape) == 3.
     if len(gambar.shape) == 3:
+        # Keterangan: Konversi ruang warna gambar.
         gray = cv2.cvtColor(gambar, cv2.COLOR_BGR2GRAY)
+    # Keterangan: Jalankan blok else jika kondisi sebelumnya tidak terpenuhi.
     else:
+        # Keterangan: Inisialisasi atau perbarui variabel gray.
         gray = gambar
     
+    # Keterangan: Inisialisasi atau perbarui variabel std_dev.
     std_dev = np.std(gray)
     
+    # Keterangan: Cek kondisi std_dev < 40.
     if std_dev < 40:
+        # Keterangan: Inisialisasi atau perbarui variabel assessment.
         assessment = 'low'
+        # Keterangan: Inisialisasi atau perbarui variabel suggested_factor.
         suggested_factor = 1.3
+    # Keterangan: Cek kondisi alternatif std_dev > 80.
     elif std_dev > 80:
+        # Keterangan: Inisialisasi atau perbarui variabel assessment.
         assessment = 'high'
+        # Keterangan: Inisialisasi atau perbarui variabel suggested_factor.
         suggested_factor = 0.8
+    # Keterangan: Jalankan blok else jika kondisi sebelumnya tidak terpenuhi.
     else:
+        # Keterangan: Inisialisasi atau perbarui variabel assessment.
         assessment = 'normal'
+        # Keterangan: Inisialisasi atau perbarui variabel suggested_factor.
         suggested_factor = 1.0
     
+    # Keterangan: Kembalikan hasil dari fungsi.
     return std_dev, assessment, suggested_factor
 
 
+# Keterangan: Definisikan fungsi analisis_noise.
 def analisis_noise(gambar):
     """
     Estimasi tingkat noise dalam gambar
     
     Menggunakan Laplacian variance method
     """
+    # Keterangan: Cek kondisi len(gambar.shape) == 3.
     if len(gambar.shape) == 3:
+        # Keterangan: Konversi ruang warna gambar.
         gray = cv2.cvtColor(gambar, cv2.COLOR_BGR2GRAY)
+    # Keterangan: Jalankan blok else jika kondisi sebelumnya tidak terpenuhi.
     else:
+        # Keterangan: Inisialisasi atau perbarui variabel gray.
         gray = gambar
     
     # Laplacian variance (higher = more detail/noise)
+    # Keterangan: Hitung Laplacian untuk deteksi tepi.
     laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
     
     # Estimate noise using median filter difference
+    # Keterangan: Inisialisasi atau perbarui variabel blurred.
     blurred = cv2.medianBlur(gray, 5)
+    # Keterangan: Inisialisasi atau perbarui variabel noise_estimate.
     noise_estimate = np.mean(np.abs(gray.astype(np.float64) - blurred.astype(np.float64)))
     
+    # Keterangan: Cek kondisi noise_estimate > 15.
     if noise_estimate > 15:
+        # Keterangan: Inisialisasi atau perbarui variabel assessment.
         assessment = 'high'
+        # Keterangan: Inisialisasi atau perbarui variabel suggested_reduction.
         suggested_reduction = 0.8
+    # Keterangan: Cek kondisi alternatif noise_estimate > 8.
     elif noise_estimate > 8:
+        # Keterangan: Inisialisasi atau perbarui variabel assessment.
         assessment = 'medium'
+        # Keterangan: Inisialisasi atau perbarui variabel suggested_reduction.
         suggested_reduction = 0.5
+    # Keterangan: Jalankan blok else jika kondisi sebelumnya tidak terpenuhi.
     else:
+        # Keterangan: Inisialisasi atau perbarui variabel assessment.
         assessment = 'low'
+        # Keterangan: Inisialisasi atau perbarui variabel suggested_reduction.
         suggested_reduction = 0.2
     
+    # Keterangan: Kembalikan hasil dari fungsi.
     return noise_estimate, assessment, suggested_reduction
 
 
+# Keterangan: Definisikan fungsi analisis_color_balance.
 def analisis_color_balance(gambar):
     """
     Analisis keseimbangan warna
@@ -190,34 +265,55 @@ def analisis_color_balance(gambar):
     - channel_means: rata-rata setiap channel
     - color_cast: deteksi color cast
     """
+    # Keterangan: Cek kondisi len(gambar.shape) != 3.
     if len(gambar.shape) != 3:
+        # Keterangan: Kembalikan hasil dari fungsi.
         return None, 'grayscale'
     
+    # Keterangan: Inisialisasi atau perbarui variabel b_mean.
     b_mean = np.mean(gambar[:, :, 0])
+    # Keterangan: Inisialisasi atau perbarui variabel g_mean.
     g_mean = np.mean(gambar[:, :, 1])
+    # Keterangan: Inisialisasi atau perbarui variabel r_mean.
     r_mean = np.mean(gambar[:, :, 2])
     
+    # Keterangan: Inisialisasi atau perbarui variabel channel_means.
     channel_means = {'B': b_mean, 'G': g_mean, 'R': r_mean}
     
     # Detect color cast
+    # Keterangan: Inisialisasi atau perbarui variabel avg.
     avg = (b_mean + g_mean + r_mean) / 3
+    # Keterangan: Inisialisasi atau perbarui variabel deviation.
     deviation = max(abs(b_mean - avg), abs(g_mean - avg), abs(r_mean - avg))
     
+    # Keterangan: Cek kondisi deviation > 20.
     if deviation > 20:
+        # Keterangan: Cek kondisi b_mean > max(g_mean, r_mean).
         if b_mean > max(g_mean, r_mean):
+            # Keterangan: Inisialisasi atau perbarui variabel color_cast.
             color_cast = 'blue'
+        # Keterangan: Cek kondisi alternatif r_mean > max(g_mean, b_mean).
         elif r_mean > max(g_mean, b_mean):
+            # Keterangan: Inisialisasi atau perbarui variabel color_cast.
             color_cast = 'red/yellow'
+        # Keterangan: Cek kondisi alternatif g_mean > max(b_mean, r_mean).
         elif g_mean > max(b_mean, r_mean):
+            # Keterangan: Inisialisasi atau perbarui variabel color_cast.
             color_cast = 'green'
+        # Keterangan: Jalankan blok else jika kondisi sebelumnya tidak terpenuhi.
         else:
+            # Keterangan: Inisialisasi atau perbarui variabel color_cast.
             color_cast = 'mixed'
+    # Keterangan: Jalankan blok else jika kondisi sebelumnya tidak terpenuhi.
     else:
+        # Keterangan: Inisialisasi atau perbarui variabel color_cast.
         color_cast = 'balanced'
     
+    # Keterangan: Kembalikan hasil dari fungsi.
     return channel_means, color_cast
 
 
+# Keterangan: Definisikan fungsi analisis_lengkap.
 def analisis_lengkap(gambar):
     """Melakukan analisis lengkap gambar"""
     print("\n" + "-" * 40)
@@ -256,8 +352,10 @@ def analisis_lengkap(gambar):
 
 def adjust_brightness_contrast(gambar, brightness=0, contrast=1.0):
     """
+    # Keterangan: Jalankan perintah berikut.
     Adjust brightness dan contrast
     
+    # Keterangan: Inisialisasi beberapa variabel (g(x,y)).
     g(x,y) = contrast × f(x,y) + brightness
     """
     result = cv2.convertScaleAbs(gambar, alpha=contrast, beta=brightness)
@@ -266,8 +364,10 @@ def adjust_brightness_contrast(gambar, brightness=0, contrast=1.0):
 
 def gamma_correction(gambar, gamma=1.0):
     """
+    # Keterangan: Jalankan perintah berikut.
     Koreksi gamma untuk non-linear brightness adjustment
     
+    # Keterangan: Inisialisasi beberapa variabel (g(x,y)).
     g(x,y) = 255 × (f(x,y)/255)^(1/gamma)
     """
     inv_gamma = 1.0 / gamma
@@ -278,6 +378,7 @@ def gamma_correction(gambar, gamma=1.0):
 
 def auto_gamma(gambar):
     """
+    # Keterangan: Jalankan perintah berikut.
     Auto gamma correction berdasarkan mean intensity
     """
     if len(gambar.shape) == 3:
@@ -296,9 +397,12 @@ def auto_gamma(gambar):
 
 def denoise(gambar, strength=0.5):
     """
+    # Keterangan: Jalankan perintah berikut.
     Noise reduction menggunakan bilateral filter atau fastNlMeans
     
+    # Keterangan: Mulai blok kode baru.
     Parameter:
+    # Keterangan: Jalankan perintah berikut.
     - strength: 0.0 (no denoising) to 1.0 (strong denoising)
     """
     if strength <= 0:
@@ -319,10 +423,14 @@ def denoise(gambar, strength=0.5):
 
 def adjust_saturation(gambar, factor=1.0):
     """
+    # Keterangan: Jalankan perintah berikut.
     Adjust saturation dari gambar berwarna
     
+    # Keterangan: Jalankan perintah berikut.
     factor > 1: lebih saturated
+    # Keterangan: Jalankan perintah berikut.
     factor < 1: less saturated
+    # Keterangan: Inisialisasi atau perbarui variabel factor.
     factor = 0: grayscale
     """
     if len(gambar.shape) != 3:
@@ -344,9 +452,12 @@ def adjust_saturation(gambar, factor=1.0):
 
 def sharpen(gambar, strength=1.0):
     """
+    # Keterangan: Jalankan perintah berikut.
     Sharpening dengan unsharp masking
     
+    # Keterangan: Mulai blok kode baru.
     Parameter:
+    # Keterangan: Jalankan perintah berikut.
     - strength: 0.0 (no sharpening) to 2.0 (strong sharpening)
     """
     if strength <= 0:
@@ -360,6 +471,7 @@ def sharpen(gambar, strength=1.0):
 
 def clahe_enhancement(gambar, clip_limit=2.0, tile_size=(8, 8)):
     """
+    # Keterangan: Jalankan perintah berikut.
     CLAHE untuk contrast enhancement
     """
     if len(gambar.shape) == 3:
@@ -377,10 +489,14 @@ def clahe_enhancement(gambar, clip_limit=2.0, tile_size=(8, 8)):
 
 def white_balance(gambar, method='gray_world'):
     """
+    # Keterangan: Jalankan perintah berikut.
     Auto white balance correction
     
+    # Keterangan: Mulai blok kode baru.
     Methods:
+    # Keterangan: Jalankan perintah berikut.
     - 'gray_world': assumes average color should be gray
+    # Keterangan: Jalankan perintah berikut.
     - 'white_patch': assumes brightest pixel should be white
     """
     if len(gambar.shape) != 3:
@@ -420,6 +536,7 @@ def white_balance(gambar, method='gray_world'):
 
 def get_preset_parameters(preset_name):
     """
+    # Keterangan: Jalankan perintah berikut.
     Mendapatkan parameter enhancement berdasarkan preset
     """
     presets = {
@@ -479,15 +596,24 @@ def get_preset_parameters(preset_name):
 
 def enhancement_pipeline_manual(gambar, params):
     """
+    # Keterangan: Jalankan perintah berikut.
     Pipeline enhancement dengan parameter manual
     
+    # Keterangan: Mulai blok kode baru.
     Parameter:
+    # Keterangan: Jalankan perintah berikut.
     - brightness: -100 to 100
+    # Keterangan: Jalankan perintah berikut.
     - contrast: 0.5 to 2.0
+    # Keterangan: Jalankan perintah berikut.
     - gamma: 0.5 to 2.5
+    # Keterangan: Jalankan perintah berikut.
     - saturation: 0.5 to 2.0
+    # Keterangan: Jalankan perintah berikut.
     - sharpness: 0.0 to 2.0
+    # Keterangan: Jalankan perintah berikut.
     - clahe_clip: CLAHE clip limit
+    # Keterangan: Jalankan perintah berikut.
     - denoise: 0.0 to 1.0
     """
     result = gambar.copy()
@@ -530,6 +656,7 @@ def enhancement_pipeline_manual(gambar, params):
 
 def enhancement_pipeline_auto(gambar):
     """
+    # Keterangan: Jalankan perintah berikut.
     Pipeline enhancement otomatis berdasarkan analisis gambar
     """
     # Analisis gambar
@@ -564,6 +691,7 @@ def enhancement_pipeline_auto(gambar):
 
 def enhancement_pipeline_preset(gambar, preset_name='natural'):
     """
+    # Keterangan: Jalankan perintah berikut.
     Pipeline enhancement menggunakan preset
     """
     params = get_preset_parameters(preset_name)
@@ -578,6 +706,7 @@ def enhancement_pipeline_preset(gambar, preset_name='natural'):
 
 def demo_pipeline_steps():
     """
+    # Keterangan: Jalankan perintah berikut.
     Demonstrasi setiap langkah dalam pipeline
     """
     print("\n" + "=" * 60)
@@ -585,29 +714,46 @@ def demo_pipeline_steps():
     print("=" * 60)
     
     print("""
+# Keterangan: Mulai blok kode baru.
 URUTAN PIPELINE YANG DISARANKAN:
 
+# Keterangan: Jalankan perintah berikut.
 1. DENOISE
+   # Keterangan: Jalankan perintah berikut.
    └── Kurangi noise sebelum enhancement lain
+       # Keterangan: Jalankan perintah berikut.
        (Enhancement akan mengamplifikasi noise)
 
+# Keterangan: Jalankan perintah berikut.
 2. WHITE BALANCE
+   # Keterangan: Jalankan perintah berikut.
    └── Koreksi color cast jika ada
 
+# Keterangan: Jalankan perintah berikut.
 3. CLAHE
+   # Keterangan: Jalankan perintah berikut.
    └── Adaptive contrast enhancement
+       # Keterangan: Jalankan perintah berikut.
        (Lebih natural dari global contrast)
 
+# Keterangan: Jalankan perintah berikut.
 4. BRIGHTNESS & CONTRAST
+   # Keterangan: Jalankan perintah berikut.
    └── Fine-tune setelah CLAHE
 
+# Keterangan: Jalankan perintah berikut.
 5. GAMMA CORRECTION
+   # Keterangan: Jalankan perintah berikut.
    └── Non-linear adjustment untuk midtones
 
+# Keterangan: Jalankan perintah berikut.
 6. SATURATION
+   # Keterangan: Jalankan perintah berikut.
    └── Adjust color vibrance
 
+# Keterangan: Jalankan perintah berikut.
 7. SHARPENING
+   # Keterangan: Jalankan perintah berikut.
    └── TERAKHIR! Karena akan mengamplifikasi noise
     """)
     
@@ -663,6 +809,7 @@ URUTAN PIPELINE YANG DISARANKAN:
 
 def demo_presets():
     """
+    # Keterangan: Jalankan perintah berikut.
     Demonstrasi berbagai enhancement presets
     """
     print("\n" + "=" * 60)
@@ -700,6 +847,7 @@ def demo_presets():
 
 def demo_auto_vs_manual():
     """
+    # Keterangan: Jalankan perintah berikut.
     Perbandingan auto enhancement vs manual
     """
     print("\n" + "=" * 60)
@@ -754,9 +902,13 @@ def demo_auto_vs_manual():
 def main():
     """Fungsi utama program"""
     
+    # Keterangan: Inisialisasi atau perbarui variabel print("\n" + ".
     print("\n" + "=" * 60)
+    # Keterangan: Jalankan perintah berikut.
     print("PRAKTIKUM: IMAGE ENHANCEMENT PIPELINE")
+    # Keterangan: Jalankan perintah berikut.
     print("Bab 3 - Pemrosesan Citra")
+    # Keterangan: Inisialisasi atau perbarui variabel print(".
     print("=" * 60)
     
     print("""
@@ -782,61 +934,102 @@ Aplikasi:
     """)
     
     # Load atau buat gambar
+    # Keterangan: Inisialisasi atau perbarui variabel path_gambar.
     path_gambar = dapatkan_path_gambar(NAMA_FILE_GAMBAR)
     
+    # Keterangan: Cek kondisi os.path.exists(path_gambar).
     if os.path.exists(path_gambar):
+        # Keterangan: Jalankan perintah berikut.
         print(f"[INFO] Memuat gambar: {path_gambar}")
+        # Keterangan: Baca gambar dari file ke array.
         gambar = cv2.imread(path_gambar)
+    # Keterangan: Jalankan blok else jika kondisi sebelumnya tidak terpenuhi.
     else:
+        # Keterangan: Jalankan perintah berikut.
         print("[INFO] Membuat gambar sample...")
+        # Keterangan: Inisialisasi atau perbarui variabel gambar.
         gambar = buat_gambar_sample()
     
+    # Keterangan: Jalankan perintah berikut.
     print(f"[INFO] Ukuran gambar: {gambar.shape}")
+    # Keterangan: Jalankan perintah berikut.
     print(f"[INFO] Enhancement Mode: {ENHANCEMENT_MODE}")
+    # Keterangan: Jalankan perintah berikut.
     print(f"[INFO] Preset: {PRESET}")
     
     # Apply enhancement
+    # Keterangan: Inisialisasi atau perbarui variabel start_time.
     start_time = time.time()
     
+    # Keterangan: Cek kondisi ENHANCEMENT_MODE == 'auto'.
     if ENHANCEMENT_MODE == 'auto':
+        # Keterangan: Inisialisasi beberapa variabel (enhanced, params).
         enhanced, params = enhancement_pipeline_auto(gambar)
+    # Keterangan: Jalankan blok else jika kondisi sebelumnya tidak terpenuhi.
     else:
+        # Keterangan: Inisialisasi atau perbarui variabel params.
         params = {
+            # Keterangan: Jalankan perintah berikut.
             'brightness': MANUAL_BRIGHTNESS,
+            # Keterangan: Jalankan perintah berikut.
             'contrast': MANUAL_CONTRAST,
+            # Keterangan: Jalankan perintah berikut.
             'gamma': MANUAL_GAMMA,
+            # Keterangan: Jalankan perintah berikut.
             'saturation': MANUAL_SATURATION,
+            # Keterangan: Jalankan perintah berikut.
             'sharpness': MANUAL_SHARPNESS,
+            # Keterangan: Jalankan perintah berikut.
             'denoise': NOISE_REDUCTION,
+            # Keterangan: Jalankan perintah berikut.
             'clahe_clip': 2.0
+        # Keterangan: Jalankan perintah berikut.
         }
+        # Keterangan: Inisialisasi atau perbarui variabel enhanced.
         enhanced = enhancement_pipeline_manual(gambar, params)
     
+    # Keterangan: Inisialisasi atau perbarui variabel elapsed_time.
     elapsed_time = time.time() - start_time
+    # Keterangan: Jalankan perintah berikut.
     print(f"\n[INFO] Enhancement completed in {elapsed_time:.3f} seconds")
     
     # Tampilkan hasil
+    # Keterangan: Pilih area subplot untuk menampilkan hasil.
     fig, axes = plt.subplots(1, 2, figsize=(12, 6))
     
+    # Keterangan: Konversi ruang warna gambar.
     axes[0].imshow(cv2.cvtColor(gambar, cv2.COLOR_BGR2RGB))
+    # Keterangan: Jalankan perintah berikut.
     axes[0].set_title("Original")
+    # Keterangan: Jalankan perintah berikut.
     axes[0].axis('off')
     
+    # Keterangan: Konversi ruang warna gambar.
     axes[1].imshow(cv2.cvtColor(enhanced, cv2.COLOR_BGR2RGB))
+    # Keterangan: Jalankan perintah berikut.
     axes[1].set_title(f"Enhanced ({ENHANCEMENT_MODE.upper()})")
+    # Keterangan: Jalankan perintah berikut.
     axes[1].axis('off')
     
+    # Keterangan: Rapikan jarak antar subplot.
     plt.tight_layout()
+    # Keterangan: Jalankan perintah berikut.
     plt.show()
     
     # Demo tambahan
+    # Keterangan: Jalankan perintah berikut.
     demo_pipeline_steps()
+    # Keterangan: Jalankan perintah berikut.
     demo_presets()
+    # Keterangan: Jalankan perintah berikut.
     demo_auto_vs_manual()
     
     # Ringkasan
+    # Keterangan: Inisialisasi atau perbarui variabel print("\n" + ".
     print("\n" + "=" * 60)
+    # Keterangan: Jalankan perintah berikut.
     print("RINGKASAN IMAGE ENHANCEMENT PIPELINE")
+    # Keterangan: Inisialisasi atau perbarui variabel print(".
     print("=" * 60)
     print("""
 PIPELINE STRUCTURE:
@@ -882,5 +1075,7 @@ TIPS:
 
 
 # Jalankan program utama
+# Keterangan: Cek kondisi __name__ == "__main__".
 if __name__ == "__main__":
+    # Keterangan: Jalankan perintah berikut.
     main()

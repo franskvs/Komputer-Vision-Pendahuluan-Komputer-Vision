@@ -354,8 +354,8 @@ Tips:
     cv2.imshow("Original", image)
     cv2.imshow("Depth Map", depth_vis)
     cv2.imshow("Bokeh Result", bokeh)
-    print("\nTekan sembarang tombol untuk menutup...")
-    cv2.waitKey(0)
+    print("\nMenampilkan hasil (akan otomatis tertutup dalam 2 detik)...")
+    cv2.waitKey(2000)
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":

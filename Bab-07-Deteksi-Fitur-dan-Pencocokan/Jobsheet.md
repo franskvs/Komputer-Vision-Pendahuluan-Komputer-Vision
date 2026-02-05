@@ -29,6 +29,9 @@ Mahasiswa mampu memahami dan mengimplementasikan teknik deteksi fitur serta penc
 | 5 | Feature Matching Brute Force | Mencocokkan fitur antara dua gambar dengan metode brute-force |
 | 6 | Feature Matching FLANN | Menggunakan FLANN untuk matching yang lebih efisien |
 | 7 | Homography dengan RANSAC | Mengestimasi transformasi perspektif dengan filtering outlier |
+| 8 | Aplikasi Nyata: Document Scanner | Menerapkan homography untuk koreksi perspektif dokumen |
+| 9 | AKAZE Feature Detection | Menyeimbangkan kecepatan dan akurasi deteksi fitur |
+| 10 | FAST Feature Detection | Mendeteksi keypoint sangat cepat untuk aplikasi real-time |
 
 ---
 
@@ -56,7 +59,7 @@ Mahasiswa mampu memahami dan mengimplementasikan teknik deteksi fitur serta penc
 | 1 | Gambar `checkerboard.png` | Untuk deteksi corner |
 | 2 | Gambar `building.jpg` | Objek dengan fitur jelas |
 | 3 | Gambar `object1.jpg` dan `object2.jpg` | Pasangan untuk matching |
-| 4 | Script Python praktikum | 7 file program |
+| 4 | Script Python praktikum | 10 file program |
 
 ---
 
@@ -198,6 +201,43 @@ Bab-07-Deteksi-Fitur-dan-Pencocokan/
    - Jumlah inlier vs outlier
    - Hasil transformasi perspektif
    - Akurasi alignment
+
+#### PERCOBAAN 8: Aplikasi Nyata - Document Scanner
+
+**Langkah-langkah:**
+1. Buka file `08_real_world_example.py`
+2. Jalankan program:
+   ```bash
+   python praktikum/08_real_world_example.py
+   ```
+3. Amati:
+   - Deteksi sudut dokumen
+   - Koreksi perspektif (warping)
+   - Hasil "scan" dokumen
+
+#### PERCOBAAN 9: AKAZE Feature Detection
+
+**Langkah-langkah:**
+1. Buka file `09_akaze_detection.py`
+2. Jalankan program:
+   ```bash
+   python praktikum/09_akaze_detection.py
+   ```
+3. Amati:
+   - Jumlah keypoint pada berbagai gambar
+   - Perbandingan dengan ORB/SIFT
+
+#### PERCOBAAN 10: FAST Feature Detection
+
+**Langkah-langkah:**
+1. Buka file `10_fast_detection.py`
+2. Jalankan program:
+   ```bash
+   python praktikum/10_fast_detection.py
+   ```
+3. Amati:
+   - Pengaruh threshold terhadap jumlah keypoint
+   - Perbandingan speed dengan algoritma lain
 
 ---
 

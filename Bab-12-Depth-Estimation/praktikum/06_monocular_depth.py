@@ -77,6 +77,9 @@ COLORMAP = cv2.COLORMAP_INFERNO
 COMPARE_WITH_STEREO = True
 STEREO_DEPTH_FILE = DATA_DIR / "depth" / "depth_meters.npy"
 
+# Auto-close settings
+AUTO_CLOSE_SECONDS = 2
+
 # =============================================================================
 # FUNGSI-FUNGSI
 # =============================================================================
@@ -240,6 +243,13 @@ def visualize_depth(depth, colormap=cv2.COLORMAP_INFERNO, invert=True):
     depth_colored = cv2.applyColorMap(depth_8bit, colormap)
     
     return depth_colored
+
+
+def show_matplotlib_auto_close(seconds=AUTO_CLOSE_SECONDS):
+    """Tampilkan matplotlib sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(seconds)
+    plt.close('all')
 
 
 def compare_mono_stereo(mono_depth, stereo_depth):
@@ -420,7 +430,8 @@ def main():
         print("\n[INFO] Menampilkan gambar sintetis sebagai demo...")
         img = create_synthetic_scene()
         cv2.imshow("Synthetic Scene (PyTorch needed for depth)", img)
-        cv2.waitKey(0)
+        cv2.waitKey(int(AUTO_CLOSE_SECONDS * 1000))
+        cv2.destroyAllWindows()
         return
     
     # Override device dari config
@@ -518,7 +529,7 @@ def main():
     
     cv2.imshow("Monocular Depth Estimation", combined)
     
-    plt.show()
+    show_matplotlib_auto_close()
     
     # Ask for real-time demo
     print("\n" + "="*60)
@@ -526,7 +537,7 @@ def main():
     print("Tekan sembarang tombol lain untuk keluar")
     print("="*60)
     
-    key = cv2.waitKey(0)
+    key = cv2.waitKey(int(AUTO_CLOSE_SECONDS * 1000))
     
     if key == ord('r'):
         cv2.destroyAllWindows()

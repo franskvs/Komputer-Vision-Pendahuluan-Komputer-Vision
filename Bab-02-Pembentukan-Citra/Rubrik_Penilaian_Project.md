@@ -89,8 +89,8 @@
 
 | Skor | Kriteria |
 |------|----------|
-| **90-100** | Fitur sangat inovatif: ML-based detection, OCR integration, cloud sync, AR preview, batch processing dengan progress bar, dll. |
-| **80-89** | Fitur tambahan yang berguna: GUI interaktif, batch processing, PDF export, history/undo, preset profiles. |
+| **90-100** | Fitur sangat inovatif: ML-based detection, OCR integration, cloud sync, AR preview, batch processing dengan progress bar, koreksi distorsi otomatis, dll. |
+| **80-89** | Fitur tambahan yang berguna: GUI interaktif, batch processing, PDF export, history/undo, preset profiles, enhancement warna/gamma. |
 | **70-79** | Beberapa fitur tambahan: Preview sebelum save, basic settings, keyboard shortcuts. |
 | **60-69** | Fitur minimal di luar requirement: Hanya memenuhi spesifikasi dasar dengan sedikit improvement. |
 | **< 60** | Tidak ada fitur tambahan. Hanya memenuhi requirement minimum. |

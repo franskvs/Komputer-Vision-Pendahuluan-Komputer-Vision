@@ -87,6 +87,46 @@ Modern approaches menggunakan CNN:
 - **PWC-Net**: Pyramid, Warping, Cost volume
 - **RAFT**: Recurrent All-Pairs Field Transforms
 
+### 2.6 Translational Alignment (Image Registration)
+Penyelarasan dua frame dengan translasi sederhana:
+
+**Error metric umum:**
+$$
+E_{SSD}(u)=\sum_i\left[I_1(x_i+u)-I_0(x_i)\right]^2
+$$
+
+**Alternatif:**
+- **SAD (L1)** lebih robust terhadap outlier
+- **NCC** tahan terhadap perbedaan intensitas
+- **Phase Correlation** (FFT) cepat untuk pergeseran besar
+
+### 2.7 Fourier/Phase Correlation
+Phase correlation memanfaatkan sifat fase pada domain Fourier untuk menemukan pergeseran:
+
+$$
+E_{PC}(u)=\mathcal{F}^{-1}\left(\frac{I_0(\omega)\cdot I_1(\omega)^*}{\lVert I_0(\omega)\rVert\,\lVert I_1(\omega)\rVert}\right)
+$$
+
+Puncak maksimum pada $E_{PC}$ menunjukkan estimasi $(dx, dy)$.
+
+### 2.8 Frame Interpolation
+Membuat frame di antara dua frame dengan optical flow:
+
+$$
+I_t(x)= (1-t)\,I_0(x) + t\,I_1(x + u_0)
+$$
+
+Kunci: **bi-directional flow**, **occlusion handling**, dan **blending**.
+
+### 2.9 Rolling Shutter & Wobble Removal
+Sensor rolling shutter menyebabkan distorsi garis lurus saat gerakan cepat.
+Perbaikan dilakukan dengan **per-pixel flow** dan re-warp per scanline.
+
+### 2.10 Layered Motion
+Gerak kompleks dapat dipecah menjadi beberapa **layer** (foreground/background):
+- Tiap layer memiliki motion model sendiri
+- Berguna untuk **video object segmentation** dan **tracking**
+
 ---
 
 ## 3. DIAGRAM DAN ILUSTRASI
@@ -131,6 +171,31 @@ O bergerak ke kanan → flow vector ke kanan
     Level 0 (fine)    ┌───────┐   Original size,
                       │       │   fine-tune flow
                       └───────┘
+
+```
+
+### 3.4 Translational Alignment Pipeline (Diagram)
+
+```mermaid
+flowchart LR
+   A[Frame t] --> B[Feature/Block Selection]
+   B --> C[Similarity Metric (SSD/NCC/PC)]
+   C --> D[Best Shift (dx, dy)]
+   D --> E[Warp/Align Frame]
+```
+
+### 3.5 Frame Interpolation Pipeline (Diagram)
+
+```mermaid
+flowchart LR
+   A[Frame t] --> B[Flow t→t+1]
+   C[Frame t+1] --> D[Flow t+1→t]
+   B --> E[Warp t (t=0.5)]
+   D --> F[Warp t+1 (t=0.5)]
+   E --> G[Blend]
+   F --> G
+   G --> H[Interpolated Frame]
+```
 ```
 
 ---
@@ -187,6 +252,24 @@ O bergerak ke kanan → flow vector ke kanan
 
 **Hasil:** Quantitative cardiac function assessment
 
+### 4.6 🎞️ Frame Interpolation (TV/Streaming)
+**Skenario:** TV 60/120Hz menghasilkan frame tambahan.
+
+**Penerapan:**
+- Optical flow untuk warping frame
+- Blending dengan occlusion handling
+
+**Hasil:** Video lebih halus tanpa ghosting berlebih
+
+### 4.7 📷 Rolling Shutter Correction
+**Skenario:** Kamera ponsel saat gerakan cepat.
+
+**Penerapan:**
+- Per-pixel flow per scanline
+- Re-warping untuk menghapus wobble
+
+**Hasil:** Garis lurus tidak melengkung
+
 ---
 
 ## 5. RINGKASAN
@@ -207,6 +290,10 @@ O bergerak ke kanan → flow vector ke kanan
 
 5. **Aplikasi** meliputi stabilization, tracking, compression, analysis
 
+6. **Translational alignment** dan **phase correlation** efektif untuk register cepat
+
+7. **Frame interpolation** memanfaatkan optical flow untuk frame rate up-conversion
+
 ### Tabel Perbandingan Metode:
 
 | Metode | Tipe | Kecepatan | Akurasi | Use Case |
@@ -218,7 +305,30 @@ O bergerak ke kanan → flow vector ke kanan
 
 ---
 
-## 6. DESKRIPSI TUGAS VIDEO
+## 6. KAITAN DENGAN PRAKTIKUM
+
+| Materi | Praktikum | Output | Aplikasi Nyata |
+|--------|-----------|--------|----------------|
+| Translational Alignment | 07_translational_alignment.py | Estimasi dx, dy | Registrasi frame & stabilisasi |
+| Optical Flow | 01–02 | Flow sparse/dense | Tracking & analisis gerak |
+| Motion Detection | 03 | Mask gerak | Surveillance |
+| Object Tracking | 04 | Trajectory | Monitoring objek |
+| Motion History | 05 | MHI | Gesture & aktivitas |
+| Video Stabilization | 06 | Video stabil | Action cam |
+| Frame Interpolation | 08_frame_interpolation.py | Frame tengah | Slow-motion |
+
+---
+
+## 7. REFERENSI GAMBAR (TAUTAN)
+
+1. Optical Flow (OpenCV tutorial): https://docs.opencv.org/4.x/d4/dee/tutorial_optical_flow.html
+2. Phase Correlation (OpenCV docs): https://docs.opencv.org/4.x/d7/df3/group__imgproc__motion.html
+3. Frame Interpolation overview (Szeliski Book): https://szeliski.org/Book/
+4. Middlebury Optical Flow dataset (visual examples): https://vision.middlebury.edu/flow/
+
+---
+
+## 8. DESKRIPSI TUGAS VIDEO
 
 ### 📹 Tugas: Membuat Video Pembelajaran Motion Estimation
 

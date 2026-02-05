@@ -30,6 +30,8 @@ import cv2
 import numpy as np
 from pathlib import Path
 import glob
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 # =============================================================================
 # KONFIGURASI - UBAH SESUAI KEBUTUHAN

@@ -30,6 +30,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from pathlib import Path
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 # ============================================================================
 # VARIABEL KONFIGURASI - UBAH NILAI INI UNTUK EKSPERIMEN

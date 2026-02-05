@@ -45,6 +45,9 @@ import time
 # Mode operasi: 'webcam' atau 'folder'
 MODE = 'folder'  # Gunakan folder karena tidak semua komputer punya webcam
 
+# Auto mode for automated testing
+AUTO_MODE = True  # Set True untuk auto-stitch tanpa interaksi
+
 # Minimum capture sebelum bisa stitch
 MIN_CAPTURES = 2
 
@@ -279,7 +282,33 @@ def run_folder_mode():
     for i, name in enumerate(names):
         print(f"  {i + 1}. {name}")
     
-    # Tampilkan gambar
+    # AUTO MODE - langsung stitch tanpa interaksi
+    if AUTO_MODE:
+        print("\n[AUTO MODE] Langsung melakukan stitching...")
+        panorama, msg = stitch_images(images)
+        print(f"Status: {msg}")
+        
+        if panorama is not None:
+            output_path = os.path.join(OUTPUT_DIR, "06_realtime_panorama.jpg")
+            cv2.imwrite(output_path, panorama)
+            print(f"Panorama disimpan: {output_path}")
+            
+            # Tampilkan hasil
+            h, w = panorama.shape[:2]
+            if max(h, w) > 800:
+                scale = 800 / max(h, w)
+                pano_display = cv2.resize(panorama, None, fx=scale, fy=scale)
+            else:
+                pano_display = panorama
+            
+            cv2.imshow("Panorama Result", pano_display)
+            print("[INFO] Menampilkan hasil... (auto-close dalam 2 detik)")
+            cv2.waitKey(2000)
+            cv2.destroyAllWindows()
+            print("[INFO] Selesai!")
+        return
+    
+    # INTERACTIVE MODE
     print("\nMenampilkan gambar...")
     print("Instruksi:")
     print("  's' - Stitch semua gambar")
@@ -327,6 +356,11 @@ def run_folder_mode():
                     output_path = os.path.join(OUTPUT_DIR, "06_realtime_panorama.jpg")
                     cv2.imwrite(output_path, panorama)
                     print(f"Panorama disimpan: {output_path}")
+                    
+                    # Auto-close after showing result for 2 seconds
+                    print("[INFO] Menampilkan panorama... (auto-close dalam 2 detik)")
+                    cv2.waitKey(2000)
+                    cv2.destroyWindow("Panorama")
             else:
                 print(f"Butuh minimal {MIN_CAPTURES} gambar!")
         

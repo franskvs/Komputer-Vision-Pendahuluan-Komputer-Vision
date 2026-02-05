@@ -97,6 +97,9 @@ DISP12_MAX_DIFF = 1
 # Colormap
 COLORMAP = cv2.COLORMAP_TURBO
 
+# Auto-close settings
+AUTO_CLOSE_SECONDS = 2
+
 # =============================================================================
 # FUNGSI-FUNGSI
 # =============================================================================
@@ -257,6 +260,13 @@ def apply_wls_filter(img_left, disparity_left, disparity_right=None):
         filtered = wls_filter.filter(disparity_left, img_left)
     
     return filtered
+
+
+def show_matplotlib_auto_close(seconds=AUTO_CLOSE_SECONDS):
+    """Tampilkan matplotlib sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(seconds)
+    plt.close('all')
 
 
 def compute_with_lr_check(sgbm, img_left, img_right):
@@ -555,10 +565,10 @@ def main():
     plt.tight_layout()
     plt.savefig(str(OUTPUT_DIR / "sgbm_analysis.png"), dpi=150, bbox_inches='tight')
     
-    plt.show()
+    show_matplotlib_auto_close()
     
-    print("\nTekan sembarang tombol untuk keluar...")
-    cv2.waitKey(0)
+    print(f"\nAuto close dalam {AUTO_CLOSE_SECONDS} detik (tekan 'q' untuk keluar)...")
+    cv2.waitKey(int(AUTO_CLOSE_SECONDS * 1000))
     cv2.destroyAllWindows()
     
     print("\n[SUCCESS] SGBM selesai!")

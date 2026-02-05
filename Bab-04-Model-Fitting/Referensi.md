@@ -119,6 +119,30 @@
    http://sintel.is.tue.mpg.de/
    - Optical flow benchmark
 
+## Referensi Gambar (Bebas Lisensi)
+
+Gunakan sumber berikut untuk gambar realistis (feature matching, hough, homography, dokumen, dan optical flow). Semua tautan di bawah menyediakan konten bebas lisensi atau berlisensi jelas:
+
+1. **Unsplash (Foto bebas lisensi)**
+   - https://unsplash.com/
+   - Contoh kategori: street/road, architecture, documents, books, coins.
+
+2. **Wikimedia Commons (Domain publik/CC)**
+   - https://commons.wikimedia.org/
+   - Gunakan kata kunci: "road", "coins", "document", "book", "building".
+
+3. **Open Images Dataset (Google)**
+   - https://storage.googleapis.com/openimages/web/index.html
+   - Dataset besar untuk object dengan anotasi, cocok untuk feature matching.
+
+4. **Pexels (Foto bebas lisensi)**
+   - https://www.pexels.com/
+   - Banyak foto close-up untuk Hough circle (koin, jam, bola).
+
+5. **Pixabay (Foto bebas lisensi)**
+   - https://pixabay.com/
+   - Cocok untuk gambar arsitektur & panorama.
+
 4. **KITTI Flow**: 
    http://www.cvlibs.net/datasets/kitti/eval_scene_flow.php?benchmark=flow
    - Real-world optical flow

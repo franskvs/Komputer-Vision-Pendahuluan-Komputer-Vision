@@ -19,6 +19,10 @@ Mahasiswa mampu memahami dan mengimplementasikan teknik Structure from Motion (S
 | 5 | Visual Odometry | Melacak gerakan kamera secara sekuensial |
 | 6 | Bundle Adjustment | Mengoptimasi rekonstruksi 3D secara global |
 | 7 | Simple SLAM | Membangun peta sekaligus melokalisasi kamera |
+| 8 | Vanishing Points Calibration | Mengestimasi focal length dari titik hilang ortogonal |
+| 9 | PnP Pose Estimation | Mengestimasi pose kamera dari korespondensi 3D-2D |
+| 10 | Radial Distortion Plumb-Line | Mengestimasi dan memperbaiki distorsi radial |
+| 11 | Tomasi-Kanade Factorization | Rekonstruksi 3D dari multi-frame orthographic |
 
 ---
 
@@ -143,6 +147,38 @@ pip install opencv-python opencv-contrib-python numpy scipy open3d matplotlib
 2. Gunakan webcam atau video untuk input
 3. Jalankan dan amati pembangunan peta real-time
 4. Evaluasi drift dan akurasi
+
+### Percobaan 8: Vanishing Points Calibration
+
+**Langkah:**
+1. Buka file `08_vanishing_points_calibration.py`
+2. Jalankan program untuk membuat scene garis paralel
+3. Amati titik hilang (vanishing points) yang dihitung
+4. Catat estimasi focal length
+
+### Percobaan 9: PnP Pose Estimation
+
+**Langkah:**
+1. Buka file `09_pnp_pose_estimation.py`
+2. Jalankan program untuk estimasi pose dari titik 3D-2D
+3. Bandingkan pose ground truth vs estimasi
+4. Catat reprojection error
+
+### Percobaan 10: Radial Distortion Plumb-Line
+
+**Langkah:**
+1. Buka file `10_radial_distortion_plumbline.py`
+2. Jalankan program untuk menambahkan distorsi radial pada grid
+3. Estimasi parameter k1 menggunakan metode plumb-line
+4. Bandingkan hasil undistorsi
+
+### Percobaan 11: Tomasi-Kanade Factorization
+
+**Langkah:**
+1. Buka file `11_tomasi_kanade_factorization.py`
+2. Jalankan program untuk rekonstruksi 3D multi-frame
+3. Amati point cloud hasil rekonstruksi
+4. Bandingkan dengan ground truth (sphere)
 
 ---
 

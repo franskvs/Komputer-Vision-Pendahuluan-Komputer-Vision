@@ -1,0 +1,25 @@
+VERIFICATION REPORT - BAB 2 PEMBENTUKAN CITRA
+Generated: 2026-02-05 07:13:56
+================================================================================
+
+Total Programs: 15
+Passed: 15/15
+Failed: 0/15
+Output Files: 22
+Total Execution Time: 23.09s
+
+ 1. Translasi (Translation)             | Status: PASS | Files:   4 | Time: 2.25s
+ 2. Rotasi (Rotation)                   | Status: PASS | Files:   1 | Time: 3.66s
+ 3. Scaling (Resize)                    | Status: PASS | Files:   1 | Time: 2.66s
+ 4. Affine Transform                    | Status: PASS | Files:   1 | Time: 2.82s
+ 5. Perspektif Transform                | Status: PASS | Files:   2 | Time: 1.20s
+ 6. Document Scanner                    | Status: PASS | Files:   4 | Time: 1.31s
+ 7. Kalibrasi Kamera                    | Status: PASS | Files:   1 | Time: 2.98s
+ 8. 3D Rotation                         | Status: PASS | Files:   1 | Time: 0.63s
+ 9. Projection                          | Status: PASS | Files:   1 | Time: 0.66s
+10. Lens Distortion                     | Status: PASS | Files:   1 | Time: 0.78s
+11. Sampling & Aliasing                 | Status: PASS | Files:   1 | Time: 0.74s
+12. Color Spaces                        | Status: PASS | Files:   1 | Time: 1.22s
+13. Gamma Correction                    | Status: PASS | Files:   1 | Time: 0.67s
+14. Photometric Shading                 | Status: PASS | Files:   1 | Time: 0.73s
+15. Compression Artifacts               | Status: PASS | Files:   1 | Time: 0.78s

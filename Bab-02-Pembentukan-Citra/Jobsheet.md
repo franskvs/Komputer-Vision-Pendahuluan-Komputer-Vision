@@ -22,6 +22,9 @@ Setelah menyelesaikan praktikum ini, mahasiswa mampu:
 3. Mengimplementasikan aplikasi document scanner menggunakan transformasi perspektif
 4. Memahami prinsip kalibrasi kamera dan koreksi distorsi lensa
 5. Menganalisis perbedaan metode interpolasi dalam operasi resize
+6. Memahami rotasi 3D (axis-angle) dan proyeksi 3D ke 2D (ortografik vs perspektif)
+7. Memahami sampling & aliasing, color space, gamma correction, dan artefak kompresi
+8. Memahami photometric image formation (Lambertian & Phong shading)
 
 ---
 
@@ -35,6 +38,9 @@ Setelah menyelesaikan praktikum ini, mahasiswa mampu:
 **File yang diperlukan:**
 - Gambar sample dari folder `data/images/`
 - Gambar dokumen/kertas untuk percobaan scanner (opsional)
+
+**Output:**
+- Semua hasil disimpan otomatis ke folder `praktikum/output/output1`, `output2`, dst.
 
 **Hardware:**
 - Komputer dengan kamera (opsional untuk kalibrasi)
@@ -292,6 +298,139 @@ Kalibrasi kamera mengestimasi:
 
 ---
 
+## Percobaan 8: Rotasi 3D (Axis-Angle) 🧭
+
+**Tujuan**: Memahami rotasi 3D menggunakan rumus Rodrigues (axis-angle)
+
+**Program**: `08_3d_rotation.py`
+
+**Langkah-langkah**:
+1. Jalankan program dan amati perubahan wireframe kubus
+2. Ubah `axis` dan `angle_deg`
+3. Amati perbedaan arah dan besar rotasi
+
+**Pertanyaan**:
+- Apa perbedaan rotasi di sekitar sumbu X, Y, Z?
+- Mengapa axis harus dinormalisasi?
+
+---
+
+## Percobaan 9: Proyeksi 3D ke 2D 👁️
+
+**Tujuan**: Membandingkan proyeksi ortografik, scaled-orthographic, dan perspektif
+
+**Program**: `09_projection_perspective.py`
+
+**Langkah-langkah**:
+1. Jalankan program dan bandingkan 3 tampilan
+2. Ubah parameter `fx`, `fy`, `cx`, `cy`
+3. Amati perubahan skala dan sudut pandang
+
+**Pertanyaan**:
+- Kapan ortografik lebih cocok daripada perspektif?
+- Apa peran `fx` dan `fy`?
+
+---
+
+## Percobaan 10: Distorsi Lensa 🔍
+
+**Tujuan**: Memahami distorsi radial (barrel/pincushion) dan koreksinya
+
+**Program**: `10_lens_distortion.py`
+
+**Langkah-langkah**:
+1. Jalankan program dan lihat grid yang terdistorsi
+2. Ubah nilai `dist` (k1, k2)
+3. Bandingkan hasil sebelum dan sesudah koreksi
+
+**Pertanyaan**:
+- Bagaimana tanda k1 memengaruhi bentuk distorsi?
+- Mengapa perlu koreksi distorsi pada aplikasi photogrammetry?
+
+---
+
+## Percobaan 11: Sampling & Aliasing 📉
+
+**Tujuan**: Memahami efek aliasing saat downsampling
+
+**Program**: `11_sampling_aliasing.py`
+
+**Langkah-langkah**:
+1. Jalankan program dan amati perbedaan metode downsampling
+2. Bandingkan `INTER_NEAREST` vs `INTER_AREA`
+3. Lihat efek blur sebelum downsample
+
+**Pertanyaan**:
+- Mengapa blur dapat mengurangi aliasing?
+- Kapan `INTER_AREA` lebih baik digunakan?
+
+---
+
+## Percobaan 12: Color Spaces 🎨
+
+**Tujuan**: Memahami representasi warna RGB, HSV, LAB, YCrCb, XYZ
+
+**Program**: `12_color_spaces.py`
+
+**Langkah-langkah**:
+1. Jalankan program dan amati channel tiap color space
+2. Bandingkan channel H/S/V vs L/a/b
+3. Amati komponen XYZ (X,Y,Z)
+
+**Pertanyaan**:
+- Mengapa LAB lebih “perceptual”?
+- Kapan memakai HSV dibanding RGB?
+
+---
+
+## Percobaan 13: Gamma Correction 🌗
+
+**Tujuan**: Memahami perbedaan linear vs gamma-compressed
+
+**Program**: `13_gamma_correction.py`
+
+**Langkah-langkah**:
+1. Jalankan program dan amati ramp intensitas
+2. Bandingkan hasil encode vs decode
+
+**Pertanyaan**:
+- Mengapa gamma penting untuk tampilan?
+- Apa dampaknya pada operasi linear (misal filter)?
+
+---
+
+## Percobaan 14: Photometric Shading 💡
+
+**Tujuan**: Memahami komponen diffuse & specular (Lambertian + Phong)
+
+**Program**: `14_photometric_shading.py`
+
+**Langkah-langkah**:
+1. Jalankan program dan amati diffuse, specular, combined
+2. Ubah `shininess` dan `light_dir`
+
+**Pertanyaan**:
+- Bagaimana `shininess` mempengaruhi highlight?
+- Mengapa diffuse tergantung dot(n, light)?
+
+---
+
+## Percobaan 15: Artefak Kompresi JPEG 🧩
+
+**Tujuan**: Melihat efek kualitas JPEG terhadap detail dan blok
+
+**Program**: `15_compression_artifacts.py`
+
+**Langkah-langkah**:
+1. Jalankan program dan bandingkan kualitas Q=95,70,40
+2. Amati munculnya blockiness dan hilangnya detail
+
+**Pertanyaan**:
+- Pada kualitas berapa artefak mulai terlihat jelas?
+- Mengapa teks dan tepi tajam paling terdampak?
+
+---
+
 ### 📊 Laporan Hasil Praktikum
 
 **Format Laporan**: PDF, maksimal 10 halaman
@@ -348,57 +487,6 @@ Kalibrasi kamera mengestimasi:
 ---
 
 **Selamat Bereksperimen! 🚀**
-
-**Pertanyaan**:
-- Metode mana yang paling cepat?
-- Metode mana yang memberikan hasil terbaik untuk upscaling?
-
-| Metode | Waktu (ms) | Kualitas Subjektif | Cocok untuk |
-|--------|------------|--------------------| ------------|
-| INTER_NEAREST | | | |
-| INTER_LINEAR | | | |
-| INTER_CUBIC | | | |
-| INTER_LANCZOS4 | | | |
-| INTER_AREA | | | |
-
----
-
-## Percobaan 4: Transformasi Affine
-
-**Tujuan**: Memahami transformasi affine yang menggabungkan rotasi, scaling, dan shearing
-
-**Langkah-langkah**:
-1. Jalankan program `04_affine_transform.py`
-2. Definisikan 3 titik sumber dan 3 titik tujuan
-3. Amati bagaimana gambar berubah
-4. Eksperimen dengan koordinat berbeda
-
-**Pertanyaan**:
-- Mengapa dibutuhkan tepat 3 titik untuk transformasi affine?
-- Apa saja transformasi yang bisa dilakukan dengan affine?
-
-**Tabel Observasi**:
-
-| Titik Sumber | Titik Tujuan | Efek yang Dihasilkan |
-|--------------|--------------|----------------------|
-| [(0,0), (w,0), (0,h)] | | Original |
-| | | Shear horizontal |
-| | | Shear vertikal |
-| | | Kombinasi |
-
----
-
-## Percobaan 5: Transformasi Perspektif
-
-**Tujuan**: Memahami transformasi perspektif untuk koreksi sudut pandang
-
-**Langkah-langkah**:
-1. Jalankan program `05_perspektif_transform.py`
-2. Praktekkan pada gambar dokumen/papan tulis
-3. Tentukan 4 titik sudut objek
-4. Transformasi ke bentuk persegi panjang
-
-**Pertanyaan**:
 - Mengapa dibutuhkan 4 titik untuk transformasi perspektif?
 - Apa perbedaan dengan transformasi affine?
 

@@ -40,6 +40,9 @@ Tanggal: [Tanggal Praktikum]
 import cv2
 import numpy as np
 import os
+import time
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 # ============================================================
 # PARAMETER YANG DAPAT DIMODIFIKASI
@@ -55,6 +58,9 @@ POLY_SIGMA = 1.2    # Gaussian std untuk polynomial expansion
 
 # Visualization parameters
 FLOW_THRESHOLD = 2  # Threshold untuk visualisasi (filter noise)
+
+# Auto close window (detik) untuk testing cepat
+AUTO_CLOSE_SECONDS = 2.0
 
 # Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -237,6 +243,7 @@ def main():
     color_wheel = create_color_wheel()
     
     frame_count = 0
+    start_time = time.time()
     
     print("\nProcessing...")
     print("Tekan 'q' untuk keluar, 's' untuk save")
@@ -302,6 +309,11 @@ def main():
         
         prev_gray = curr_gray.copy()
         frame_count += 1
+
+        if AUTO_CLOSE_SECONDS > 0 and not using_webcam:
+            if (time.time() - start_time) >= AUTO_CLOSE_SECONDS:
+                print("Auto-close: waktu uji selesai.")
+                break
     
     cap.release()
     out.release()

@@ -104,6 +104,14 @@ def create_noisy_images(output_dir):
     # Add some shapes
     cv2.circle(clean, (w//3, h//2), 80, (50, 150, 200), -1)
     cv2.rectangle(clean, (w//2, h//3), (w*2//3, h*2//3), (200, 100, 50), -1)
+    # Tulis teks ke gambar
+    # a (clean): canvas/gambar tujuan
+    # b ("TEST"): teks yang akan ditulis
+    # c ((w//2-60, h-50)): posisi (x, y) baseline teks
+    # font: tipe font (Hershey Simplex)
+    # font_scale: ukuran teks (2)
+    # color: warna teks dalam BGR (putih)
+    # thickness: ketebalan garis teks (3)
     cv2.putText(clean, "TEST", (w//2-60, h-50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3)
     
     # Save clean

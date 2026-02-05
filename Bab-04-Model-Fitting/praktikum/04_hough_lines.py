@@ -46,6 +46,9 @@ MAX_LINE_GAP = 10         # Maximum gap between line segments
 LINE_COLOR = (0, 255, 0)   # Hijau
 LINE_THICKNESS = 2
 
+# 7. Auto-close plot (detik)
+AUTO_CLOSE_SECONDS = 2.0
+
 # ============================================================
 # FUNGSI HELPER
 # ============================================================
@@ -95,6 +98,13 @@ def buat_gambar_sample():
         gambar[y, x] = [200, 200, 200]
     
     return gambar
+
+
+def tampilkan_plot():
+    """Tampilkan plot sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(AUTO_CLOSE_SECONDS)
+    plt.close()
 
 
 # ============================================================
@@ -304,7 +314,7 @@ Threshold tinggi:
     
     plt.suptitle("Pengaruh Vote Threshold pada Hough Lines", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_minlength_maxgap():
@@ -358,7 +368,7 @@ Contoh:
     
     plt.suptitle("Pengaruh minLineLength dan maxLineGap", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_hough_space():
@@ -443,7 +453,7 @@ Peak di accumulator = garis terdeteksi
     
     plt.suptitle("Hough Transform Visualization", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 # ============================================================
@@ -590,7 +600,7 @@ APLIKASI:
     
     plt.suptitle("Hough Line Transform", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
     
     # Demo tambahan
     demo_hough_space()

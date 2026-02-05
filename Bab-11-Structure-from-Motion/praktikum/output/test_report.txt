@@ -1,0 +1,270 @@
+======================================================================
+TEST REPORT - BAB 11: STRUCTURE FROM MOTION
+======================================================================
+
+Test Date: 2026-02-05 07:12:29
+Total Programs: 7
+Passed: 7
+Failed: 0
+
+
+======================================================================
+Program: 01_feature_matching_multiview.py
+Status: PASSED
+======================================================================
+STDOUT:
+i
+[3] Memvisualisasikan keypoints...
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/01_keypoints_img1_SIFT.png
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/01_keypoints_img2_SIFT.png
+[4] Membuat feature matcher...
+[5] Mencocokkan features...
+    Jumlah good matches: 53
+[6] Memvisualisasikan matches...
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/01_feature_matches_SIFT.png
+
+==================================================
+STATISTIK HASIL
+==================================================
+Detector: SIFT
+Keypoints Gambar 1: 403
+Keypoints Gambar 2: 435
+Total Matches: 53
+Match Rate: 13.2%
+Jarak Match Min: 4.58
+Jarak Match Max: 158.16
+Jarak Match Rata-rata: 42.66
+
+✓ Program selesai!
+Output disimpan di: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output
+
+
+======================================================================
+Program: 02_fundamental_matrix.py
+Status: PASSED
+======================================================================
+STDOUT:
+hitung Fundamental Matrix...
+    Inliers: 181 dari 252
+    Inlier ratio: 71.8%
+
+[3] Fundamental Matrix F:
+[[ 1.97475451e-06  3.98103736e-04 -9.55315838e-02]
+ [-3.96145568e-04  9.17792113e-06 -5.40776908e-02]
+ [ 9.23807051e-02  4.61144271e-02  1.00000000e+00]]
+
+    Rank F: 2 (seharusnya 2)
+
+[4] Memverifikasi epipolar constraint...
+    Mean epipolar error: 0.193162
+    Max epipolar error: 0.708166
+    Std epipolar error: 0.170751
+
+[5] Memvisualisasikan epipolar lines...
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/02_epipolar_lines.png
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/02_epipolar_error_dist.png
+
+==================================================
+RINGKASAN
+==================================================
+Total korespondensi: 252
+Inliers setelah RANSAC: 181
+Mean epipolar error: 0.193162
+Fundamental Matrix berhasil diestimasi!
+
+✓ Program selesai!
+
+
+======================================================================
+Program: 03_essential_matrix.py
+Status: PASSED
+======================================================================
+STDOUT:
+ential Matrix menjadi R dan t...
+
+Rotation Matrix R:
+[[-9.98760416e-01  1.05400270e-03 -4.97646445e-02]
+ [-1.29551592e-04 -9.99827442e-01 -1.85760358e-02]
+ [-4.97756365e-02 -1.85465622e-02  9.98588209e-01]]
+
+Translation Vector t (normalized):
+[ 0.03747802  0.00938599 -0.99925337]
+
+Euler Angles (degrees):
+    Roll:  -1.06°
+    Pitch: 2.85°
+    Yaw:   -179.99°
+
+[6] Memvisualisasikan pose kamera...
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/03_camera_poses.png
+
+[7] Memverifikasi dekomposisi...
+    Reconstruction error: 0.000000
+
+==================================================
+RINGKASAN
+==================================================
+Total korespondensi: 151
+Inliers: 119
+Rotasi: Roll=-1.1°, Pitch=2.9°, Yaw=-180.0°
+Translasi: [0.037, 0.009, -0.999]
+
+Note: Translasi hanya arah (normalized), bukan magnitude absolut.
+      Untuk mendapatkan scale, diperlukan informasi tambahan (e.g., known distance).
+
+✓ Program selesai!
+
+
+======================================================================
+Program: 04_triangulasi_3d.py
+Status: PASSED
+======================================================================
+STDOUT:
+atches: 95
+[3] Mengestimasi pose kamera...
+    Inliers untuk triangulasi: 48
+[4] Melakukan triangulasi...
+    Jumlah titik 3D: 48
+[5] Menghitung reprojection error...
+    Mean error gambar 1: 0.12 px
+    Mean error gambar 2: 0.12 px
+[6] Memfilter outliers...
+    Titik setelah filtering: 48
+[7] Memvisualisasikan hasil...
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/04_triangulated_points.png
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/04_reprojection_error.png
+
+==================================================
+STATISTIK HASIL TRIANGULASI
+==================================================
+Total matches: 95
+Inliers: 48
+Titik 3D valid: 48
+
+Reprojection Error (setelah filtering):
+  Mean (img1): 0.120 px
+  Mean (img2): 0.120 px
+  Max:  0.358 px
+
+3D Point Statistics:
+  X range: [-7.22, 0.78]
+  Y range: [-5.01, 5.18]
+  Z range: [1.89, 21.80]
+
+✓ Program selesai!
+
+
+======================================================================
+Program: 05_visual_odometry.py
+Status: PASSED
+======================================================================
+STDOUT:
+T
+  - Max Features: 3000
+
+Menggunakan video sintetis...
+Total frames: 100
+
+Memproses frames...
+  Frame 0/100, Features: 11, Time: 0.9ms
+  Frame 20/100, Features: 1, Time: 1.4ms
+  Frame 40/100, Features: 5, Time: 1.4ms
+  Frame 60/100, Features: 2, Time: 1.4ms
+  Frame 80/100, Features: 2, Time: 1.5ms
+
+Trajectory computed: 1 poses
+
+Memvisualisasikan hasil...
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/05_vo_trajectory.png
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/05_feature_count.png
+
+==================================================
+STATISTIK VISUAL ODOMETRY
+==================================================
+Total frames diproses: 100
+Trajectory length: 1 poses
+
+Feature Statistics:
+  Mean: 2
+  Min: 0
+  Max: 8
+
+✓ Program selesai!
+
+Note: Pada monocular VO, scale tidak dapat ditentukan.
+      Untuk scale absolut, diperlukan stereo camera atau sensor lain.
+
+
+======================================================================
+Program: 06_bundle_adjustment.py
+Status: PASSED
+======================================================================
+STDOUT:
+ameters: 330
+  Residuals: 112
+  Running optimization...
+    Optimization finished in 1.40 seconds
+    Iterations: 100
+    Termination: The maximum number of function evaluations is exceeded.
+
+[4] Computing optimized reprojection error...
+    Mean error: 0.279 px
+    Max error: 1.371 px
+
+[5] Visualizing results...
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/06_ba_reconstruction.png
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/06_ba_error_comparison.png
+
+==================================================
+RINGKASAN BUNDLE ADJUSTMENT
+==================================================
+
+Reprojection Error:
+  Before BA: 30.7671 px (mean), 73.3329 px (max)
+  After BA:  0.2787 px (mean), 1.3712 px (max)
+  Improvement: 99.1%
+
+3D Point Accuracy (distance to ground truth):
+  Before BA: 0.0793 (mean)
+  After BA:  0.0834 (mean)
+  Improvement: -5.2%
+
+✓ Program selesai!
+
+
+======================================================================
+Program: 07_simple_slam.py
+Status: PASSED
+======================================================================
+STDOUT:
+0, MapPts: 0, Time: 3.1ms
+  Frame 20/150, KF: 0, MapPts: 0, Time: 1.6ms
+  Frame 40/150, KF: 0, MapPts: 0, Time: 1.7ms
+  Frame 60/150, KF: 0, MapPts: 0, Time: 2.6ms
+  Frame 80/150, KF: 7, MapPts: 89, Time: 113.2ms
+  Frame 100/150, KF: 26, MapPts: 783, Time: 163.5ms
+  Frame 120/150, KF: 46, MapPts: 2527, Time: 38.5ms
+  Frame 140/150, KF: 66, MapPts: 4632, Time: 179.6ms
+
+==================================================
+SLAM COMPLETED
+==================================================
+
+Total frames processed: 150
+Keyframes created: 75
+Map points: 5000
+Lost frames: 74
+
+Trajectory statistics:
+  Total distance: 100.90 units
+  Start: [0.00, 0.00, 0.00]
+  End: [14.67, -1.06, 21.74]
+
+Visualisasi hasil...
+Hasil disimpan: /home/sirobo/Documents/Praktikum Komputer Vision/Bab-11-Structure-from-Motion/praktikum/output/07_slam_result.png
+
+✓ Program selesai!
+
+Note: Ini adalah implementasi SLAM sederhana untuk pembelajaran.
+      Untuk aplikasi nyata, gunakan library seperti ORB-SLAM, OpenVSLAM, dll.
+

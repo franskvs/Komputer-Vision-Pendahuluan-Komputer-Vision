@@ -18,6 +18,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import time
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 # ============================================================
 # VARIABEL YANG BISA DIUBAH-UBAH (EKSPERIMEN)
@@ -52,6 +54,9 @@ AKAZE_THRESHOLD = 0.001     # Detector response threshold
 # 7. Parameter FAST Detector
 FAST_THRESHOLD = 20         # Threshold untuk FAST
 FAST_NONMAX_SUPPRESSION = True
+
+# 8. Auto-close plot (detik)
+AUTO_CLOSE_SECONDS = 2.0
 
 # ============================================================
 # FUNGSI HELPER
@@ -100,10 +105,18 @@ def buat_gambar_sample():
                 cv2.rectangle(gambar, (x, y), (x+30, y+30), (255, 255, 255), -1)
     
     # Text
+    # cv2.putText(a,b,c,d,e,f,g): a=img, b=teks, c=posisi(x,y), d=font, e=skala, f=warna, g=ketebalan
     cv2.putText(gambar, "FEATURES", (320, 380), 
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
     
     return gambar
+
+
+def tampilkan_plot():
+    """Tampilkan plot sebentar lalu tutup otomatis."""
+    plt.show(block=False)
+    plt.pause(AUTO_CLOSE_SECONDS)
+    plt.close()
 
 
 # ============================================================
@@ -369,7 +382,7 @@ THRESHOLD:
     
     plt.suptitle("Pengaruh Parameter pada Harris Corner Detection", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 def demo_detector_comparison():
@@ -438,7 +451,7 @@ PERBANDINGAN:
     
     plt.suptitle("Perbandingan Feature Detectors", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
     
     # Print summary
     print("\nSUMMARY:")
@@ -497,7 +510,7 @@ def demo_scale_rotation():
     
     plt.suptitle("Scale dan Rotation Invariance Test", fontsize=14)
     plt.tight_layout()
-    plt.show()
+    tampilkan_plot()
 
 
 # ============================================================
@@ -579,7 +592,7 @@ Aplikasi:
         plt.title(f"{DETECTOR_TYPE.upper()} Feature Detection")
         plt.axis('off')
         plt.tight_layout()
-        plt.show()
+        tampilkan_plot()
     
     # Demo tambahan
     demo_harris_parameter()

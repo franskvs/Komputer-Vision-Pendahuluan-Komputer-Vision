@@ -39,6 +39,8 @@ import matplotlib.pyplot as plt
 import os
 import time
 import glob
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 # ============================================================
 # PARAMETER YANG DAPAT DIMODIFIKASI
@@ -347,7 +349,12 @@ def main():
         plt.savefig(output_path, dpi=150, bbox_inches='tight')
         print(f"\nHasil disimpan ke: {output_path}")
         
-        plt.show()
+        # Auto-close setelah 2 detik
+        print("\n[INFO] Menampilkan hasil... (akan auto-close dalam 2 detik)")
+        plt.show(block=False)
+        plt.pause(2)
+        plt.close('all')
+        print("[INFO] Selesai!")
     else:
         print("\nTidak ada hasil yang bisa ditampilkan.")
         print("Pastikan gambar tersedia di folder data/images/")

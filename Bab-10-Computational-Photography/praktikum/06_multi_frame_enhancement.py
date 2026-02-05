@@ -363,8 +363,8 @@ Key insight:
     cv2.imshow("Clean Original", clean)
     cv2.imshow("Single Noisy Frame", frames[0])
     cv2.imshow("8 Frames Averaged", results.get('8 frames', frames[0]))
-    print("\nTekan sembarang tombol untuk menutup...")
-    cv2.waitKey(0)
+    print("\nMenampilkan hasil (akan otomatis tertutup dalam 2 detik)...")
+    cv2.waitKey(2000)
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":

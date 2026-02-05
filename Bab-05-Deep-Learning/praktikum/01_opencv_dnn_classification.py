@@ -30,6 +30,8 @@ import numpy as np
 import os
 import urllib.request
 from pathlib import Path
+# REFERENSI: Lihat CV2_FUNCTIONS_REFERENCE.py untuk dokumentasi lengkap cv2 functions
+
 
 
 def download_file(url, filepath):
@@ -192,7 +194,11 @@ def demo_classification_basic():
                 (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 200, 0), 2)
     
     cv2.imshow("Classification Result (Simulated)", display)
-    cv2.waitKey(0)
+    print("\n[INFO] Tekan 'q' untuk menutup gambar...")
+    while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q') or key == 27:  # 'q' atau ESC
+            break
     cv2.destroyAllWindows()
 
 
@@ -282,7 +288,11 @@ def demo_blob_creation():
     
     cv2.imshow("Blob Channels (after RGB swap)", combined)
     cv2.imshow("Original Image", image)
-    cv2.waitKey(0)
+    print("\n[INFO] Tekan 'q' untuk menutup gambar...")
+    while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q') or key == 27:  # 'q' atau ESC
+            break
     cv2.destroyAllWindows()
 
 
@@ -361,7 +371,11 @@ def demo_classification_workflow():
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
     
     cv2.imshow("Classification Workflow Demo", grid)
-    cv2.waitKey(0)
+    print("\n[INFO] Tekan 'q' untuk menutup gambar...")
+    while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q') or key == 27:  # 'q' atau ESC
+            break
     cv2.destroyAllWindows()
 
 

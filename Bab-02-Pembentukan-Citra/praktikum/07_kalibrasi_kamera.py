@@ -23,6 +23,29 @@ import os
 import glob
 
 # ============================================================
+# PANDUAN FUNGSI (RINGKAS) - ARTI PARAMETER
+# ============================================================
+# cv2.findChessboardCorners(gray, pattern_size, flags)
+#   - pattern_size: (cols-1, rows-1) jumlah inner corners
+#
+# cv2.cornerSubPix(gray, corners, winSize, zeroZone, criteria)
+#   - winSize : ukuran jendela pencarian sub-pixel
+#   - criteria: kriteria terminasi
+#
+# cv2.calibrateCamera(objPoints, imgPoints, imageSize, cameraMatrix, distCoeffs)
+#
+# cv2.undistort(img, cameraMatrix, distCoeffs)
+#
+# cv2.getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, alpha, newImgSize)
+#
+# cv2.initUndistortRectifyMap(cameraMatrix, distCoeffs, R, newCameraMatrix, size, m1type)
+#
+# cv2.remap(src, map1, map2, interpolation)
+#
+# matplotlib.pyplot.savefig(path, dpi, bbox_inches)
+#   - path : lokasi simpan gambar
+
+# ============================================================
 # VARIABEL YANG BISA DIUBAH-UBAH (EKSPERIMEN)
 # ============================================================
 
@@ -33,7 +56,7 @@ import glob
 # Dapatkan direktori script (praktikum folder)
 DIR_SCRIPT = os.path.dirname(os.path.abspath(__file__))
 DIR_DATA = os.path.join(DIR_SCRIPT, "data", "images")
-DIR_OUTPUT = os.path.join(DIR_SCRIPT, "output7")
+DIR_OUTPUT = os.path.join(DIR_SCRIPT, "output", "output7")
 
 # Pastikan folder output ada
 os.makedirs(DIR_OUTPUT, exist_ok=True)
@@ -57,21 +80,27 @@ CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 # FUNGSI HELPER
 # ============================================================
 
+# Keterangan: Membuat gambar pola checkerboard untuk kalibrasi.
 def buat_checkerboard_pattern(rows=6, cols=9, square_size=50):
-    """
-    Membuat gambar pola checkerboard
-    
+    """Membuat gambar pola checkerboard.
+
     Parameter:
-    - rows: jumlah baris kotak
-    - cols: jumlah kolom kotak
-    - square_size: ukuran kotak dalam pixel
+    - rows (int): jumlah baris kotak.
+    - cols (int): jumlah kolom kotak.
+    - square_size (int): ukuran kotak dalam piksel.
+
+    Return:
+    - np.ndarray: gambar checkerboard (grayscale).
     """
     height = rows * square_size
     width = cols * square_size
     
+    # Inisialisasi array numpy dengan nilai nol
     pattern = np.zeros((height, width), dtype=np.uint8)
     
+    # Iterasi melalui range untuk pemrosesan
     for i in range(rows):
+        # Iterasi melalui range
         for j in range(cols):
             if (i + j) % 2 == 0:
                 y1 = i * square_size
@@ -86,12 +115,20 @@ def buat_checkerboard_pattern(rows=6, cols=9, square_size=50):
                                    dtype=np.uint8) * 200
     pattern_with_border[border:border+height, border:border+width] = pattern
     
+    # Kembalikan hasil dari fungsi
     return pattern_with_border
 
 
+# Keterangan: Membuat simulasi dataset kalibrasi dari berbagai sudut.
 def simulasi_gambar_kalibrasi(pattern, num_images=15):
-    """
-    Membuat simulasi gambar kalibrasi dengan berbagai sudut pandang
+    """Membuat simulasi gambar kalibrasi dengan berbagai sudut pandang.
+
+    Parameter:
+    - pattern (np.ndarray): gambar checkerboard (grayscale).
+    - num_images (int): jumlah gambar simulasi.
+
+    Return:
+    - list[np.ndarray]: daftar gambar simulasi (BGR).
     """
     images = []
     
@@ -144,7 +181,9 @@ def simulasi_gambar_kalibrasi(pattern, num_images=15):
                 [output_size[0]*persp*50, output_size[1]*(1-persp*50)],
                 [output_size[0]*(1-persp*80), output_size[1]*(1-persp*100)]
             ])
+            # Hitung matriks transformasi perspektif
             M_persp = cv2.getPerspectiveTransform(pts1, pts2)
+            # Terapkan transformasi perspektif pada gambar
             temp = cv2.warpPerspective(temp, M_persp, output_size)
         
         # Tambahkan sedikit noise
@@ -153,6 +192,7 @@ def simulasi_gambar_kalibrasi(pattern, num_images=15):
         
         images.append(temp)
     
+    # Kembalikan hasil dari fungsi
     return images
 
 
@@ -160,14 +200,17 @@ def simulasi_gambar_kalibrasi(pattern, num_images=15):
 # FUNGSI KALIBRASI
 # ============================================================
 
+# Keterangan: Menjelaskan parameter intrinsik/ekstrinsik kamera.
 def penjelasan_parameter_kamera():
-    """
-    Menjelaskan parameter intrinsik dan ekstrinsik kamera
-    """
+    """Menjelaskan parameter intrinsik dan ekstrinsik kamera."""
+    # Cetak informasi ke console
     print("\n" + "=" * 60)
+    # Cetak informasi ke console
     print("PARAMETER KAMERA")
+    # Cetak informasi ke console
     print("=" * 60)
     
+    # Cetak informasi ke console
     print("""
 CAMERA MATRIX (Intrinsic Parameters):
 ┌                         ┐
@@ -208,22 +251,24 @@ EXTRINSIC PARAMETERS:
     """)
 
 
+# Keterangan: Mendeteksi sudut checkerboard pada gambar.
 def deteksi_checkerboard(gambar, pattern_size):
-    """
-    Mendeteksi corner checkerboard dalam gambar
-    
+    """Mendeteksi corner checkerboard dalam gambar.
+
     Parameter:
-    - gambar: input image (BGR atau grayscale)
-    - pattern_size: tuple (cols-1, rows-1) untuk inner corners
-    
+    - gambar (np.ndarray): input image (BGR atau grayscale).
+    - pattern_size (tuple[int, int]): (cols-1, rows-1) untuk inner corners.
+
     Return:
-    - found: boolean apakah checkerboard ditemukan
-    - corners: koordinat corners yang ditemukan
+    - bool: apakah checkerboard ditemukan.
+    - np.ndarray | None: koordinat corners yang ditemukan.
     """
     # Konversi ke grayscale jika perlu
     if len(gambar.shape) == 3:
+        # Konversi gambar ke format warna berbeda
         gray = cv2.cvtColor(gambar, cv2.COLOR_BGR2GRAY)
     else:
+        # Buat salinan dari array/gambar
         gray = gambar.copy()
     
     # Temukan corners
@@ -238,30 +283,33 @@ def deteksi_checkerboard(gambar, pattern_size):
     if found:
         corners = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), CRITERIA)
     
+    # Kembalikan hasil dari fungsi
     return found, corners
 
 
+# Keterangan: Menghitung parameter kamera dari kumpulan gambar.
 def kalibrasi_kamera(images, pattern_size, square_size):
-    """
-    Melakukan kalibrasi kamera dari sekumpulan gambar
-    
+    """Melakukan kalibrasi kamera dari sekumpulan gambar.
+
     Parameter:
-    - images: list gambar checkerboard
-    - pattern_size: tuple (cols-1, rows-1)
-    - square_size: ukuran kotak dalam satuan real
-    
+    - images (list[np.ndarray]): list gambar checkerboard.
+    - pattern_size (tuple[int, int]): (cols-1, rows-1).
+    - square_size (float): ukuran kotak dalam satuan real.
+
     Return:
-    - ret: RMS re-projection error
-    - camera_matrix: matrix intrinsik
-    - dist_coeffs: koefisien distorsi
-    - rvecs: rotation vectors
-    - tvecs: translation vectors
+    - float | None: RMS re-projection error.
+    - np.ndarray | None: camera matrix intrinsik.
+    - np.ndarray | None: koefisien distorsi.
+    - list[np.ndarray] | None: rotation vectors.
+    - list[np.ndarray] | None: translation vectors.
     """
+    # Cetak informasi ke console
     print("\n[INFO] Memulai proses kalibrasi...")
     
     # Siapkan object points (koordinat 3D di world frame)
     objp = np.zeros((pattern_size[0] * pattern_size[1], 3), np.float32)
     objp[:, :2] = np.mgrid[0:pattern_size[0], 0:pattern_size[1]].T.reshape(-1, 2)
+    # Kalikan variabel dengan nilai
     objp *= square_size  # Skala ke ukuran real
     
     # Arrays untuk menyimpan points dari semua gambar
@@ -278,14 +326,19 @@ def kalibrasi_kamera(images, pattern_size, square_size):
             objpoints.append(objp)
             imgpoints.append(corners)
             successful_images.append(i)
+            # Cetak informasi ke console
             print(f"  [✓] Gambar {i+1}: Checkerboard terdeteksi")
         else:
+            # Cetak informasi ke console
             print(f"  [✗] Gambar {i+1}: Checkerboard tidak terdeteksi")
     
     if len(objpoints) < 3:
+        # Cetak informasi ke console
         print("[ERROR] Minimal 3 gambar dengan checkerboard terdeteksi diperlukan!")
+        # Kembalikan hasil dari fungsi
         return None, None, None, None, None
     
+    # Cetak informasi ke console
     print(f"\n[INFO] Menggunakan {len(objpoints)} gambar untuk kalibrasi...")
     
     # Kalibrasi
@@ -294,12 +347,23 @@ def kalibrasi_kamera(images, pattern_size, square_size):
         objpoints, imgpoints, (w, h), None, None
     )
     
+    # Kembalikan hasil dari fungsi
     return ret, camera_matrix, dist_coeffs, rvecs, tvecs
 
 
+# Keterangan: Mengoreksi distorsi lensa pada gambar.
 def undistort_gambar(gambar, camera_matrix, dist_coeffs):
-    """
-    Menghilangkan distorsi dari gambar
+    """Menghilangkan distorsi dari gambar.
+
+    Parameter:
+    - gambar (np.ndarray): input image (BGR).
+    - camera_matrix (np.ndarray): matriks intrinsik.
+    - dist_coeffs (np.ndarray): koefisien distorsi.
+
+    Return:
+    - np.ndarray: hasil undistort (direct).
+    - np.ndarray: hasil undistort (remap).
+    - np.ndarray: hasil undistort (cropped).
     """
     h, w = gambar.shape[:2]
     
@@ -323,35 +387,53 @@ def undistort_gambar(gambar, camera_matrix, dist_coeffs):
     x, y, w_roi, h_roi = roi
     hasil_cropped = hasil_remap[y:y+h_roi, x:x+w_roi]
     
+    # Kembalikan hasil dari fungsi
     return hasil_direct, hasil_remap, hasil_cropped
 
 
-def hitung_reprojection_error(objpoints, imgpoints, rvecs, tvecs, 
-                               camera_matrix, dist_coeffs):
-    """
-    Menghitung re-projection error untuk menilai kualitas kalibrasi
+# Keterangan: Menghitung error reprojection untuk evaluasi kalibrasi.
+def hitung_reprojection_error(objpoints, imgpoints, rvecs, tvecs,
+                              camera_matrix, dist_coeffs):
+    """Menghitung re-projection error untuk menilai kualitas kalibrasi.
+
+    Parameter:
+    - objpoints (list[np.ndarray]): titik 3D dunia.
+    - imgpoints (list[np.ndarray]): titik 2D gambar.
+    - rvecs (list[np.ndarray]): rotation vectors.
+    - tvecs (list[np.ndarray]): translation vectors.
+    - camera_matrix (np.ndarray): matriks intrinsik.
+    - dist_coeffs (np.ndarray): koefisien distorsi.
+
+    Return:
+    - float: mean reprojection error.
     """
     total_error = 0
     total_points = 0
     
+    # Iterasi melalui range untuk pemrosesan
     for i in range(len(objpoints)):
         imgpoints2, _ = cv2.projectPoints(
             objpoints[i], rvecs[i], tvecs[i], camera_matrix, dist_coeffs
         )
         error = cv2.norm(imgpoints[i], imgpoints2, cv2.NORM_L2) / len(imgpoints2)
+        # Tambahkan nilai ke variabel
         total_error += error
+        # Tambahkan nilai ke variabel
         total_points += 1
     
     mean_error = total_error / total_points
+    # Kembalikan hasil dari fungsi
     return mean_error
 
 
+# Keterangan: Memvisualisasikan efek distorsi lensa.
 def visualisasi_distorsi():
-    """
-    Visualisasi berbagai jenis distorsi lensa
-    """
+    """Memvisualisasikan berbagai jenis distorsi lensa."""
+    # Cetak informasi ke console
     print("\n" + "=" * 60)
+    # Cetak informasi ke console
     print("VISUALISASI DISTORSI LENSA")
+    # Cetak informasi ke console
     print("=" * 60)
     
     # Buat grid pattern
@@ -360,8 +442,11 @@ def visualisasi_distorsi():
     
     # Gambar grid
     spacing = 40
+    # Iterasi melalui range untuk pemrosesan
     for i in range(0, size, spacing):
+        # Gambar garis pada gambar
         cv2.line(grid, (i, 0), (i, size-1), (0, 0, 0), 1)
+        # Gambar garis pada gambar
         cv2.line(grid, (0, i), (size-1, i), (0, 0, 0), 1)
     
     # Berbagai jenis distorsi
@@ -386,6 +471,7 @@ def visualisasi_distorsi():
     axes_flat = axes.flatten()
     
     for ax, (dist, title) in zip(axes_flat, distortion_types):
+        # Buat array numpy dari data
         dist_coeffs = np.array(dist, dtype=np.float32)
         
         # Buat distorted image dengan menerapkan inverse undistort
@@ -399,23 +485,35 @@ def visualisasi_distorsi():
         ax.set_title(title)
         ax.axis('off')
     
+    # Set judul keseluruhan figure
     plt.suptitle("Jenis-jenis Distorsi Lensa", fontsize=14)
+    # Atur spacing antar subplot
     plt.tight_layout()
     output_path = os.path.join(DIR_OUTPUT, "output.png")
 
+    # Simpan figure ke file dengan kualitas DPI tertentu
     plt.savefig(output_path, dpi=100, bbox_inches="tight")
 
+    # Cetak informasi ke console
     print(f"[SAVED] {output_path}")
 
+    # Tutup figure untuk menghemat memory
     plt.close()
 
 
+# Keterangan: Menjalankan pipeline demo kalibrasi kamera.
 def demo_calibration_pipeline():
+    """Demo pipeline kalibrasi lengkap dengan gambar simulasi.
+
+    Return:
+    - np.ndarray | None: camera matrix.
+    - np.ndarray | None: dist coeffs.
     """
-    Demo pipeline kalibrasi lengkap dengan gambar simulasi
-    """
+    # Cetak informasi ke console
     print("\n" + "=" * 60)
+    # Cetak informasi ke console
     print("DEMO PIPELINE KALIBRASI KAMERA")
+    # Cetak informasi ke console
     print("=" * 60)
     
     # Buat pattern checkerboard
@@ -425,20 +523,26 @@ def demo_calibration_pipeline():
         square_size=50
     )
     
+    # Cetak informasi ke console
     print(f"[INFO] Pola checkerboard: {CHECKERBOARD_COLS}x{CHECKERBOARD_ROWS}")
+    # Cetak informasi ke console
     print(f"[INFO] Inner corners: {CHECKERBOARD_COLS-1}x{CHECKERBOARD_ROWS-1}")
     
     # Tampilkan pattern
     plt.figure(figsize=(8, 6))
+    # Tampilkan gambar pada plot
     plt.imshow(pattern, cmap='gray')
     plt.title(f"Pola Kalibrasi Checkerboard\n{CHECKERBOARD_COLS}×{CHECKERBOARD_ROWS} kotak")
     plt.axis('off')
     output_path = os.path.join(DIR_OUTPUT, "output.png")
 
+    # Simpan figure ke file dengan kualitas DPI tertentu
     plt.savefig(output_path, dpi=100, bbox_inches="tight")
 
+    # Cetak informasi ke console
     print(f"[SAVED] {output_path}")
 
+    # Tutup figure untuk menghemat memory
     plt.close()
     
     # Buat gambar simulasi kalibrasi
@@ -450,6 +554,7 @@ def demo_calibration_pipeline():
     pattern_size = (CHECKERBOARD_COLS - 1, CHECKERBOARD_ROWS - 1)
     
     for i, (ax, img) in enumerate(zip(axes.flatten(), images)):
+        # Buat salinan dari array/gambar
         img_display = img.copy()
         
         # Deteksi dan gambar corners
@@ -462,14 +567,19 @@ def demo_calibration_pipeline():
         ax.set_title(f"Image {i+1} [{status}]")
         ax.axis('off')
     
+    # Set judul keseluruhan figure
     plt.suptitle("Gambar Kalibrasi dengan Detected Corners", fontsize=14)
+    # Atur spacing antar subplot
     plt.tight_layout()
     output_path = os.path.join(DIR_OUTPUT, "output.png")
 
+    # Simpan figure ke file dengan kualitas DPI tertentu
     plt.savefig(output_path, dpi=100, bbox_inches="tight")
 
+    # Cetak informasi ke console
     print(f"[SAVED] {output_path}")
 
+    # Tutup figure untuk menghemat memory
     plt.close()
     
     # Lakukan kalibrasi
@@ -478,20 +588,31 @@ def demo_calibration_pipeline():
     )
     
     if ret is not None:
+        # Cetak informasi ke console
         print("\n" + "=" * 60)
+        # Cetak informasi ke console
         print("HASIL KALIBRASI")
+        # Cetak informasi ke console
         print("=" * 60)
         
+        # Cetak informasi ke console
         print(f"\nRMS Re-projection Error: {ret:.4f} pixels")
+        # Cetak informasi ke console
         print("(Nilai < 1.0 pixel dianggap baik)")
         
+        # Cetak informasi ke console
         print("\nCamera Matrix (Intrinsic):")
+        # Cetak informasi ke console
         print(camera_matrix)
         
+        # Cetak informasi ke console
         print(f"\nFocal Length: fx={camera_matrix[0,0]:.2f}, fy={camera_matrix[1,1]:.2f}")
+        # Cetak informasi ke console
         print(f"Principal Point: cx={camera_matrix[0,2]:.2f}, cy={camera_matrix[1,2]:.2f}")
         
+        # Cetak informasi ke console
         print("\nDistortion Coefficients (k1, k2, p1, p2, k3):")
+        # Cetak informasi ke console
         print(dist_coeffs.ravel())
         
         # Demo undistortion
@@ -499,38 +620,60 @@ def demo_calibration_pipeline():
         test_img = images[0]
         direct, remap, cropped = undistort_gambar(test_img, camera_matrix, dist_coeffs)
         
+        # Siapkan kanvas plot untuk menampilkan hasil
         fig, axes = plt.subplots(1, 3, figsize=(15, 5))
         
+        # Tampilkan gambar pada subplot tertentu
         axes[0].imshow(cv2.cvtColor(test_img, cv2.COLOR_BGR2RGB))
+        # Set judul untuk subplot
         axes[0].set_title("Original (with distortion)")
+        # Nonaktifkan atau atur axis pada subplot
         axes[0].axis('off')
         
+        # Tampilkan gambar pada subplot tertentu
         axes[1].imshow(cv2.cvtColor(remap, cv2.COLOR_BGR2RGB))
+        # Set judul untuk subplot
         axes[1].set_title("Undistorted (full)")
+        # Nonaktifkan atau atur axis pada subplot
         axes[1].axis('off')
         
+        # Tampilkan gambar pada subplot tertentu
         axes[2].imshow(cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB))
+        # Set judul untuk subplot
         axes[2].set_title("Undistorted (cropped)")
+        # Nonaktifkan atau atur axis pada subplot
         axes[2].axis('off')
         
+        # Set judul keseluruhan figure
         plt.suptitle("Hasil Undistortion", fontsize=14)
+        # Atur spacing antar subplot
         plt.tight_layout()
         output_path = os.path.join(DIR_OUTPUT, "output.png")
 
+        # Simpan figure ke file dengan kualitas DPI tertentu
         plt.savefig(output_path, dpi=100, bbox_inches="tight")
 
+        # Cetak informasi ke console
         print(f"[SAVED] {output_path}")
 
+        # Tutup figure untuk menghemat memory
         plt.close()
         
+        # Kembalikan hasil dari fungsi
         return camera_matrix, dist_coeffs
     
+    # Kembalikan hasil dari fungsi
     return None, None
 
 
+# Keterangan: Menyimpan parameter kalibrasi ke file.
 def simpan_parameter_kalibrasi(camera_matrix, dist_coeffs, filename):
-    """
-    Menyimpan parameter kalibrasi ke file
+    """Menyimpan parameter kalibrasi ke file.
+
+    Parameter:
+    - camera_matrix (np.ndarray): matriks intrinsik.
+    - dist_coeffs (np.ndarray): koefisien distorsi.
+    - filename (str): path tanpa ekstensi.
     """
     # Metode 1: NumPy
     np.savez(filename + '.npz', 
@@ -543,24 +686,36 @@ def simpan_parameter_kalibrasi(camera_matrix, dist_coeffs, filename):
     fs.write('dist_coeffs', dist_coeffs)
     fs.release()
     
+    # Cetak informasi ke console
     print(f"[INFO] Parameter disimpan ke {filename}.npz dan {filename}.yaml")
 
 
+# Keterangan: Memuat parameter kalibrasi dari file.
 def muat_parameter_kalibrasi(filename):
-    """
-    Memuat parameter kalibrasi dari file
+    """Memuat parameter kalibrasi dari file.
+
+    Parameter:
+    - filename (str): path tanpa ekstensi.
+
+    Return:
+    - np.ndarray | None: camera matrix.
+    - np.ndarray | None: dist coeffs.
     """
     if os.path.exists(filename + '.npz'):
         data = np.load(filename + '.npz')
+        # Kembalikan hasil dari fungsi
         return data['camera_matrix'], data['dist_coeffs']
     elif os.path.exists(filename + '.yaml'):
         fs = cv2.FileStorage(filename + '.yaml', cv2.FILE_STORAGE_READ)
         camera_matrix = fs.getNode('camera_matrix').mat()
         dist_coeffs = fs.getNode('dist_coeffs').mat()
         fs.release()
+        # Kembalikan hasil dari fungsi
         return camera_matrix, dist_coeffs
     else:
+        # Cetak informasi ke console
         print(f"[ERROR] File {filename} tidak ditemukan!")
+        # Kembalikan hasil dari fungsi
         return None, None
 
 
@@ -568,14 +723,23 @@ def muat_parameter_kalibrasi(filename):
 # PROGRAM UTAMA
 # ============================================================
 
+# Keterangan: Menjalankan demo kalibrasi kamera dan penyimpanan parameter.
 def main():
-    """Fungsi utama program"""
+    """Fungsi utama program.
+
+    Menjalankan demo kalibrasi kamera dan menyimpan parameter.
+    """
     
+    # Cetak informasi ke console
     print("\n" + "=" * 60)
+    # Cetak informasi ke console
     print("PRAKTIKUM: KALIBRASI KAMERA")
+    # Cetak informasi ke console
     print("Bab 2 - Pembentukan Citra")
+    # Cetak informasi ke console
     print("=" * 60)
     
+    # Cetak informasi ke console
     print("""
 KALIBRASI KAMERA bertujuan untuk:
 ├── Mengetahui parameter intrinsik (focal length, principal point)
@@ -617,8 +781,11 @@ LANGKAH-LANGKAH KALIBRASI:
     
     # Ringkasan
     print("\n" + "=" * 60)
+    # Cetak informasi ke console
     print("RINGKASAN KALIBRASI KAMERA")
+    # Cetak informasi ke console
     print("=" * 60)
+    # Cetak informasi ke console
     print("""
 FUNGSI UTAMA:
 ├── cv2.findChessboardCorners(img, pattern_size)

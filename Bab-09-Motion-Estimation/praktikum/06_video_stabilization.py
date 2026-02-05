@@ -36,6 +36,7 @@ Tanggal: [Tanggal Praktikum]
 import cv2
 import numpy as np
 import os
+import time
 
 # ============================================================
 # PARAMETER YANG DAPAT DIMODIFIKASI
@@ -56,6 +57,9 @@ MIN_DISTANCE = 30
 
 # Crop ratio untuk menghilangkan border artifacts (0.0 - 0.2)
 CROP_RATIO = 0.1
+
+# Auto close window (detik) untuk testing cepat
+AUTO_CLOSE_SECONDS = 2.0
 
 # Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -199,6 +203,9 @@ def stabilize_video(input_path, output_path, show_progress=True):
     ret, prev_frame = cap.read()
     prev_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
     
+    display_start_time = time.time()
+    display_active = True
+
     for i in range(n_frames - 1):
         # Detect features
         prev_pts = cv2.goodFeaturesToTrack(
@@ -309,9 +316,15 @@ def stabilize_video(input_path, output_path, show_progress=True):
         out.write(combined)
         
         # Display
-        cv2.imshow("Video Stabilization", combined)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        if display_active:
+            cv2.imshow("Video Stabilization", combined)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+            if AUTO_CLOSE_SECONDS > 0 and (time.time() - display_start_time) >= AUTO_CLOSE_SECONDS:
+                print("Auto-close: tampilan ditutup, proses tetap berjalan.")
+                cv2.destroyAllWindows()
+                display_active = False
         
         if show_progress and (i + 1) % 30 == 0:
             print(f"  Frame {i + 1}/{n_frames}")

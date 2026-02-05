@@ -379,7 +379,12 @@ def main():
     cv2.imwrite(pano_path, panorama)
     print(f"Panorama disimpan ke: {pano_path}")
     
-    plt.show()
+    # Auto-close setelah 2 detik
+    print("\n[INFO] Menampilkan hasil... (akan auto-close dalam 2 detik)")
+    plt.show(block=False)
+    plt.pause(2)
+    plt.close('all')
+    print("[INFO] Selesai!")
 
 if __name__ == "__main__":
     main()

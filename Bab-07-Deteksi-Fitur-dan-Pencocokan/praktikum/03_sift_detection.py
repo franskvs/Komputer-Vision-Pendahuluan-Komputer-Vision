@@ -209,7 +209,7 @@ def main():
     
     # Path setup
     script_dir = get_script_dir()
-    data_dir = os.path.join(os.path.dirname(script_dir), "data", "images")
+    data_dir = os.path.join(script_dir, "data", "images")
     output_dir = os.path.join(script_dir, "output")
     os.makedirs(output_dir, exist_ok=True)
     
