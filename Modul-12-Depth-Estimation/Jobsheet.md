@@ -6,48 +6,125 @@
 ## 🎯 1. Tujuan Praktikum
 
 ### Tujuan Umum
-Mahasiswa mampu memahami dan mengimplementasikan teknik estimasi kedalaman menggunakan stereo vision dan deep learning.
+Mahasiswa mampu memahami, mengimplementasikan, dan menganalisis berbagai teknik estimasi kedalaman (depth estimation) menggunakan stereo vision dan deep learning, serta menerapkannya dalam aplikasi computer vision seperti autonomous driving, robotics, dan augmented reality.
 
 ### Tujuan Khusus per Percobaan
 
-| No | Percobaan | Tujuan | Penerapan Nyata |
-|----|-----------|--------|----------------|
-| 1 | Stereo Camera Calibration | Memahami cara mengkalibrasi stereo camera | Kalibrasi rig kamera robot, scanner 3D |
-| 2 | Stereo Rectification | Memahami proses rectification untuk stereo matching | Optimasi pipeline stereo pada kendaraan otonom |
-| 3 | Block Matching | Mengimplementasikan algoritma stereo matching dasar | Depth real-time sederhana (robotik edukasi) |
-| 4 | Semi-Global Matching (SGM) | Menggunakan SGM untuk hasil lebih baik | ADAS/robot navigasi dengan noise rendah |
-| 5 | Disparity to Depth Conversion | Mengkonversi disparity map ke depth map | Estimasi jarak & ukur volume objek |
-| 6 | Monocular Depth Estimation | Menggunakan deep learning untuk depth estimation | AR, portrait mode, scene understanding |
-| 7 | Depth Map Applications | Menerapkan depth map untuk segmentasi dan 3D | Bokeh, obstacle detection, point cloud |
+| No | Percobaan | Tujuan Pembelajaran | Kompetensi yang Dikembangkan | Penerapan Industri |
+|----|-----------|---------------------|------------------------------|-------------------|
+| 1 | Stereo Camera Calibration | Memahami dan melakukan kalibrasi stereo camera dengan akurasi tinggi (RMS error < 0.5 pixel) | Menguasai konsep parameter intrinsik, extrinsik, dan rectification mapping | Robot vision systems, 3D scanning, industrial inspection |
+| 2 | Stereo Rectification | Memahami proses rectification dan transformasi epipolar untuk optimasi pencarian korespondensi | Implementasi image warping dan validasi epipolar constraints | ADAS (Advanced Driver Assistance Systems), drone navigation |
+| 3 | Block Matching (BM) | Mengimplementasikan algoritma stereo matching berbasis window-based correlation | Analisis trade-off antara speed dan accuracy, parameter tuning | Real-time robotics, warehouse automation, AGV |
+| 4 | Semi-Global Matching (SGM) | Menerapkan SGM untuk hasil depth yang lebih smooth dengan global optimization | Memahami path aggregation, smoothness constraints, dan post-processing | Autonomous vehicles (Tesla, Waymo), mapping & SLAM |
+| 5 | Disparity to Depth Conversion | Mengkonversi disparity map ke metric depth menggunakan triangulation principles | Kalibrasi baseline dan focal length, handling invalid disparities | Distance measurement, collision avoidance, parking assistance |
+| 6 | Monocular Depth Estimation | Menggunakan deep learning (MiDaS, DPT) untuk estimasi depth dari single image | Transfer learning, model inference, relative vs absolute depth | AR filters (Instagram, Snapchat), smartphone photography |
+| 7 | Depth Map Post-Processing | Menerapkan filtering, hole filling, dan temporal smoothing | Bilateral filtering, WLS filtering, median filtering | Production-ready systems, noise reduction |
+| 8 | Depth-based Applications | Implementasi obstacle detection, 3D reconstruction, dan depth segmentation | Point cloud generation, plane fitting, clustering | Safety systems, scene understanding, virtual reality |
 
 ---
 
 ## 🔧 2. Alat dan Bahan
 
 ### 2.1 Perangkat Keras
-| Alat | Spesifikasi Minimum | Keterangan |
-|------|-------------------|------------|
-| Komputer/Laptop | RAM 8GB, GPU recommended | Untuk running program |
-| Stereo Camera (opsional) | ZED, RealSense, atau DIY | Untuk capture stereo |
-| Webcam | 2 unit identik | Untuk DIY stereo |
+| Alat | Spesifikasi Minimum | Spesifikasi Rekomendasi | Keterangan |
+|------|-------------------|------------------------|------------|
+| Komputer/Laptop | RAM 8GB, CPU multi-core | RAM 16GB+, GPU NVIDIA (4GB+ VRAM) | GPU untuk deep learning models (MiDaS, DPT) |
+| Stereo Camera (opsional) | ZED, RealSense D435, OAK-D | RealSense D455, ZED 2i | Untuk capture stereo real-time |
+| Webcam | 2 unit identik (minimal 720p) | 2 unit 1080p dengan mounting rig | Untuk DIY stereo setup |
+| Printer Checkerboard | - | - | Untuk mencetak pattern kalibrasi |
 
 ### 2.2 Perangkat Lunak
-| Software | Versi | Fungsi |
-|----------|-------|--------|
-| Python | 3.8+ | Bahasa pemrograman |
-| OpenCV | 4.8+ | Stereo matching algorithms |
-| NumPy | 1.24+ | Operasi numerik |
-| PyTorch | 2.0+ | Deep learning (MiDaS) |
-| Open3D | 0.17+ | Visualisasi point cloud |
+| Software | Versi | Fungsi | Instalasi |
+|----------|-------|--------|-----------|
+| Python | 3.8 - 3.11 | Bahasa pemrograman utama | `python --version` |
+| OpenCV | 4.8+ | Stereo algorithms (BM, SGM, WLS filter) | `pip install opencv-contrib-python` |
+| NumPy | 1.24+ | Array operations dan matrix math | `pip install numpy` |
+| PyTorch | 2.0+ | Deep learning framework (MiDaS) | `pip install torch torchvision` |
+| Timm | 0.9+ | Vision models backbone | `pip install timm` |
+| Open3D | 0.17+ | 3D visualization dan point clouds | `pip install open3d` |
+| Matplotlib | 3.7+ | Plotting dan visualization | `pip install matplotlib` |
+| SciPy | 1.10+ | Scientific computing | `pip install scipy` |
+| PIL/Pillow | 10.0+ | Image I/O operations | `pip install Pillow` |
 
-### 2.3 Data yang Dibutuhkan
-- Gambar stereo (left-right pair)
-- Checkerboard untuk kalibrasi (9×6 atau 7×5)
-- Dataset stereo (Middlebury, KITTI)
+### 2.3 Data dan Resource yang Dibutuhkan
+| Resource | Sumber | Keterangan |
+|----------|--------|------------|
+| **Gambar Stereo Pairs** | - Middlebury Dataset<br>- KITTI Dataset<br>- Driving Stereo Dataset | Download dari official websites |
+| **Checkerboard Pattern** | - 9×6 inner corners (recommended)<br>- 7×5 alternative<br>- Square size: 25mm | Print dengan akurasi tinggi |
+| **Pre-trained Models** | - MiDaS v3.1 (DPT-Large)<br>- MiDaS v2.1 (Small)<br>- Depth-Anything | Auto-download via PyTorch Hub |
+| **Sample Videos** | - Driving scenes<br>- Indoor navigation<br>- Outdoor scenes | Untuk testing real-world scenarios |
 
-### 2.4 Instalasi Library
+### 2.4 Instalasi Lengkap Library
+
+#### A. Instalasi via pip (Recommended)
 ```bash
-pip install opencv-python opencv-contrib-python numpy torch torchvision timm open3d matplotlib
+# Core libraries
+pip install opencv-contrib-python==4.8.1.78
+pip install numpy==1.24.3
+pip install matplotlib==3.7.2
+pip install scipy==1.10.1
+pip install Pillow==10.0.0
+
+# Deep learning
+pip install torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cu118
+pip install timm==0.9.5
+
+# 3D visualization
+pip install open3d==0.17.0
+
+# Optional: untuk visualisasi interaktif
+pip install plotly==5.15.0
+pip install dash==2.11.1
+```
+
+#### B. Instalasi via Conda (Alternative)
+```bash
+conda create -n depth_estimation python=3.10
+conda activate depth_estimation
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+conda install -c conda-forge opencv matplotlib numpy scipy pillow open3d
+pip install timm
+```
+
+#### C. Verifikasi Instalasi
+```bash
+python -c "import cv2; print('OpenCV:', cv2.__version__)"
+python -c "import torch; print('PyTorch:', torch.__version__, 'CUDA:', torch.cuda.is_available())"
+python -c "import open3d; print('Open3D:', open3d.__version__)"
+python -c "import timm; print('Timm:', timm.__version__)"
+```
+
+### 2.5 Download Sample Data
+Gunakan script berikut untuk download dataset:
+
+```python
+# download_sample_data.py
+import urllib.request
+import zipfile
+import os
+
+DATASETS = {
+    'middlebury_2014': 'https://vision.middlebury.edu/stereo/data/scenes2014/zip/Adirondack-perfect.zip',
+    'sample_stereo': 'https://github.com/opencv/opencv_extra/raw/master/testdata/cv/stereo/',
+}
+
+def download_dataset(name, url, extract_to='./data'):
+    os.makedirs(extract_to, exist_ok=True)
+    filename = os.path.join(extract_to, name + '.zip')
+    
+    if not os.path.exists(filename):
+        print(f'Downloading {name}...')
+        urllib.request.urlretrieve(url, filename)
+        print(f'Extracting {name}...')
+        with zipfile.ZipFile(filename, 'r') as zip_ref:
+            zip_ref.extractall(extract_to)
+        print(f'{name} ready!')
+    else:
+        print(f'{name} already exists.')
+
+# Download all datasets
+for name, url in DATASETS.items():
+    download_dataset(name, url)
 ```
 
 ---

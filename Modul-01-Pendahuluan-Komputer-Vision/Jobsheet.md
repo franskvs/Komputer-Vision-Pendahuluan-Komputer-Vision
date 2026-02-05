@@ -1,24 +1,29 @@
 # JOBSHEET PRAKTIKUM
-# BAB 1: PENDAHULUAN COMPUTER VISION
+# MODUL 1: PENDAHULUAN COMPUTER VISION
 
 ---
 
-## 🎯 1. TUJUAN PRAKTIKUM
+## 🎯 TUJUAN PEMBELAJARAN
 
-### Tujuan Umum:
-Memahami konsep dasar Computer Vision dan mampu melakukan operasi dasar pada citra digital menggunakan Python dan OpenCV.
+### Capaian Pembelajaran (Learning Outcomes):
+Setelah menyelesaikan praktikum ini, mahasiswa diharapkan mampu:
+1. **Memahami** konsep dasar Computer Vision dan representasi citra digital
+2. **Mengoperasikan** library OpenCV dan NumPy untuk pemrosesan gambar dasar
+3. **Mengimplementasikan** operasi dasar: loading, display, konversi, dan manipulasi citra
+4. **Menganalisis** properti gambar dan karakteristik color space yang berbeda
+5. **Menerapkan** pemahaman untuk membangun aplikasi sederhana berbasis Computer Vision
 
 ### Tujuan Khusus per Percobaan:
 
-| No | Percobaan | Tujuan |
-|----|-----------|--------|
-| 1 | Loading Image | Mampu membaca file gambar dari berbagai format (jpg, png, bmp) |
-| 2 | Display Image | Mampu menampilkan gambar menggunakan OpenCV dan Matplotlib |
-| 3 | Image Properties | Mampu mengakses dan memahami properti gambar (dimensi, channel, dtype) |
-| 4 | Color Conversion | Mampu mengkonversi gambar antar color space (RGB, BGR, Grayscale, HSV) |
-| 5 | Pixel Manipulation | Mampu mengakses dan memodifikasi nilai piksel secara langsung |
-| 6 | Drawing Shapes | Mampu menggambar bentuk geometris dan teks pada gambar |
-| 7 | Save Output | Mampu menyimpan hasil pemrosesan dalam berbagai format |
+| No | Percobaan | Tujuan Spesifik | Waktu |
+|----|-----------|----------------|-------|
+| 1 | Loading & Display Image | Memahami cara membaca dan menampilkan gambar dari berbagai format (jpg, png, bmp) menggunakan OpenCV dan Matplotlib | 20 menit |
+| 2 | Image Properties | Mengakses dan memahami properti gambar (dimensi, channel, dtype, size) serta implikasinya | 20 menit |
+| 3 | Color Space Conversion | Mengkonversi gambar antar color space (BGR, RGB, Grayscale, HSV) dan memahami aplikasinya | 25 menit |
+| 4 | Pixel Access & Manipulation | Mengakses dan memodifikasi nilai piksel secara langsung untuk operasi tingkat rendah | 25 menit |
+| 5 | Drawing & Annotation | Menggambar bentuk geometris dan menambahkan teks pada gambar untuk visualisasi | 20 menit |
+| 6 | Arithmetic Operations | Melakukan operasi aritmatika pada gambar (blending, masking) | 20 menit |
+| 7 | Save & Export | Menyimpan hasil pemrosesan dalam berbagai format dengan konfigurasi optimal | 20 menit |
 
 ---
 

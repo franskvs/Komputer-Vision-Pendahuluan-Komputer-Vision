@@ -3,8 +3,11 @@
 ## Informasi Umum
 - **Mata Kuliah**: Praktikum Computer Vision
 - **Topik**: Deep Learning untuk Computer Vision
-- **Waktu**: 6 × 150 menit (6 pertemuan)
-- **Tools**: Python 3.8+, PyTorch/TensorFlow, OpenCV, Ultralytics
+- **Durasi Modul**: 6 × 150 menit (6 pertemuan @ 2.5 jam)
+- **Total Waktu**: 900 menit (15 jam)
+- **Tools**: Python 3.8+, PyTorch/TensorFlow, OpenCV 4.5+, Ultralytics YOLO
+- **Hardware**: CPU (minimal), GPU CUDA-capable (recommended untuk training)
+- **RAM**: Minimal 8GB (16GB recommended untuk training)
 
 ---
 
@@ -26,25 +29,48 @@ OpenCV DNN module memungkinkan inference menggunakan model dari berbagai framewo
 
 **Supported Frameworks:**
 ```
-├── Caffe (.caffemodel, .prototxt)
-├── TensorFlow (.pb)
-├── PyTorch/Torch (.t7)
-├── Darknet/YOLO (.weights, .cfg)
-├── ONNX (.onnx)
-└── OpenVINO (.xml, .bin)
+├── Caffe (.caffemodel, .prototxt)        # Berkeley framework
+├── TensorFlow (.pb, .pbtxt)              # Google framework
+├── PyTorch/Torch (.t7, .pth)             # Meta/Facebook framework
+├── Darknet/YOLO (.weights, .cfg)         # YOLO original
+├── ONNX (.onnx)                          # Open Neural Network Exchange
+└── OpenVINO (.xml, .bin)                 # Intel optimization
 ```
+
+**Keunggulan OpenCV DNN:**
+- No framework dependency (pure OpenCV)
+- Lightweight dan portable
+- CPU-optimized dengan Intel optimizations
+- Support multiple backends (OpenVINO, Vulkan, CUDA)
+- Cocok untuk deployment production
 
 **Blob Preprocessing:**
 ```python
 blob = cv2.dnn.blobFromImage(
-    image,           # Input image
-    scalefactor,     # Scale (1/255.0 for normalization)
-    size,            # Network input size
-    mean,            # Mean subtraction
-    swapRB,          # BGR to RGB
-    crop             # Center crop
+    image,           # Input image (BGR format dari OpenCV)
+    scalefactor,     # Scale (1/255.0 untuk [0,1], 1.0 untuk [0,255])
+    size,            # Network input size (224, 224) atau (300, 300)
+    mean,            # Mean subtraction (103.939, 116.779, 123.68) untuk ImageNet
+    swapRB,          # BGR to RGB (True jika model trained dengan RGB)
+    crop,            # Center crop (True) atau resize (False)
+    ddepth           # Output depth (cv2.CV_32F default)
 )
 ```
+
+**Penjelasan Detail:**
+- **scalefactor**: Mengubah range nilai pixel
+  - 1/255.0 → normalize ke [0, 1]
+  - 0.00392 → sama dengan 1/255.0
+  - 1.0 → tetap di [0, 255]
+- **mean**: Mean subtraction untuk normalisasi
+  - ImageNet mean: (103.939, 116.779, 123.68) BGR
+  - Atau (0.485, 0.456, 0.406) RGB normalized
+- **swapRB**: OpenCV default BGR, model biasanya RGB
+- **crop**: True = crop center, False = resize/warp
+
+**Output Blob Format:**
+`[batch, channels, height, width]` atau `[N, C, H, W]`
+Contoh: `[1, 3, 224, 224]` untuk 1 gambar RGB 224x224
 
 ### Langkah Praktikum
 
@@ -52,27 +78,142 @@ blob = cv2.dnn.blobFromImage(
 ```
 File: praktikum/01_opencv_dnn_classification.py
 ```
-1. Jalankan program
-2. Amati prediksi untuk berbagai gambar
-3. Coba dengan gambar sendiri
+
+**Langkah Eksperimen:**
+1. **Setup dan Load Model**
+   - Download MobileNet model dari OpenCV model zoo
+   - Load model dengan `cv2.dnn.readNetFromCaffe()`
+   - Load ImageNet class labels (1000 classes)
+
+2. **Inference pada Single Image**
+   - Load test image (gunakan gambar kucing/anjing/mobil)
+   - Create blob dengan parameter yang tepat
+   - Forward pass melalui network
+   - Parse output dan ambil top-5 predictions
+
+3. **Visualisasi Hasil**
+   - Tampilkan gambar dengan predicted class
+   - Show confidence scores untuk top-5 classes
+   - Bandingkan dengan ground truth
+
+**Expected Output:**
+```
+Image: cat.jpg
+Predictions:
+1. tabby cat (82.3%)
+2. tiger cat (12.1%)
+3. Egyptian cat (3.4%)
+4. lynx (1.2%)
+5. Persian cat (0.8%)
+Inference time: 23.5 ms
+```
+
+**Troubleshooting:**
+- Jika akurasi rendah, cek parameter mean dan swapRB
+- Jika inference lambat, pastikan menggunakan CPU backend
+- Jika error "cannot find model", verify path model
 
 #### Praktikum 1.2: Model Comparison
 ```
 File: praktikum/02_model_comparison.py
 ```
-1. Bandingkan MobileNet vs ResNet
-2. Ukur inference time
-3. Analisis accuracy vs speed trade-off
+
+**Objective:** Membandingkan trade-off antara accuracy dan speed
+
+**Models untuk Comparison:**
+| Model | Size | Params | Expected Accuracy |
+|-------|------|--------|-------------------|
+| MobileNet-V2 | 14 MB | 3.5M | 72% Top-1 |
+| ResNet-50 | 102 MB | 25M | 76% Top-1 |
+| EfficientNet-B0 | 21 MB | 5.3M | 77% Top-1 |
+
+**Metrics yang Diukur:**
+1. **Inference Time**
+   - Average over 100 runs
+   - Exclude first run (warm-up)
+   - Report in milliseconds
+
+2. **Accuracy**
+   - Test pada ImageNet validation subset (50 images)
+   - Calculate Top-1 dan Top-5 accuracy
+
+3. **Memory Usage**
+   - Model file size
+   - Runtime memory (measure dengan psutil)
+
+**Analisis Expected:**
+- MobileNet: fastest, reasonable accuracy
+- ResNet: slower, higher accuracy
+- Trade-off: 2-3x slower untuk ~4% accuracy gain
+
+**Buat Tabel Hasil:**
+```
+| Model | Size | Time (ms) | Top-1 | Top-5 | FPS |
+|-------|------|-----------|-------|-------|-----|
+| ...   | ...  | ...       | ...   | ...   | ... |
+```
 
 ### Latihan
 1. Download dan test model ONNX lain
 2. Buat wrapper function untuk berbagai model
 3. Test dengan batch processing
 
-### Tugas Mandiri
-1. Benchmark 3 model berbeda (MobileNet, ResNet, EfficientNet)
-2. Buat tabel perbandingan (size, speed, accuracy)
-3. Dokumentasikan hasil dalam laporan
+### Tugas Mandiri (Dikumpulkan Pertemuan 2)
+
+**Tugas 1.1: Model Benchmark Report**
+
+Benchmark minimal 3 model berbeda dengan requirements:
+
+**Models yang Disarankan:**
+- MobileNet-V2 (lightweight)
+- ResNet-50 (balanced)
+- EfficientNet-B0 (efficient)
+
+**Dataset Test:**
+- Minimal 100 images dari ImageNet validation
+- Balanced across 10 different classes
+- Include challenging cases (occlusion, blur, small object)
+
+**Metrics yang Harus Dilaporkan:**
+1. Model size (MB)
+2. Inference time (mean ± std)
+3. Top-1 accuracy (%)
+4. Top-5 accuracy (%)
+5. Memory footprint (MB)
+6. FPS throughput
+
+**Format Laporan:**
+```markdown
+# Model Benchmark Report
+
+## Executive Summary
+- Best model untuk accuracy: ...
+- Best model untuk speed: ...
+- Recommended untuk production: ...
+
+## Detailed Results
+### MobileNet-V2
+- Accuracy: XX%
+- Speed: YY ms
+- Analysis: ...
+
+[Include graphs: accuracy vs speed plot]
+
+## Conclusion
+- Trade-off analysis
+- Use case recommendations
+```
+
+**Deliverables:**
+- `benchmark_report.pdf` (3-5 halaman)
+- `benchmark_results.csv` (raw data)
+- `comparison_plots.png` (visualization)
+
+**Grading Criteria:**
+- Completeness: 40%
+- Analysis depth: 30%
+- Visualization: 20%
+- Writing quality: 10%
 
 ---
 
